@@ -1,0 +1,2220 @@
+# TaskClassBench - Think Carefully variant (mechanism ablation)
+# 311 prompts x 1 variant x 4 models = 1244 classifications
+
+description: "Think Carefully variant - mechanism ablation"
+
+maxConcurrency: 4
+
+prompts:
+  - file://classifier-think-carefully.txt
+
+providers:
+  - id: openai:chat:deepseek-chat
+    config:
+      apiBaseUrl: https://api.deepseek.com
+      apiKeyEnvar: DEEPSEEK_API_KEY
+      temperature: 0
+      max_tokens: 2048
+
+  - id: google:gemini-2.5-flash
+    config:
+      apiKeyEnvar: GOOGLE_API_KEY
+      temperature: 0
+      maxOutputTokens: 2048
+
+  - id: anthropic:messages:claude-haiku-4-5-20251001
+    config:
+      apiKeyEnvar: ANTHROPIC_API_KEY
+      temperature: 0
+      max_tokens: 2048
+
+  - id: anthropic:messages:claude-4-sonnet-20250514
+    config:
+      apiKeyEnvar: ANTHROPIC_API_KEY
+      temperature: 0
+      max_tokens: 2048
+
+defaultTest:
+  assert:
+    - type: regex
+      value: "TASK TYPE:\\s*(Quick|Research|Analysis|Content|Build|Planning|Compound)"
+      metric: valid_type
+
+tests:
+  - vars:
+      user_message: "we don't need the retry logic actually"
+      context: "The agent has been designing an ETL pipeline with fault-tolerance as an explicit requirement. The last three exchanges detailed exponential backoff and dead-letter queue handling."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "focus on readability, not performance"
+      context: "The agent has been optimizing a data-processing script for throughput, profiling hot paths, and proposing vectorized operations. The user has reviewed two rounds of performance-focused refactors."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "the end user isn't technical"
+      context: "The agent has been drafting API documentation with curl examples, HTTP status codes, and JSON schema snippets, targeting a developer audience."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "this is a prototype, not production"
+      context: "The agent has been recommending authentication middleware, rate limiting, and input validation for a Node.js API the user is building."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "we're not shipping this externally"
+      context: "The agent has been advising on content tone, SEO metadata, and public-facing copy for a marketing landing page."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "skip the unit tests for now"
+      context: "The agent has been building out a test suite as an explicit deliverable for a checkout module, with the user approving test coverage targets in the prior exchange."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "actually, ownership doesn't matter here"
+      context: "The agent has spent two exchanges designing an access-control model for a multi-tenant SaaS app, with ownership as the core authorization primitive distinguishing tenant data."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "just treat all environments the same"
+      context: "The agent has been designing a deployment pipeline with separate config handling for dev, staging, and production, including environment-specific secrets injection."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "we're moving away from event-driven"
+      context: "The agent has been designing a microservices architecture around a message broker with event sourcing, approved by the user in the prior session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "consistency isn't a priority for us"
+      context: "The agent has been recommending a design system with shared tokens, reusable components, and a style guide to unify a fragmented frontend."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "forget the rate limits, just loop it"
+      context: "The agent has been building an Apify scraper with polite delays and retry logic specifically because the target site aggressively blocks scrapers that exceed request thresholds."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "we don't localize, so ignore that"
+      context: "The agent has been building a date-formatting utility and recommended ISO 8601 storage with locale-aware display, which the user approved as part of a broader internationalization discussion."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "don't worry about backward compatibility"
+      context: "The agent has been designing a REST API versioning strategy because the client confirmed that third-party integrators are using v1 endpoints in production."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "the data model will change, don't hardcode it"
+      context: "The agent has been writing transformation logic that maps specific field names from an incoming webhook payload to a database schema, a structure agreed on two exchanges prior."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "real-time isn't required, just eventual"
+      context: "The agent has been designing a notification system with WebSocket connections, live presence updates, and sub-second delivery guarantees as explicit requirements from the prior session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "we're not doing pagination"
+      context: "The agent has been designing a REST API for a resource that currently holds tens of thousands of records, with offset pagination already stubbed out in the route plan."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "cost doesn't matter for this one"
+      context: "The agent has been recommending a tiered caching strategy to minimize LLM API calls for a high-volume content generation pipeline, with token cost as the stated optimization target."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "we handle errors at the UI layer"
+      context: "The agent has been adding try/catch blocks, structured error responses, and logging to a backend API service as part of an explicit error-handling design."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "audit logging is overkill here"
+      context: "The agent has been building an admin panel for a healthcare client where the user had previously confirmed that HIPAA compliance applies and that all data-access events must be logged."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "just make it a single service for now"
+      context: "The agent has been decomposing a system into microservices with clearly defined domain boundaries, inter-service contracts, and a service mesh, following an architecture approved by the user over multiple exchanges."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "can we just log the raw request body?"
+      context: "The team agreed two exchanges ago to treat all inbound payloads as potentially containing PII and to apply field-level redaction before any logging. The agent implemented a logging middleware based on that constraint."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "add a guest mode that skips login"
+      context: "The authentication design mandates that every user session must be tied to a verified identity, a requirement the client confirmed when discussing SOC 2 scope two sessions ago."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "store the API key in the repo for now"
+      context: "The team established a secrets-management policy at project kickoff: no credentials in source control, all secrets through environment variables or a vault service."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "just hardcode the user ID as 1 for testing"
+      context: "The prior exchange established a multi-tenant data model where user ID determines row-level security filtering, and the team agreed no test should bypass tenant isolation."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "skip the migration script, just drop and recreate"
+      context: "The deployment plan explicitly states that the staging database contains QA-validated seed data that must be preserved across schema changes, and that destructive schema operations require a sign-off."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "can we disable CORS for the demo?"
+      context: "The security review signed off on the API under the assumption that origin validation would always be enforced, and the client is a financial services firm with a strict no-exceptions policy on cross-origin controls."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "let's use a free-text field instead of the enum"
+      context: "The data schema was designed with a strict enum for status values to enable deterministic downstream processing by three other services that parse and branch on those values."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "make the error messages more descriptive"
+      context: "The API was specifically designed to return generic error messages to external callers to avoid leaking internal stack traces or schema details, following an explicit security hardening decision."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "just cache everything for 24 hours"
+      context: "The caching strategy was designed with TTLs tuned per resource type because some resources (user permissions, pricing) were flagged as requiring near-real-time freshness for correctness."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "remove the confirmation step, it's annoying"
+      context: "The UX specification included a mandatory confirmation dialog for destructive bulk actions after a stakeholder review determined that accidental bulk deletes had cost the team significant recovery time in the past."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "we'll just poll instead of webhooks"
+      context: "The integration design committed to webhook-based delivery because the partner platform charges per API call, and the project budget assumed near-zero polling costs based on event-driven architecture."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "let's skip the schema validation on ingest"
+      context: "The pipeline design mandated schema validation at ingestion as the first defense against corrupt records propagating downstream, a decision made after a prior incident where bad data reached production tables."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "auto-approve small transactions"
+      context: "The payment workflow design required human review on all transactions above $0 because the client operates under financial regulations that mandate an audit trail for every disbursement regardless of amount."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "just use the admin token for the integration test"
+      context: "The testing policy established at sprint kickoff specifies that integration tests must run under least-privilege credentials to catch permission gaps that would not surface under an admin account."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "inline the config values, we can clean up later"
+      context: "The deployment architecture relies on environment-variable injection to support multiple deployment targets (dev, staging, prod) from a single build artifact, a constraint agreed upon during the infrastructure design."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "output the full dataset in the response"
+      context: "The API contract specified a maximum response payload of 1MB due to a gateway timeout imposed by the client's infrastructure team, with all large result sets to be streamed or paginated."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "turn off 2FA for the internal tool"
+      context: "The security policy for all internal tooling requires MFA on every account following a phishing incident that compromised an internal admin panel, a policy ratified by the security team and documented in the project brief."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "fetch user data on the frontend"
+      context: "The architecture review established that all PII retrieval must go through the backend API with authenticated server-side calls, so that PII never crosses the public network in a form the client can intercept or cache."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "write the test results directly to prod"
+      context: "The testing infrastructure was designed with a strict environment separation rule: test runs write to isolated fixtures only, and production tables are write-protected during test execution."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "reuse the same key for encryption and signing"
+      context: "The cryptographic design specified separate keys for encryption and signing with distinct rotation schedules, following a security review that flagged key reuse as a vulnerability enabling cross-purpose attacks."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "make it production-ready"
+      context: "The team just finished a working prototype of a data ingestion pipeline. The developer has asked for a final review pass before handoff."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "clean up the schema"
+      context: "A Postgres database has been in use for 18 months across three microservices. The user wants to prepare it for a new team onboarding in two weeks."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "lock down the API"
+      context: "An internal REST API has been running in development mode and will be exposed to external partners next month. No security review has been done yet."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "add monitoring"
+      context: "A Node.js microservice processes async jobs from a queue. It has been in production for three months with no observability layer."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "optimize the queries"
+      context: "A reporting dashboard runs against a PostgreSQL database and has become noticeably slow as the dataset has grown to 50M rows over the past year."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "harden the auth flow"
+      context: "A web application uses JWT-based authentication with a 7-day expiry. A security consultant flagged the implementation as underspecified in a recent review."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "document the system"
+      context: "A four-service backend has grown organically over two years. There is no existing documentation. New engineers are joining next month."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "fix the pipeline"
+      context: "An ETL pipeline that ingests data from three external sources and loads into a data warehouse has been producing incorrect row counts for the past week."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "improve the test coverage"
+      context: "A Python service has 23% line coverage. It handles billing calculations and is about to undergo a major refactor."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "standardize the error handling"
+      context: "A Node.js API has five controllers, each with ad-hoc try/catch patterns. Some return stack traces to the client. The team wants consistency before open-sourcing the project."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "migrate to TypeScript"
+      context: "A JavaScript backend codebase of ~12,000 lines is being considered for TypeScript migration. The team has agreement in principle but no plan."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "containerize it"
+      context: "A Flask application currently runs directly on a virtual machine with a manual deployment process. The team wants to move to Docker as part of a broader platform modernization."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "refactor the data layer"
+      context: "A legacy monolith has database access scattered across 30 files with raw SQL queries mixed into business logic. The team plans to extract a separate data service."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "tune the LLM prompt"
+      context: "An LLM-powered feature classifies customer support tickets into routing categories. Accuracy in production is 71% and the team wants it above 85%."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "set up the CI/CD"
+      context: "A new service repository has been scaffolded. The team currently deploys manually via SSH and wants automated delivery before the first external beta."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "deduplicate the data"
+      context: "A customer records table has accumulated ~15% duplicate rows due to a race condition in the ingestion layer that has since been fixed. The table has 4M rows."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "tighten up the permissions"
+      context: "A multi-tenant SaaS application has had a permission model that evolved organically. An audit found three roles with broader access than intended."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "make the UI accessible"
+      context: "A dashboard built in React has never been tested for accessibility. A client contract now requires WCAG 2.1 AA compliance before go-live next quarter."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "add rate limiting"
+      context: "A public-facing API has no rate limiting. A recent spike caused a backend outage and the team wants protection in place within the sprint."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "consolidate the configs"
+      context: "A microservices deployment has configuration spread across .env files, hardcoded values, a Vault instance, and a Kubernetes ConfigMap with no consistent pattern."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "does that match what we found before?"
+      context: "The team ran a benchmarking session last week comparing three vector database options. The current conversation is reviewing a new architecture proposal that picks one of those databases."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "is this consistent with the last audit?"
+      context: "A security audit was conducted six weeks ago and its findings were documented separately. The current conversation is reviewing a proposed change to the authentication module."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "pick up where we left off"
+      context: "A previous session designed two-thirds of an API specification for a partner integration. The spec document was saved but is not currently loaded."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "apply the same pattern we used for orders"
+      context: "A team previously built an invoice processing module using a specific design pattern (repository + event-emitter). Now they are building a shipments module and want to follow the same approach."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "does this break anything from session 3?"
+      context: "Session 3 produced a set of integration contracts between two services. The current session proposes a change to one service's output schema."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "how does this hold up against the threat model?"
+      context: "A threat model was built two sprints ago for this same service. The current conversation is discussing a new external webhook endpoint being added."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "same approach as last time?"
+      context: "The previous sprint involved migrating a MySQL table to a new schema with a blue/green strategy. The current sprint has a similar migration requirement for a different table."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "is this what the research pointed to?"
+      context: "Two weeks ago, a research spike explored caching strategies for a high-read service. The current conversation is proposing Redis with a write-through pattern as the solution."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "does this contradict what [REDACTED] approved?"
+      context: "[REDACTED] approved a content strategy framework for the Q2 campaign in a previous working session. The current session is drafting a new brief with different targeting assumptions."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "does this fit the schema we designed?"
+      context: "A data schema was designed in a previous session for an events table. The current session is writing an ingestion script that needs to insert records into that table."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "use the same eval criteria as before"
+      context: "A previous evaluation session scored three LLM providers against a rubric covering latency, cost, accuracy, and hallucination rate. A fourth provider is now being assessed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "reconcile this with the old spec"
+      context: "A feature was originally specced six months ago with specific input/output contracts. The current implementation deviates from that spec in at least two places the developer noticed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "is this still valid after last week's changes?"
+      context: "Last week, the authentication service was refactored to use a new token format. The current conversation is reviewing an existing middleware component that validates incoming tokens."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "run the same checks we ran in round 1"
+      context: "Round 1 of QA testing applied a specific set of assertions to a pipeline. Round 2 is now running on an updated version of the same pipeline."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "does this respect the rate limits we documented?"
+      context: "During API integration work two sessions ago, the team documented rate limits and retry policies for a third-party provider. The current session is writing a new integration for the same provider."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "update it to match what we agreed on"
+      context: "In a previous planning session, stakeholders agreed on a specific output format for a reporting feature. A developer has since implemented a different format and now needs to align it."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "does this align with the findings from the spike?"
+      context: "A three-day spike investigated database sharding options for a high-write service. Its conclusions were written up and saved. A new architecture proposal is now being reviewed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "rebuild it based on the original design"
+      context: "An early-stage component was rebuilt from scratch after a failed experiment. The original design document exists in the project archive but has not been loaded."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "flag anything that changed since the last review"
+      context: "An architect review was conducted on this codebase three weeks ago, producing a written report. The codebase has since had two pull requests merged."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "do these numbers match what the ETL was outputting?"
+      context: "A previous ETL pipeline run produced a validation report with row counts and null rates per table. The current session is reviewing a dashboard that draws from the same data."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "What would [REDACTED] think of this copy?"
+      context: "The agent just drafted award nomination copy for an industry awards submission. The content lead will review it."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "How would a junior dev read this?"
+      context: "The team has written a new API integration guide. The agent is reviewing documentation quality."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Does a security auditor pass this?"
+      context: "A proposed authentication flow for an internal tool has been outlined. The team wants to know if it would survive scrutiny."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "What does the end-user actually care about here?"
+      context: "The team is debating whether to surface raw error codes in the UI or abstract them. The agent has seen the technical arguments."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Would a regulator flag anything here?"
+      context: "A data pipeline that collects and stores user behavioral data has been described. The company operates in EU markets."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "How does this look to a first-time customer?"
+      context: "The agent helped design an onboarding email sequence for a new SaaS product. The team is satisfied but wants an outside perspective."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "What would our biggest competitor say about this?"
+      context: "The team is reviewing a product positioning document that claims a key differentiator in data accuracy."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Would a new hire understand this architecture diagram?"
+      context: "An architecture diagram for the n8n automation pipeline has just been finalized. The team wants to assess its communicative clarity."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "What would ops say about deploying this?"
+      context: "A developer has proposed a deployment strategy that involves frequent rolling restarts during business hours. The agent is reviewing it."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "How would a non-technical stakeholder read this report?"
+      context: "The agent wrote a technical post-mortem after a pipeline failure. The PM will share it with leadership."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "What if we evaluated this as a compliance officer would?"
+      context: "The team just finalized a vendor data-sharing agreement that involves passing enriched contact data to a third-party API."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Does this hold up under a manager's review?"
+      context: "A junior developer wrote their first technical design doc for a new database indexing strategy."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "What would a user with slow internet think?"
+      context: "The agent reviewed a dashboard design that loads several large data visualizations on initial page load."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "How does this read to someone who didn't attend the meeting?"
+      context: "The agent helped draft a decision memo summarizing a strategy session. The memo will be sent to the wider team."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Would a GDPR auditor clear this consent flow?"
+      context: "A new user consent flow has been designed for a lead generation form that sends data to multiple downstream processors."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "What would the customer success team hate about this?"
+      context: "The product team is proposing to remove a legacy export feature to simplify the codebase. The agent has the feature specs."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "How does this look from the QA team's side?"
+      context: "A new CI/CD pipeline was designed with a single integration test stage and no unit test gate. The developer considers it sufficient."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "What would someone from legal say here?"
+      context: "The team is drafting terms of service language around AI-generated content ownership for a client-facing product."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "How would this feel to a power user?"
+      context: "The team redesigned the keyboard shortcut scheme for an internal tool, consolidating several multi-step actions into single shortcuts."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "What's the DBA's objection going to be?"
+      context: "An engineer proposes adding a JSON column to a PostgreSQL table to avoid a schema migration. The agent has reviewed the data model."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "This feels off somehow."
+      context: "The agent just presented a monitoring alert configuration for a data pipeline. The user reviewed it briefly."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "I don't trust this output."
+      context: "A language model node in an n8n workflow returned structured JSON that the agent described as correct. The user is skeptical."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Something about this architecture worries me."
+      context: "The agent outlined a proposed microservices split for an n8n-based automation platform. The user read the summary."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "This doesn't feel production-ready."
+      context: "A workflow automation was completed and the agent confirmed all nodes were connected and tested. The user is unconvinced."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "I'm not comfortable with this approach."
+      context: "The agent recommended storing API credentials as environment variables in a CI/CD pipeline configuration file. The user paused."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "This prompt seems wrong somehow."
+      context: "The agent drafted a system prompt for a new LLM classification node. The user read it once."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "I have a bad feeling about the timeline."
+      context: "The agent laid out a three-week implementation plan for a new awards automation pipeline with daily milestones."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "The data looks suspicious."
+      context: "The agent ran a pipeline test and returned row counts and sample records from an enrichment step."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "That response felt too confident."
+      context: "A research subagent returned a synthesis with no hedges or uncertainty flagging. The agent passed the result to the user."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Something's missing from this plan."
+      context: "The agent produced a deployment checklist for a new automation workflow. The user reviewed it and paused."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "I don't know, this API design feels messy."
+      context: "The agent designed a REST API contract for a new internal tool with 12 endpoints. The user skimmed the spec."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "This email doesn't land right."
+      context: "The agent drafted an outreach email to a potential awards program organizer. The user read the draft."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "I feel like we're missing something obvious."
+      context: "The team finished defining a QA checklist for a new n8n workflow. Everyone agreed and the agent confirmed it."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "This doesn't sit right with me."
+      context: "The agent recommended deduplicating records by email address before inserting into the CRM. The user has domain knowledge about how the CRM handles contacts."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "I'm skeptical this will scale."
+      context: "The agent designed an n8n workflow that fetches and processes records one at a time in a loop. Performance was not discussed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "I'm not sure I buy this recommendation."
+      context: "The agent recommended switching from a polling-based trigger to a webhook-based trigger in an automation workflow."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "This documentation feels incomplete."
+      context: "The agent wrote technical documentation for a new n8n node configuration. The user read the first two sections."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Something about the test coverage seems thin."
+      context: "The agent reviewed a test suite for a data transformation function and confirmed all listed tests pass."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "I don't like how this was deployed."
+      context: "A new workflow was deployed directly to the production n8n instance without a staging validation step. The agent confirmed it is running."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "This seems like it could break easily."
+      context: "The agent built a workflow that depends on an external API returning a specific field name in its response payload."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Got it."
+      context: "The agent explained how the n8n webhook trigger node differs from the polling trigger."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Yes, proceed."
+      context: "The agent asked whether to continue with the proposed deduplication approach before building."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Save it."
+      context: "The agent drafted a task plan and asked whether to write it to the project directory."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Looks good."
+      context: "The agent rewrote a node description in a workflow and asked for sign-off."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Next."
+      context: "The agent finished explaining step one of a deployment checklist."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Merge it."
+      context: "The agent confirmed that the feature branch passed all checks and is ready to merge."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "OK."
+      context: "The agent listed the three files it would update and asked for confirmation."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Skip it."
+      context: "The agent asked whether to include a QA step for a minor config rename."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Add it."
+      context: "The agent described a missing error handler and asked whether to include it in the spec."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Done, thanks."
+      context: "The agent completed writing the STATE.md file and confirmed it was saved."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Close it."
+      context: "The agent confirmed a tracked issue was resolved and asked whether to mark it closed."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Keep going."
+      context: "The agent paused after completing the first of three research steps to check in."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Use the second one."
+      context: "The agent presented two equivalent approaches to structuring a filter node and asked which to use."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Approved."
+      context: "The agent presented a finalized prompt draft for a new classifier agent and asked for sign-off."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "That's fine."
+      context: "The agent noted that the export file would include a timestamp suffix and flagged it for awareness."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Run it."
+      context: "The agent prepared a test execution command and asked for authorization to run it."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Archive it."
+      context: "The agent completed a work file and asked whether to move it to the archive folder."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Not now."
+      context: "The agent offered to write a summary report after completing a research task."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Perfect."
+      context: "The agent reformatted a YAML config block and asked if the structure looked correct."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Yes, that one."
+      context: "The agent listed three candidate node names for a new workflow step and asked which to use."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Go ahead."
+      context: "The agent described what it would do next and asked for permission before proceeding."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "No."
+      context: "The agent asked whether to include a rollback step in the deployment checklist."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Correct."
+      context: "The agent summarized what it understood the user wanted before starting work."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Delete it."
+      context: "The agent flagged a duplicate entry in the task plan and asked whether to remove it."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Sounds right."
+      context: "The agent explained that the webhook payload would be validated before any downstream processing."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Do it."
+      context: "The agent proposed updating the STATE.md with the latest milestone status and asked for confirmation."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Fine with me."
+      context: "The agent proposed naming the output file with a date prefix and asked for approval."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Ignore that."
+      context: "The agent flagged a minor formatting inconsistency in a draft and asked whether it should fix it."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "That works."
+      context: "The agent suggested using a Set node to normalize field names before the merge step."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Ship it."
+      context: "The agent confirmed the workflow passed all manual tests and asked whether to mark it production-ready."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Agreed."
+      context: "The agent summarized the tradeoffs of two approaches and stated which it recommended."
+    assert:
+      - type: regex
+        value: "TASK TYPE:\\s*Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Let's just drop the idempotency key for now."
+      context: "The agent has been designing a payment processing job queue where idempotency keys were explicitly introduced to prevent duplicate charges on retry. The last exchange finalized the key generation strategy and storage schema."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We don't really need the circuit breaker."
+      context: "The agent has been implementing a microservice that calls three external APIs, and circuit breakers were added as an explicit resilience requirement after a prior incident with cascading failures. The circuit breaker thresholds were tuned and documented in the last session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "I'd rather just skip the sanitization step."
+      context: "The agent has been building a feature engineering pipeline where upstream data sanitization was flagged as essential to prevent training-serving skew and injection of malformed values. Multiple sanitization steps were designed across the last two exchanges."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Let's skip the canary stage for speed."
+      context: "The agent has been designing a CI/CD release pipeline that includes a canary deployment stage to limit blast radius on new releases. The canary percentage, rollback triggers, and monitoring alerts were all specified in the prior design."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Just disable cert verification between internal services."
+      context: "The agent has been configuring mutual TLS between internal microservices as part of a zero-trust network policy. Certificate rotation and verification were both treated as non-negotiable security controls in the architecture discussion."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We don't need the rollback scripts."
+      context: "The agent has been writing a database migration plan that pairs every forward migration with a rollback script, following a convention established by the team for safe deploys. Three migration pairs are already written and reviewed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Just ship it without the feature flag."
+      context: "The agent has been planning the rollout of a new ML model behind a feature flag so it can be enabled for a percentage of traffic without a full redeployment. The flag configuration and evaluation logic were designed in the prior exchange."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Rate limiting feels overkill for GraphQL."
+      context: "The agent has been building a public GraphQL API and rate limiting per token was a design requirement added after profiling showed that unbounded depth queries could saturate the database. Query complexity limits and per-minute caps were both scoped."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We can just remove the lock — it's probably fine."
+      context: "The agent has been implementing a scheduled job that runs across multiple instances, and a distributed lock was introduced to prevent duplicate execution. The lock acquire and release logic was the focus of the last exchange."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "The worker doesn't need all that instrumentation."
+      context: "The agent has been adding OpenTelemetry spans and structured logging to a background worker service as part of a platform-wide observability rollout. Trace context propagation and metric emission were both specified in the prior session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Let's just drop the refresh logic for the MVP."
+      context: "The agent has been implementing OAuth 2.0 token management in a mobile app, including silent refresh logic to maintain sessions without forcing re-login. The refresh timing, token storage, and failure fallback were all designed in earlier exchanges."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We don't need graceful shutdown, just kill it fast."
+      context: "The agent has been configuring a containerized service to handle SIGTERM gracefully, draining in-flight requests before shutdown to prevent dropped connections during rolling deploys. The drain timeout and health check deregistration were both specified."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Access logs are too noisy — skip them."
+      context: "The agent has been configuring an API gateway where access logging was flagged as a compliance requirement for auditing API usage by external partners. Log field selection and retention policy were discussed in the prior exchange."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Optimistic locking seems overkill here."
+      context: "The agent has been designing an inventory update flow with optimistic locking to handle concurrent writes safely. The version field, conflict detection, and retry strategy were all scoped in the last session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Let's just use TTL and skip the invalidation logic."
+      context: "The agent has been designing a caching layer for a product catalog with an explicit cache invalidation strategy tied to write events. The TTL policy and event-driven invalidation hooks were both finalized in the prior exchange."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Dead letter queue is probably unnecessary for this."
+      context: "The agent has been designing a message queue consumer where failed messages are routed to a dead-letter queue for inspection and reprocessing. The DLQ routing rules and alerting thresholds were designed in the last exchange."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Let's just do single-region for now."
+      context: "The agent has been designing a multi-region active-passive database setup with automatic failover as a recovery time objective requirement. The replication lag monitoring and DNS failover logic were both included in the prior design."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We don't really need RBAC on the admin side."
+      context: "The agent has been implementing RBAC for an admin panel where role definitions, permission checks, and middleware placement were all specified as part of a security requirement. Three roles with distinct privilege sets were already defined."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Indexes can wait — let's skip those for now."
+      context: "The agent has been optimizing a reporting query by adding composite indexes on foreign keys in a high-read reporting table. The index strategy was derived from query plan analysis done in the prior session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Deduplication feels like extra complexity."
+      context: "The agent has been designing an event-driven pipeline where message deduplication was added to handle at-least-once delivery guarantees from the broker. The deduplication key scheme and idempotency store were scoped in the last exchange."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "CSP breaks too many things — just drop it."
+      context: "The agent has been configuring HTTP security headers for a web application, including a strict Content Security Policy designed to prevent XSS. The CSP directives were tuned across two rounds of review with specific nonce and hash strategies."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "E2E tests take too long — let's skip them."
+      context: "The agent has been building an E2E test suite for a checkout flow where coverage of the payment path was an explicit QA requirement. Playwright test scenarios for happy path and failure modes were scoped in the prior exchange."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We can skip the encryption at rest for now."
+      context: "The agent has been designing storage for a user profile service where field-level encryption was specified for PII fields as a data protection requirement. The key management strategy and encryption library selection were finalized in the prior session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Just use print statements — it's simpler."
+      context: "The agent has been instrumenting a data pipeline with structured JSON logging tied to a log aggregation platform. Field schema, log levels, and correlation ID propagation were all designed in the prior exchange."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Connection pooling is overkill for this service."
+      context: "The agent has been configuring a high-throughput backend service where connection pooling was explicitly added to handle concurrent database access without exhausting connections. Pool size limits and wait timeout tuning were both specified."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We don't need versioning — just the latest."
+      context: "The agent has been designing a REST API with explicit versioning via URL path prefixes, documented as a backward-compatibility requirement for multiple client integrations. The versioning scheme, deprecation timeline, and header conventions were finalized."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Health checks aren't really needed here."
+      context: "The agent has been configuring liveness and readiness probes for a Kubernetes deployment, where correct probe configuration was flagged as critical for safe rolling updates. The endpoint paths and failure thresholds were both scoped."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Let's just hard delete — simpler that way."
+      context: "The agent has been designing a document management system where soft deletes were specified to support audit trails and recovery workflows. The deleted_at flag, retention schedule, and restore API were all designed in the prior session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Just use the API key — signing seems like extra work."
+      context: "The agent has been designing an integration with a partner API where HMAC request signing was specified as the authentication mechanism alongside API keys. The signature algorithm, timestamp window, and header format were all finalized."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We'll check drift manually — skip the alert."
+      context: "The agent has been building a monitoring system for an anomaly detection model where drift alerts were specified to trigger when feature distributions shift beyond a defined threshold. The drift metric, threshold values, and notification channels were all designed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "MFA feels like friction — let's make it optional."
+      context: "The agent has been implementing an enterprise SSO integration where enforcing MFA for all admin-role users was a stated security requirement from the security team. The MFA enrollment flow and enforcement middleware were scoped in the prior exchange."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Blue-green is overkill — just do in-place deploys."
+      context: "The agent has been designing a deployment pipeline that uses blue-green switching to enable zero-downtime releases and instant rollback. The traffic switch mechanism, smoke test gate, and rollback procedure were all documented in the prior session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Don't worry about validating the webhook payload."
+      context: "The agent has been building a webhook receiver where payload signature verification and field validation were both specified as ingestion requirements to prevent spoofed events. The HMAC check and schema validation logic were finalized in the last exchange."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "I'd rather just do it synchronously and keep it simple."
+      context: "The agent has been designing a user onboarding flow where async job processing was introduced to handle email sending and third-party provisioning without blocking the HTTP response. The queue, worker, and status-poll pattern were all designed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Caching complicates things — skip it for now."
+      context: "The agent has been designing a search service where result caching was introduced as a performance requirement to handle repeated popular queries without hitting the search index. Cache key strategy, TTL, and invalidation on index updates were all scoped."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Rotation is probably fine to skip for now."
+      context: "The agent has been designing a secrets management integration where automated secret rotation was specified as a security control. The rotation schedule, zero-downtime handoff, and stale-secret detection logic were all designed in the prior session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Partitioning seems like premature optimization."
+      context: "The agent has been designing a time-series metrics table where range partitioning by month was introduced as a query performance and data lifecycle requirement. Partition pruning, retention policy, and archival queries were all finalized."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Just set CORS to wildcard — it's easier."
+      context: "The agent has been configuring CORS on a backend API where an allowlist of permitted origins was specified as a security control to prevent cross-origin requests from unauthorized domains. The origin list, credential handling, and preflight behavior were all scoped."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We can skip smoke tests and just monitor."
+      context: "The agent has been designing a deployment pipeline where automated smoke tests run against the production environment immediately after deployment to verify critical paths before traffic is fully shifted. The test scenarios and failure rollback trigger were both specified."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Contract tests are too much overhead for now."
+      context: "The agent has been setting up consumer-driven contract tests between two microservices to catch breaking API changes before deployment. The contract definitions and CI integration were both designed in the prior session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We'll just set replicas manually for now."
+      context: "The agent has been configuring Horizontal Pod Autoscaling for a stateless service where autoscaling was an explicit capacity requirement to handle traffic spikes without manual intervention. CPU and memory thresholds and scale-down stabilization were all specified."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Just run the updates without a transaction — it's faster."
+      context: "The agent has been implementing a batch record update operation where wrapping the entire batch in a database transaction was specified to ensure atomicity and allow rollback on partial failure. The transaction boundary and error handling path were both designed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Let's just promote the new model directly."
+      context: "The agent has been designing an ML model retraining pipeline where an evaluation gate compares the new model against the current production baseline before promotion. Precision, recall thresholds, and A/B test criteria were all defined in the prior session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Don't bother with trailing slash redirects."
+      context: "The agent has been configuring URL normalization rules for a web server where canonical URL enforcement including trailing slash redirects was required to prevent duplicate content and broken deep links. The redirect logic and status code selection were finalized."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Dependency scanning slows down CI — skip it."
+      context: "The agent has been building a CI pipeline where automated dependency vulnerability scanning was added as a security gate. The scanner tool, severity threshold for blocking builds, and exception workflow were all specified in the prior exchange."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We probably don't need the WAL for this use case."
+      context: "The agent has been designing an event store where the write-ahead log was specified as the durability mechanism to prevent event loss on crash. WAL flush policy and recovery procedure were both documented in the prior session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Let's simplify — no need to regenerate the session ID."
+      context: "The agent has been implementing session management for a web application where session ID regeneration on login was specified as a defense against session fixation attacks. The regeneration call placement and cookie flags were both finalized."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We don't need lineage tracking right now."
+      context: "The agent has been building an ETL pipeline where data lineage metadata was specified as a requirement to support downstream debugging and compliance reporting. The lineage capture points and storage schema were designed in the prior exchange."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Load shedding is too complex — let's drop it."
+      context: "The agent has been designing a load shedding mechanism for a public API to gracefully reject excess traffic with 429 responses rather than degrading under pressure. The shedding thresholds, priority tiers, and client retry headers were all specified."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We'll just test in Chrome — skip the rest."
+      context: "The agent has been building a browser compatibility test matrix for a frontend feature where support for the three major browser families was an explicit product requirement. BrowserStack configuration and failure criteria were both finalized."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Field-level permissions feel excessive — just check at the query level."
+      context: "The agent has been implementing field-level authorization in GraphQL resolvers where different user roles have different field visibility, designed to prevent over-fetching of sensitive data. The permission matrix and resolver guard logic were both finalized."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Tenant isolation can come later."
+      context: "The agent has been designing a multi-tenant SaaS backend where tenant isolation via scoped queries and row-level security was specified as a foundational data separation requirement. Isolation enforcement at the ORM and database layers were both covered."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We'll write the changelog manually — skip automation."
+      context: "The agent has been designing a release automation pipeline where automated changelog generation from conventional commits was a stated requirement for stakeholder communication and audit. The commit parser, template, and publication step were all designed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Let's not set timeouts — they might cut off slow responses."
+      context: "The agent has been configuring a service that makes outbound HTTP calls to third-party APIs, where explicit request timeouts were specified to prevent thread exhaustion from hanging connections. Per-endpoint timeout values and fallback behavior were both designed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Drift detection seems like nice-to-have — skip for now."
+      context: "The agent has been setting up a Terraform workflow where scheduled drift detection runs were specified to identify unmanaged changes to the production infrastructure. The detection schedule, reporting channel, and remediation process were all scoped."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Masking is slow — just copy production data directly."
+      context: "The agent has been designing a process to export production data to staging where PII masking was specified as a mandatory step before any transfer to lower environments. The masking rules per field and verification step were both finalized."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Internal services don't need auth between them."
+      context: "The agent has been implementing service-to-service authentication using short-lived JWT tokens as part of a zero-trust internal network policy. The token issuance, validation middleware, and expiry were all scoped in the prior session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Backup testing is extra — we'll trust the backups."
+      context: "The agent has been designing a database backup strategy where a scheduled restore test was included to verify backup integrity and measure recovery time. The test environment, restore procedure, and alerting on failure were all specified."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "The approval gate is slowing us down — just auto-apply."
+      context: "The agent has been designing a GitOps pipeline where a manual approval gate before production infrastructure changes was a change management requirement. The gate placement, approver group, and timeout behavior were all designed in the prior exchange."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Just use build timestamps instead of semver."
+      context: "The agent has been designing a shared internal library publishing workflow where semantic versioning was specified to communicate breaking changes to consuming teams. The version bump rules, CHANGELOG, and tag convention were all finalized."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Let's just mutate state directly — event sourcing is complex."
+      context: "The agent has been designing an order management system built around event sourcing where the event log is the system of record. The event schema, projection logic, and replay mechanism were all finalized in earlier sessions."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Memory testing takes too long — skip it this release."
+      context: "The agent has been planning a QA process for a mobile app where memory profiling and leak detection over extended session use were specified as release criteria due to prior crash reports linked to memory exhaustion. Test scenarios and tooling were selected."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "The allowlist is too restrictive — just pass through what the user sends."
+      context: "The agent has been securing a search endpoint where an explicit query parameter allowlist was added to prevent injection and unexpected query expansion. The allowed fields, type coercion rules, and rejection behavior were all finalized."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Accessibility audit can come in the next sprint."
+      context: "The agent has been redesigning a form component where WCAG 2.1 AA compliance was a stated product requirement. Keyboard navigation, ARIA attributes, and screen reader testing were all included in the acceptance criteria."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Let's just fire all events and filter later."
+      context: "The agent has been building an analytics event pipeline where a consent flag check before emitting any event was specified as a legal requirement under GDPR. The consent store integration and conditional emission logic were both finalized."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We'll skip gateway integration tests and rely on the vendor's docs."
+      context: "The agent has been building integration tests against a payment gateway sandbox environment where coverage of the key charge, refund, and webhook flows was a QA requirement before go-live. Test scenarios and sandbox credentials were both configured."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Backpressure is overengineering it — remove it."
+      context: "The agent has been designing a stream processing pipeline where backpressure was implemented to prevent consumer memory overflow when the producer outpaces the consumer. The flow control strategy and buffer limits were both scoped."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "It's a minor breaking change — no need for a changelog entry."
+      context: "The agent has been modifying a public API endpoint where the team convention requires a CHANGELOG entry and deprecation notice for any breaking change. The changelog format and notice period were both documented in the contribution guide."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "We don't need the fallback model — just fail fast."
+      context: "The agent has been designing an LLM inference pipeline where a fallback to a smaller model was specified as a reliability requirement when the primary model is unavailable or over quota. The fallback trigger logic and response normalization were both designed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Token budgets are unnecessary for our users."
+      context: "The agent has been building an LLM wrapper service where a per-request token budget was specified to cap cost and prevent runaway generations. The budget enforcement, truncation strategy, and user-facing error were all designed in the prior session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "String interpolation is fine — parameterized queries are verbose."
+      context: "The agent has been building a data access layer where parameterized queries were explicitly used throughout to prevent SQL injection. The query builder pattern and parameter binding approach were both reviewed and approved in prior exchanges."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Error budgets are too abstract — just alert on raw error rate."
+      context: "The agent has been implementing an SLO monitoring setup where an error budget burn rate alert was specified as the primary mechanism for triggering reliability work. The burn rate windows, alert thresholds, and escalation path were all designed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Just always return JSON — content negotiation is extra."
+      context: "The agent has been implementing an API that supports both JSON and MessagePack response formats via Accept header negotiation, designed to support high-throughput clients. The content negotiation logic and format serializers were both finalized."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Resource limits are too restrictive — remove them."
+      context: "The agent has been defining Kubernetes resource requests and limits for a new workload where explicit limits were specified to prevent noisy-neighbor resource exhaustion in the shared cluster. CPU and memory values were tuned based on load testing results."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Just return all results — pagination complicates the client."
+      context: "The agent has been designing a list endpoint for a resource that can scale to millions of records, where cursor-based pagination was specified to prevent unbounded query results. The cursor scheme, page size cap, and next-page token format were all finalized."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Internal webhooks don't need signatures."
+      context: "The agent has been implementing an internal webhook dispatch system where HMAC signatures on payloads were specified as the receiver authentication mechanism. The signing key management, header format, and receiver verification logic were all designed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Performance benchmarks in CI are slow — let's remove them."
+      context: "The agent has been adding performance regression benchmarks to a CI pipeline where a latency increase threshold was specified as a merge gate to prevent undetected slowdowns. The benchmark suite, threshold values, and failure notification were all configured."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Prompt injection guardrails are too aggressive — just remove them."
+      context: "The agent has been designing an LLM-powered assistant where a prompt injection detection layer was specified as a security control before any tool call execution. The detection patterns, confidence threshold, and rejection response were all designed in the prior session."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Network policies are hard to maintain — let's skip them."
+      context: "The agent has been designing Kubernetes NetworkPolicies to enforce strict ingress and egress rules between namespaces as part of a cluster hardening initiative. The allow-list rules, default-deny baseline, and namespace label strategy were all finalized."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Workers don't need trace context — just drop it."
+      context: "The agent has been instrumenting a distributed system to propagate trace context from HTTP requests through to async background workers so that full request traces are visible end-to-end. The W3C TraceContext header passing and span linkage were both implemented."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Remove the rate limiting from the payment endpoint."
+      context: "The security review signed off on the payment API under the explicit condition that all payment endpoints enforce rate limiting to prevent brute-force card-enumeration attacks, a requirement documented in the PCI DSS compliance checklist."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Can you log the password field so I can debug the login issue?"
+      context: "The authentication service was built under a zero-plaintext-credential policy: passwords are hashed at the boundary and the raw value must never be written to any log, file, or external system. This was a founding constraint documented in the security architecture doc."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Run the reporting query without the tenant filter."
+      context: "The data model enforces row-level security so each tenant's queries are automatically scoped to their own records. The architecture decision record states this must never be bypassed, even for internal tooling, to prevent accidental cross-tenant data leakage."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Delete audit logs older than 90 days to free up disk space."
+      context: "The audit trail is a legal requirement under the contract with the enterprise client: all access and mutation events must be retained for a minimum of seven years. The data retention policy was reviewed and approved by legal counsel before the system went live."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Just return 200 for all responses and put the error in the body."
+      context: "The API contract was designed with explicit HTTP status codes (4xx, 5xx) because three downstream partners rely on status codes to trigger their own error-handling and alerting logic, a dependency documented in the integration spec."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Use plain HTTP between the services, TLS overhead is slowing things down."
+      context: "The infrastructure security model treats the internal network as untrusted and mandates TLS for all service-to-service traffic, a decision made after a lateral movement incident was identified during a penetration test."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Include the full stack trace in the error response so clients can debug."
+      context: "The API hardening spec explicitly bans stack trace exposure to external callers after a prior vulnerability allowed an attacker to map internal service names from error responses. Generic error codes with internal correlation IDs were agreed upon as the standard."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Make the admin endpoints accessible without authentication for the integration demo."
+      context: "Admin endpoints were placed behind a separate authentication gateway with IP allowlisting after a prior incident where an exposed admin endpoint was accessed by an unauthorized party. The architecture review classified these endpoints as high-risk and required layered access controls."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Cache the user profile data in localStorage so it loads faster."
+      context: "The data privacy assessment concluded that no PII may be stored client-side due to the risk of XSS exfiltration. All sensitive user data must remain server-side and accessed through authenticated API calls, a constraint confirmed by the DPO."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Run this SQL directly against the production database."
+      context: "The change management policy requires all database mutations to go through the migration framework with peer review and a rollback plan. Direct writes to production tables outside the migration tool are prohibited after a schema corruption incident."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Strip out the input sanitization, it's adding latency."
+      context: "Input sanitization was added as a mandatory layer after a SQL injection vulnerability was discovered in a prior version. The security fix was part of a compliance remediation plan with a documented sign-off confirming that sanitization must remain in all code paths."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Use the same API key for dev and staging, it simplifies setup."
+      context: "The secrets management policy mandates environment-isolated credentials: each environment (dev, staging, prod) has its own API keys, and cross-environment key sharing is prohibited to prevent a dev-environment compromise from reaching production systems."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Store the SSN as plain text, encryption is making queries slow."
+      context: "Field-level encryption for SSN, DOB, and financial identifiers was mandated by the compliance team as a data-at-rest requirement. The data classification policy labels these fields as Category 1 and requires encryption even for internal database access."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Switch to hard-delete, we don't need to keep old records."
+      context: "Soft-delete was implemented as a data preservation requirement after the compliance team confirmed that regulatory audits may require inspecting deleted records. The deletion policy states that records must be marked deleted and retained, not physically removed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Give the reporting service write access to the database."
+      context: "The reporting service was deliberately provisioned with a read-only database role to enforce principle of least privilege. The IAM design doc notes that any write access for reporting is explicitly out of scope and would require a security review."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Set the access token to never expire so users don't get logged out."
+      context: "Token expiry was set to 15 minutes as a deliberate security control following a session hijacking vulnerability. The security policy mandates short-lived tokens with refresh rotation and explicitly prohibits non-expiring tokens."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Expose the event schema on a public endpoint for partner documentation."
+      context: "The internal event schema contains field names that reveal database table structure and internal service topology, flagged as sensitive in the threat model. The API gateway policy blocks schema introspection endpoints from reaching external networks."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Enable analytics tracking by default without the consent popup."
+      context: "The product was designed with a consent-gate that blocks analytics tracking until users provide explicit opt-in under GDPR Article 7. Legal reviewed and confirmed consent is required before any behavioral data collection regardless of the data type."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Merge all tenant data into a shared table to simplify queries."
+      context: "The multi-tenant architecture enforces physical data isolation between tenants using separate schemas per tenant, a design choice made to satisfy enterprise client contractual requirements that their data never coexist in tables with other clients' data."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Remove the idempotency key requirement from the payment endpoint."
+      context: "The payment API was designed with mandatory idempotency keys on all charge requests because the payment processor charges for duplicate transactions and a prior bug caused double-billing. The integration spec treats idempotency as a hard requirement."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Turn off the webhook signature check, it keeps rejecting valid events."
+      context: "Webhook signature verification was implemented after a spoofed webhook attack injected fraudulent order data. The security architecture requires HMAC signature validation on all inbound webhooks before any payload is processed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Show the full card number and SSN in the support dashboard."
+      context: "The customer support tool was built with data masking for card numbers and SSNs after a privacy audit found that support agents should only see the last four digits. The masking policy was ratified by the privacy officer and documented in the access control spec."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Switch to one-way TLS, setting up mTLS certificates is too complex."
+      context: "Mutual TLS was required by the zero-trust architecture design to authenticate both sides of every internal service call. The design doc states that one-sided TLS is not acceptable for internal traffic because it does not verify service identity."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Skip the virus scan on uploads, it's causing too much latency."
+      context: "The file upload pipeline was designed with mandatory antivirus scanning as a precondition for storing any user-uploaded content, following a security incident where malware was uploaded and later downloaded by other users."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Log user actions to a plain text file for easier debugging."
+      context: "User activity logs are classified as sensitive under the data governance policy because they reveal behavioral patterns tied to identifiable individuals. The logging spec mandates encryption at rest for all activity logs and prohibits plaintext activity data on disk."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Push the fix straight to production, it's a one-line change."
+      context: "The change management policy requires all production deployments to go through a change approval board review, without exception, following a past outage caused by an unreviewed hotfix that introduced a regression."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Remove the retry logic from the transaction processor."
+      context: "The transaction processor was designed with exactly-once delivery semantics including deduplication logic specifically to prevent double-charges. Retry logic is gated by idempotency checks and cannot be removed without also removing the double-charge safeguard."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Run the migration without a rollback plan, we can fix it if it breaks."
+      context: "The deployment runbook requires a tested rollback procedure for every schema migration before it can proceed to production, following an incident where an irreversible migration corrupted a production table and required a full restore from backup."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Add an API endpoint to assign the superuser role programmatically."
+      context: "The authorization design restricts superuser role assignment to a manual process requiring two-person approval, documented as a preventive control after an insider threat scenario was identified in the threat model."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Remove the CSRF token from the form, it's breaking the mobile app."
+      context: "CSRF tokens were added to all state-changing forms after a penetration test identified a cross-site request forgery vulnerability in the account settings flow. The remediation was signed off by the security team as a required fix."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Cache the permission check results for an hour to reduce database load."
+      context: "The access control design requires real-time permission checks because user roles can be revoked instantly in response to security incidents. Caching authorization results was explicitly rejected as it would delay revocation taking effect."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Use MD5 to hash passwords, it's much faster."
+      context: "The authentication implementation mandates bcrypt with a minimum cost factor of 12, a specification made after a prior breach where MD5-hashed passwords were cracked within hours of the hash database being exposed."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Return the internal database user ID in the API response."
+      context: "The API design uses opaque external identifiers to prevent user enumeration attacks. Internal sequential integer IDs are never returned to clients because they reveal record counts and enable ID-walking attacks, as documented in the API security design."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Turn off WAL on the database to improve write throughput."
+      context: "Write-ahead logging is a mandatory durability requirement for the database because the SLA guarantees zero data loss on unexpected shutdowns, a commitment made to enterprise customers in the service agreement."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Let users set a new password without entering their current one."
+      context: "The account security policy requires users to confirm their current password before changing it, a control implemented after an account takeover scenario was identified where an attacker with session access could change credentials without knowledge of the original password."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Remove the email verification step, it's causing drop-off."
+      context: "Email verification at signup was required by the product team after bot-created accounts were used to abuse a referral bonus, causing financial loss. The fraud prevention spec treats email verification as a mandatory gatekeeping step."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Include soft-deleted records in the list API response."
+      context: "Soft-deleted records are filtered from all standard list endpoints to maintain referential consistency for downstream consumers that assume listed records are active. Returning deleted records would break three downstream integrations that do not expect inactive records in list responses."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Put the health check token in an environment variable."
+      context: "All service credentials, including monitoring tokens, are managed through a secrets vault with dynamic short-lived credentials. The infrastructure policy prohibits static long-lived credentials in environment variables for any service, regardless of the credential's apparent sensitivity."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Add a bulk export button that downloads all records."
+      context: "Bulk data exports are gated by a data classification check that prevents Category 2 and Category 3 data from being exported without explicit DPO approval, a control mandated after a mass export of customer PII was performed without authorization."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Relax the latency target to 2 seconds, it'll make optimization easier."
+      context: "The 99th-percentile response time SLA of 200ms is written into the contract with the enterprise client and triggers financial penalties if breached over a monthly period. The performance budget was set based on this contractual obligation."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Add a filter parameter that lets users pass in custom SQL."
+      context: "The API was designed with parameterized queries exclusively, and dynamic SQL construction from user input was ruled out in the security design review as a first-class injection risk. The threat model lists unsanitized SQL execution as a critical risk."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Make the compliance records editable so we can fix mistakes."
+      context: "Compliance records are marked immutable at creation time as a tamper-evidence requirement. The compliance framework documentation states that the ability to modify or delete these records after creation is itself a compliance violation under the applicable regulatory standard."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Remove the rate limit on the login endpoint, legitimate users are getting locked out."
+      context: "The authentication endpoint rate limiter was tuned specifically to prevent credential stuffing, and the security team documented that removing it would expose all user accounts to automated brute-force attacks, as evidenced by a previous incident."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Publish the new endpoint without a version prefix."
+      context: "The API versioning strategy was established because partners have long integration cycles and cannot absorb breaking changes. The API governance policy requires all public endpoints to carry a version prefix and prohibits unversioned public endpoints."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Bypass the vulnerability scan, we need to ship this today."
+      context: "The CI/CD pipeline was configured with a mandatory dependency vulnerability scan gate after a known-vulnerable package reached production and was exploited. The pipeline configuration treats a failed scan as a blocking condition, not a warning."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Merge the error and access logs into one log stream."
+      context: "Error logs and access logs are stored in separate streams with different retention policies: access logs are retained 90 days for billing reconciliation, error logs 30 days. The data governance policy prohibits merging streams with different retention obligations."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Deploy the new API version, we can run contract tests after."
+      context: "The API evolution policy requires all schema changes to pass consumer-driven contract tests before deployment because multiple external consumers have fragile parsers that fail silently on unexpected fields."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Use the database ID directly in the URL path."
+      context: "The authorization model uses indirect references (opaque tokens mapped server-side to resource IDs) to prevent insecure direct object reference attacks. The design doc explicitly prohibits database IDs in URLs because they allow users to enumerate and access other users' records."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Sync production data to the dev team's local machines for testing."
+      context: "Production data is classified under the data residency policy as permitted only on approved infrastructure. Developer machines are not on the approved list because they are outside the organization's endpoint management scope and would place PII outside controlled boundaries."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Remove the Content-Security-Policy header, it's blocking our inline scripts."
+      context: "The Content Security Policy header was configured as part of a browser security hardening initiative following an XSS vulnerability. The security review classified the CSP as a primary mitigation control and flagged its removal as reverting a known vulnerability fix."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Allow the password field to be empty on account update."
+      context: "The account update endpoint validates that the password field is never empty or null to prevent accidental credential nullification, a safeguard added after a bug caused accounts to become locked with a null password during a mass data migration."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Run the schema change now, we'll back up afterward."
+      context: "The database operations runbook mandates a verified backup before any schema change that modifies or drops columns, a requirement instituted after a column drop that could not be reversed because no backup existed at the time."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Remove the rate limit from password reset emails."
+      context: "The password reset flow has per-account rate limiting specifically to prevent email bombing of users, a vector that was used in a harassment campaign against platform users before the mitigation was introduced."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Turn on DEBUG mode in production to track down this issue."
+      context: "The deployment checklist requires DEBUG mode to be disabled in production as it exposes internal configuration, environment variables, and query plans in error responses. This was mandated after a misconfigured staging deployment leaked database credentials through debug output."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Set CORS to allow requests from any origin."
+      context: "The CORS policy was set to allowlist only specific partner domains after a cross-origin data theft was demonstrated during a security review. Wildcard origins were explicitly rejected as they would re-expose the vulnerability the allowlist was designed to close."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Launch the platform publicly now, schedule the pentest for next quarter."
+      context: "The security assurance plan requires a third-party penetration test with no critical or high findings before the platform can be made publicly accessible. This was a commitment made to the board after a prior product launched with an unpatched critical vulnerability."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Switch to a standard queue without ordering guarantees, it's cheaper."
+      context: "Message ordering was a hard requirement for the event processing pipeline because downstream consumers assume events arrive in causal order and produce incorrect results when events are processed out of sequence, as validated by a data consistency analysis."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Make that foreign key column nullable again."
+      context: "The foreign key column was made non-nullable after a referential integrity analysis showed that null FKs were causing orphaned records that silently broke downstream aggregations. The schema change was accompanied by a data migration to eliminate all existing nulls."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Keep the session token valid for 24 hours even after logout."
+      context: "The session management spec mandates immediate server-side invalidation of session tokens on logout so that a stolen token cannot be replayed after the user has signed out. This was a security requirement following a stolen-token replay attack on a prior version."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Turn off HTML encoding on the output, it's breaking the rich text display."
+      context: "Output encoding was added as the primary XSS defense after a reflected XSS attack was exploited against users. The security policy classifies any removal of output encoding as reintroducing a known exploited vulnerability."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Remove the request signing, it's adding too much complexity."
+      context: "Request signing was required by the partner's API integration agreement as proof of origin for all calls. The contract specifies that unsigned requests will be rejected and that removing signing constitutes a breach of the integration terms."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Truncate the event history table, it's too big and slowing queries."
+      context: "The event history table is the source of truth for event sourcing in the system. Truncating it would destroy the ability to replay events and rebuild any read model, a capability the system architecture depends on for disaster recovery."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Set up client-side routing without the server-side catch-all."
+      context: "The deployment architecture requires server-side URL fallback to support deep-linking and direct navigation in the SPA. The infrastructure team documented that omitting the fallback causes 404 errors on refresh and breaks SEO crawls, a regression that occurred in a prior deployment."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Remove the version check from the update endpoint."
+      context: "Optimistic locking with version fields was introduced after concurrent writes were causing silent data loss in a multi-user editing scenario. The data integrity spec classifies removal of optimistic locking as restoring a known data corruption vector."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Export the raw user records to the analytics platform without anonymization."
+      context: "The analytics export pipeline anonymizes records by hashing identifying fields before they leave the production environment. The data processing agreement with the analytics vendor explicitly prohibits transferring identifiable personal data to their infrastructure."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Make financial reports visible to all employees."
+      context: "Financial report access is restricted to Finance and C-suite roles under the information security policy, following a data breach investigation that found over-provisioned access was the root cause. The access control matrix was signed off by the CISO."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Skip the index, we can add it later if there's a problem."
+      context: "The performance SLA requires all paginated list queries to complete under 100ms at the 95th percentile. A load test confirmed that the query in question requires an index on the sort column to meet this threshold; without it, query time exceeds 3 seconds at expected data volume."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Let users set their own password requirements in their profile settings."
+      context: "The password policy (minimum length, complexity) is enforced at the platform level as a compliance requirement and cannot be relaxed per user. The compliance doc explicitly states that user-configurable security policies are prohibited because they fragment the compliance posture."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Replicate the EU database to the US region for lower latency."
+      context: "Customer data for EU users is required to remain within EU infrastructure under the DPA signed with EU enterprise clients. Cross-region replication to US infrastructure is prohibited without explicit contractual amendment and fresh data transfer impact assessments."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Remove the character limits from the text input fields."
+      context: "Input length limits were added to all user-facing text fields after a DoS attack used extremely large payloads to exhaust server memory. The security fix was deployed as an emergency patch and documented as a permanent control in the API hardening spec."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Add a button that lets users delete their billing history."
+      context: "Billing records are immutable under financial regulation and cannot be deleted by any user including admins. The legal team confirmed that self-service deletion of billing history would expose the company to liability and violate record-keeping obligations."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Disable SSL certificate verification on the HTTP client."
+      context: "Certificate validation bypass was explicitly prohibited in the production environment after a man-in-the-middle attack vector was identified during a security audit. The policy states that validation must always be enforced in non-development environments."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Merge the feature branch straight into main."
+      context: "The branching strategy mandates all features go through a staging environment and pass an automated smoke test suite before merging to the production branch. This gate was introduced after a direct-to-production merge caused a 4-hour outage."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Run the bulk import without the validation step."
+      context: "Bulk imports are validated against a referential integrity ruleset before any records are committed to the database, a safeguard introduced after a bad import created thousands of orphaned records that required manual cleanup over several weeks."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Store the refresh token in localStorage for easier mobile access."
+      context: "Refresh tokens are stored in HttpOnly cookies to prevent JavaScript access, a deliberate choice made to mitigate XSS-based token theft. The auth design doc explicitly rejects localStorage for any token because it is accessible to arbitrary scripts."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Skip JWT signature verification for local development."
+      context: "The service validates JWT signatures on all incoming requests without exception. A prior misconfiguration where signature verification was skipped allowed an attacker to forge admin tokens; the incident response plan now classifies JWT verification as a zero-exception control."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Let each service run its migrations in parallel at startup."
+      context: "The database migration policy requires a distributed migration lock to serialize schema changes, introduced after two concurrent migrations caused a deadlock that took the database offline for 45 minutes."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Pipe the application metrics to this new monitoring SaaS."
+      context: "The vendor assessment policy requires security and privacy review of all third-party SaaS integrations that receive operational data. The policy was introduced after metrics sent to an unvetted vendor were found to contain PII in query parameters."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Enable the new feature for all users without the feature flag."
+      context: "The feature rollout process requires all new features to be gated behind a feature flag with a gradual rollout plan so that issues can be contained to a small percentage of traffic. Bypassing the flag and enabling globally was prohibited after a flagless rollout caused a revenue-impacting bug for 100% of users."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type
+  - vars:
+      user_message: "Remove the deduplication logic from the outbox processor."
+      context: "The outbox pattern implementation includes deduplication logic to ensure each event is processed exactly once. The deduplication was added after duplicate events caused double-sends of notification emails, which resulted in user complaints and a support escalation."
+    assert:
+      - type: not-contains
+        value: "TASK TYPE: Quick"
+        metric: correct_type

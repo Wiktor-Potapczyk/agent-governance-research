@@ -1,0 +1,221 @@
+{
+  "metadata": {
+    "dataset": "Variance",
+    "purpose": "Measure run-to-run stability at temperature=0",
+    "deepseek_exploration_runs": {
+      "R1": "results-deepseek-run1.json",
+      "Variance": "results-deepseek-variance.json",
+      "Expanded": "results-expanded-deepseek.json"
+    },
+    "computed_at": "2026-03-24T22:49:58.518983",
+    "script": "compute-variance.py"
+  },
+  "deepseek_exploration_3runs": {
+    "R1 (results-deepseek-run1.json)": {
+      "type2_errors": 0,
+      "type2_total": 120
+    },
+    "Variance (results-deepseek-variance.json)": {
+      "type2_errors": 1,
+      "type2_total": 120
+    },
+    "Expanded (results-expanded-deepseek.json)": {
+      "type2_errors": 1,
+      "type2_total": 120
+    }
+  },
+  "deepseek_exploration_flips": [
+    {
+      "prompt_idx": 11,
+      "results": {
+        "R1 (results-deepseek-run1.json)": true,
+        "Variance (results-deepseek-variance.json)": false,
+        "Expanded (results-expanded-deepseek.json)": false
+      }
+    }
+  ],
+  "cross_run_stability": {
+    "DeepSeek": {
+      "R1_vs_EXP_base": {
+        "r1_errors": 7,
+        "exp_errors": 7,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R1_vs_EXP_expl": {
+        "r1_errors": 0,
+        "exp_errors": 1,
+        "diff": 1,
+        "n_flips": 1
+      },
+      "R1_vs_EXP_extr": {
+        "r1_errors": 15,
+        "exp_errors": 15,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R2_vs_EXP_gated": {
+        "r2_errors": 3,
+        "exp_errors": 5,
+        "diff": 2,
+        "n_flips": 2
+      },
+      "R2_vs_EXP_extr2": {
+        "r2_errors": 2,
+        "exp_errors": 2,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R2_vs_EXP_expl2": {
+        "r2_errors": 1,
+        "exp_errors": 1,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R2_vs_EXP_expl3": {
+        "r2_errors": 0,
+        "exp_errors": 0,
+        "diff": 0,
+        "n_flips": 0
+      }
+    },
+    "Gemini Flash": {
+      "R1_vs_EXP_base": {
+        "r1_errors": 2,
+        "exp_errors": 1,
+        "diff": 1,
+        "n_flips": 1
+      },
+      "R1_vs_EXP_expl": {
+        "r1_errors": 0,
+        "exp_errors": 0,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R1_vs_EXP_extr": {
+        "r1_errors": 2,
+        "exp_errors": 2,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R2_vs_EXP_gated": {
+        "r2_errors": 1,
+        "exp_errors": 0,
+        "diff": 1,
+        "n_flips": 1
+      },
+      "R2_vs_EXP_extr2": {
+        "r2_errors": 1,
+        "exp_errors": 1,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R2_vs_EXP_expl2": {
+        "r2_errors": 0,
+        "exp_errors": 0,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R2_vs_EXP_expl3": {
+        "r2_errors": 1,
+        "exp_errors": 2,
+        "diff": 1,
+        "n_flips": 1
+      }
+    },
+    "Claude Haiku": {
+      "R1_vs_EXP_base": {
+        "r1_errors": 5,
+        "exp_errors": 6,
+        "diff": 1,
+        "n_flips": 1
+      },
+      "R1_vs_EXP_expl": {
+        "r1_errors": 1,
+        "exp_errors": 1,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R1_vs_EXP_extr": {
+        "r1_errors": 4,
+        "exp_errors": 4,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R2_vs_EXP_gated": {
+        "r2_errors": 17,
+        "exp_errors": 15,
+        "diff": 2,
+        "n_flips": 2
+      },
+      "R2_vs_EXP_extr2": {
+        "r2_errors": 4,
+        "exp_errors": 5,
+        "diff": 1,
+        "n_flips": 1
+      },
+      "R2_vs_EXP_expl2": {
+        "r2_errors": 0,
+        "exp_errors": 0,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R2_vs_EXP_expl3": {
+        "r2_errors": 2,
+        "exp_errors": 3,
+        "diff": 1,
+        "n_flips": 1
+      }
+    },
+    "Claude Sonnet": {
+      "R1_vs_EXP_base": {
+        "r1_errors": 4,
+        "exp_errors": 4,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R1_vs_EXP_expl": {
+        "r1_errors": 4,
+        "exp_errors": 4,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R1_vs_EXP_extr": {
+        "r1_errors": 6,
+        "exp_errors": 6,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R2_vs_EXP_gated": {
+        "r2_errors": 15,
+        "exp_errors": 15,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R2_vs_EXP_extr2": {
+        "r2_errors": 4,
+        "exp_errors": 4,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R2_vs_EXP_expl2": {
+        "r2_errors": 3,
+        "exp_errors": 3,
+        "diff": 0,
+        "n_flips": 0
+      },
+      "R2_vs_EXP_expl3": {
+        "r2_errors": 1,
+        "exp_errors": 1,
+        "diff": 0,
+        "n_flips": 0
+      }
+    }
+  },
+  "summary": {
+    "total_cross_run_comparisons": 28,
+    "max_error_count_diff": 2,
+    "max_prompt_flips": 2,
+    "note": "All comparisons on first 120 trap prompts (shared between R1/R2 and Expanded)"
+  }
+}

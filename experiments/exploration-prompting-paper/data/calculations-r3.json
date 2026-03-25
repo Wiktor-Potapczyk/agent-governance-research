@@ -1,0 +1,434 @@
+{
+  "metadata": {
+    "dataset": "R3",
+    "source_file": "results-think-carefully.json",
+    "n_prompts": 311,
+    "n_effective_traps": 200,
+    "n_quick": 31,
+    "variant": "think",
+    "models": [
+      "DeepSeek",
+      "Gemini Flash",
+      "Claude Haiku",
+      "Claude Sonnet"
+    ],
+    "n_models": 4,
+    "purpose": "Mechanism ablation: content-free metacognitive instruction vs open-ended exploration",
+    "note": "Cross-variant comparisons with EXP are CROSS-DATASET (different API runs).",
+    "computed_at": "2026-03-25T00:48:41.770037",
+    "script": "compute-r3.py",
+    "prompt_file": "prompts-expanded.yaml"
+  },
+  "error_counts": {
+    "DeepSeek": {
+      "effective_type2_errors": 2,
+      "effective_type2_total": 200,
+      "all_trap_type2_errors": 3,
+      "all_trap_type2_total": 280,
+      "type1_errors": 7,
+      "type1_total": 31
+    },
+    "Gemini Flash": {
+      "effective_type2_errors": 1,
+      "effective_type2_total": 200,
+      "all_trap_type2_errors": 1,
+      "all_trap_type2_total": 280,
+      "type1_errors": 6,
+      "type1_total": 31
+    },
+    "Claude Haiku": {
+      "effective_type2_errors": 1,
+      "effective_type2_total": 200,
+      "all_trap_type2_errors": 1,
+      "all_trap_type2_total": 280,
+      "type1_errors": 6,
+      "type1_total": 31
+    },
+    "Claude Sonnet": {
+      "effective_type2_errors": 4,
+      "effective_type2_total": 200,
+      "all_trap_type2_errors": 4,
+      "all_trap_type2_total": 280,
+      "type1_errors": 2,
+      "type1_total": 31
+    }
+  },
+  "pooled": {
+    "effective_type2_errors": 8,
+    "effective_type2_total": 800,
+    "effective_type2_pct": 1.0,
+    "type1_errors": 21,
+    "type1_total": 124,
+    "type1_pct": 16.94
+  },
+  "mcnemar_vs_exp": {
+    "expl2_vs_think": {
+      "var_a": "expl2",
+      "var_b": "think",
+      "a_wins": 5,
+      "b_wins": 7,
+      "n_discordant": 12,
+      "p_value": 0.774414,
+      "significant_005": false,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku",
+        "Claude Sonnet"
+      ],
+      "n_models": 4,
+      "note": "CROSS-DATASET: EXP run vs R3 run. Same prompts, different API calls."
+    },
+    "expl3_vs_think": {
+      "var_a": "expl3",
+      "var_b": "think",
+      "a_wins": 4,
+      "b_wins": 15,
+      "n_discordant": 19,
+      "p_value": 0.019211,
+      "significant_005": true,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku",
+        "Claude Sonnet"
+      ],
+      "n_models": 4,
+      "note": "CROSS-DATASET: EXP run vs R3 run. Same prompts, different API calls."
+    },
+    "expl_vs_think": {
+      "var_a": "expl",
+      "var_b": "think",
+      "a_wins": 4,
+      "b_wins": 12,
+      "n_discordant": 16,
+      "p_value": 0.076813,
+      "significant_005": false,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku",
+        "Claude Sonnet"
+      ],
+      "n_models": 4,
+      "note": "CROSS-DATASET: EXP run vs R3 run. Same prompts, different API calls."
+    },
+    "extr2_vs_think": {
+      "var_a": "extr2",
+      "var_b": "think",
+      "a_wins": 4,
+      "b_wins": 21,
+      "n_discordant": 25,
+      "p_value": 0.000911,
+      "significant_005": true,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku",
+        "Claude Sonnet"
+      ],
+      "n_models": 4,
+      "note": "CROSS-DATASET: EXP run vs R3 run. Same prompts, different API calls."
+    },
+    "gated_vs_think": {
+      "var_a": "gated",
+      "var_b": "think",
+      "a_wins": 1,
+      "b_wins": 77,
+      "n_discordant": 78,
+      "p_value": 0.0,
+      "significant_005": true,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku",
+        "Claude Sonnet"
+      ],
+      "n_models": 4,
+      "note": "CROSS-DATASET: EXP run vs R3 run. Same prompts, different API calls."
+    },
+    "base_vs_think": {
+      "var_a": "base",
+      "var_b": "think",
+      "a_wins": 1,
+      "b_wins": 34,
+      "n_discordant": 35,
+      "p_value": 0.0,
+      "significant_005": true,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku",
+        "Claude Sonnet"
+      ],
+      "n_models": 4,
+      "note": "CROSS-DATASET: EXP run vs R3 run. Same prompts, different API calls."
+    }
+  },
+  "per_model_mcnemar": {
+    "DeepSeek": {
+      "expl2_vs_think": {
+        "var_a": "expl2",
+        "var_b": "think",
+        "a_wins": 0,
+        "b_wins": 0,
+        "n_discordant": 0,
+        "p_value": 1.0,
+        "significant_005": false,
+        "models": [
+          "DeepSeek"
+        ],
+        "n_models": 1,
+        "note": "CROSS-DATASET: EXP run vs R3 run. Same prompts, different API calls."
+      },
+      "extr2_vs_think": {
+        "var_a": "extr2",
+        "var_b": "think",
+        "a_wins": 0,
+        "b_wins": 6,
+        "n_discordant": 6,
+        "p_value": 0.03125,
+        "significant_005": true,
+        "models": [
+          "DeepSeek"
+        ],
+        "n_models": 1,
+        "note": "CROSS-DATASET: EXP run vs R3 run. Same prompts, different API calls."
+      }
+    },
+    "Gemini Flash": {
+      "expl2_vs_think": {
+        "var_a": "expl2",
+        "var_b": "think",
+        "a_wins": 1,
+        "b_wins": 0,
+        "n_discordant": 1,
+        "p_value": 1.0,
+        "significant_005": false,
+        "models": [
+          "Gemini Flash"
+        ],
+        "n_models": 1,
+        "note": "CROSS-DATASET: EXP run vs R3 run. Same prompts, different API calls."
+      },
+      "extr2_vs_think": {
+        "var_a": "extr2",
+        "var_b": "think",
+        "a_wins": 1,
+        "b_wins": 1,
+        "n_discordant": 2,
+        "p_value": 1.0,
+        "significant_005": false,
+        "models": [
+          "Gemini Flash"
+        ],
+        "n_models": 1,
+        "note": "CROSS-DATASET: EXP run vs R3 run. Same prompts, different API calls."
+      }
+    },
+    "Claude Haiku": {
+      "expl2_vs_think": {
+        "var_a": "expl2",
+        "var_b": "think",
+        "a_wins": 1,
+        "b_wins": 1,
+        "n_discordant": 2,
+        "p_value": 1.0,
+        "significant_005": false,
+        "models": [
+          "Claude Haiku"
+        ],
+        "n_models": 1,
+        "note": "CROSS-DATASET: EXP run vs R3 run. Same prompts, different API calls."
+      },
+      "extr2_vs_think": {
+        "var_a": "extr2",
+        "var_b": "think",
+        "a_wins": 1,
+        "b_wins": 8,
+        "n_discordant": 9,
+        "p_value": 0.039062,
+        "significant_005": true,
+        "models": [
+          "Claude Haiku"
+        ],
+        "n_models": 1,
+        "note": "CROSS-DATASET: EXP run vs R3 run. Same prompts, different API calls."
+      }
+    },
+    "Claude Sonnet": {
+      "expl2_vs_think": {
+        "var_a": "expl2",
+        "var_b": "think",
+        "a_wins": 3,
+        "b_wins": 6,
+        "n_discordant": 9,
+        "p_value": 0.507812,
+        "significant_005": false,
+        "models": [
+          "Claude Sonnet"
+        ],
+        "n_models": 1,
+        "note": "CROSS-DATASET: EXP run vs R3 run. Same prompts, different API calls."
+      },
+      "extr2_vs_think": {
+        "var_a": "extr2",
+        "var_b": "think",
+        "a_wins": 2,
+        "b_wins": 6,
+        "n_discordant": 8,
+        "p_value": 0.289062,
+        "significant_005": false,
+        "models": [
+          "Claude Sonnet"
+        ],
+        "n_models": 1,
+        "note": "CROSS-DATASET: EXP run vs R3 run. Same prompts, different API calls."
+      }
+    }
+  },
+  "category_breakdown": {
+    "DeepSeek": {
+      "context-contradiction": {
+        "errors": 0,
+        "total": 100
+      },
+      "cross-reference": {
+        "errors": 1,
+        "total": 20
+      },
+      "disguised-correction": {
+        "errors": 2,
+        "total": 100
+      },
+      "genuinely-quick": {
+        "errors": 7,
+        "total": 31
+      },
+      "hidden-compound": {
+        "errors": 0,
+        "total": 20
+      },
+      "perspective-shift": {
+        "errors": 0,
+        "total": 20
+      },
+      "vague-affect": {
+        "errors": 0,
+        "total": 20
+      }
+    },
+    "Gemini Flash": {
+      "context-contradiction": {
+        "errors": 0,
+        "total": 100
+      },
+      "cross-reference": {
+        "errors": 0,
+        "total": 20
+      },
+      "disguised-correction": {
+        "errors": 1,
+        "total": 100
+      },
+      "genuinely-quick": {
+        "errors": 6,
+        "total": 31
+      },
+      "hidden-compound": {
+        "errors": 0,
+        "total": 20
+      },
+      "perspective-shift": {
+        "errors": 0,
+        "total": 20
+      },
+      "vague-affect": {
+        "errors": 0,
+        "total": 20
+      }
+    },
+    "Claude Haiku": {
+      "context-contradiction": {
+        "errors": 0,
+        "total": 100
+      },
+      "cross-reference": {
+        "errors": 0,
+        "total": 20
+      },
+      "disguised-correction": {
+        "errors": 1,
+        "total": 100
+      },
+      "genuinely-quick": {
+        "errors": 6,
+        "total": 31
+      },
+      "hidden-compound": {
+        "errors": 0,
+        "total": 20
+      },
+      "perspective-shift": {
+        "errors": 0,
+        "total": 20
+      },
+      "vague-affect": {
+        "errors": 0,
+        "total": 20
+      }
+    },
+    "Claude Sonnet": {
+      "context-contradiction": {
+        "errors": 1,
+        "total": 100
+      },
+      "cross-reference": {
+        "errors": 0,
+        "total": 20
+      },
+      "disguised-correction": {
+        "errors": 3,
+        "total": 100
+      },
+      "genuinely-quick": {
+        "errors": 2,
+        "total": 31
+      },
+      "hidden-compound": {
+        "errors": 0,
+        "total": 20
+      },
+      "perspective-shift": {
+        "errors": 0,
+        "total": 20
+      },
+      "vague-affect": {
+        "errors": 0,
+        "total": 20
+      }
+    }
+  },
+  "wilson_cis": {
+    "DeepSeek": {
+      "lower": 0.27,
+      "upper": 3.57,
+      "point": 1.0
+    },
+    "Gemini Flash": {
+      "lower": 0.09,
+      "upper": 2.78,
+      "point": 0.5
+    },
+    "Claude Haiku": {
+      "lower": 0.09,
+      "upper": 2.78,
+      "point": 0.5
+    },
+    "Claude Sonnet": {
+      "lower": 0.78,
+      "upper": 5.03,
+      "point": 2.0
+    }
+  }
+}
