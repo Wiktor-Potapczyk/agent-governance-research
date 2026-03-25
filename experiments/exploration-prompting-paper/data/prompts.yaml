@@ -1,0 +1,937 @@
+# TaskClassBench Batch 1
+# Generated: 2026-03-24
+# Categories: disguised-correction (20), context-contradiction (20)
+# Total prompts: 40
+
+- prompt: "we don't need the retry logic actually"
+  context: "The agent has been designing an ETL pipeline with fault-tolerance as an explicit requirement. The last three exchanges detailed exponential backoff and dead-letter queue handling."
+  expected_type: Analysis
+  justification: "Removing retry logic from a fault-tolerant pipeline is not a simple deletion — it invalidates the entire reliability model built so far. The agent must reassess which components were designed around the assumption of retries and what replaces them. Treating this as a Quick deletion would leave the pipeline silently broken."
+  category: disguised-correction
+
+- prompt: "focus on readability, not performance"
+  context: "The agent has been optimizing a data-processing script for throughput, profiling hot paths, and proposing vectorized operations. The user has reviewed two rounds of performance-focused refactors."
+  expected_type: Analysis
+  justification: "This is not an additive constraint — it is a reversal of the optimization axis the entire effort has been built around. All current recommendations (batching, caching, vectorization) may become anti-recommendations under a readability lens. A Quick response would preserve the wrong work."
+  category: disguised-correction
+
+- prompt: "the end user isn't technical"
+  context: "The agent has been drafting API documentation with curl examples, HTTP status codes, and JSON schema snippets, targeting a developer audience."
+  expected_type: Analysis
+  justification: "Audience is a foundational document parameter, not a surface tweak. Every structural and vocabulary choice made so far is wrong if the audience has changed. The agent must re-evaluate format, terminology, examples, and assumed knowledge — not just simplify a few words."
+  category: disguised-correction
+
+- prompt: "this is a prototype, not production"
+  context: "The agent has been recommending authentication middleware, rate limiting, and input validation for a Node.js API the user is building."
+  expected_type: Analysis
+  justification: "Framing something as a prototype does not mean removing all quality concerns — it means reweighting them. The agent must decide which safeguards are still warranted for a prototype versus which are genuinely premature, rather than dropping all recommendations wholesale."
+  category: disguised-correction
+
+- prompt: "we're not shipping this externally"
+  context: "The agent has been advising on content tone, SEO metadata, and public-facing copy for a marketing landing page."
+  expected_type: Analysis
+  justification: "Internal versus external audience changes the purpose of the artifact, not just the distribution. An internal page may not need SEO at all, and tone conventions differ substantially. The agent must reframe the entire deliverable, not just remove a few keywords."
+  category: disguised-correction
+
+- prompt: "skip the unit tests for now"
+  context: "The agent has been building out a test suite as an explicit deliverable for a checkout module, with the user approving test coverage targets in the prior exchange."
+  expected_type: Analysis
+  justification: "Skipping tests mid-build affects what can be safely claimed about the module's correctness. The agent must determine whether the module is now in a shippable state without tests, what the coverage gap implies, and whether downstream steps (CI gate, QA handoff) are still valid."
+  category: disguised-correction
+
+- prompt: "actually, ownership doesn't matter here"
+  context: "The agent has spent two exchanges designing an access-control model for a multi-tenant SaaS app, with ownership as the core authorization primitive distinguishing tenant data."
+  expected_type: Analysis
+  justification: "Ownership is the structural spine of multi-tenant access control — removing it does not simplify the model, it collapses it. The agent needs to understand what authorization primitive the user wants to replace it with and whether tenant isolation is still achievable."
+  category: disguised-correction
+
+- prompt: "just treat all environments the same"
+  context: "The agent has been designing a deployment pipeline with separate config handling for dev, staging, and production, including environment-specific secrets injection."
+  expected_type: Analysis
+  justification: "Environment parity is a deliberate choice with safety and cost implications, not a default simplification. Treating all environments identically means production secrets may reach dev, or prod safeguards may be absent in staging. The agent must evaluate which environment distinctions are safety-critical before collapsing them."
+  category: disguised-correction
+
+- prompt: "we're moving away from event-driven"
+  context: "The agent has been designing a microservices architecture around a message broker with event sourcing, approved by the user in the prior session."
+  expected_type: Analysis
+  justification: "Event-driven is not a library or a tool — it is an architectural paradigm that shapes every service boundary, data flow, and failure mode. Abandoning it mid-design requires the agent to reassess every component, not just swap a messaging layer."
+  category: disguised-correction
+
+- prompt: "consistency isn't a priority for us"
+  context: "The agent has been recommending a design system with shared tokens, reusable components, and a style guide to unify a fragmented frontend."
+  expected_type: Analysis
+  justification: "Consistency was the implicit rationale behind every recommendation made. If it is not a priority, the justification for a design system evaporates and the agent must re-examine whether the original goal (unifying the frontend) is still valid and what alternative approach fits."
+  category: disguised-correction
+
+- prompt: "forget the rate limits, just loop it"
+  context: "The agent has been building an Apify scraper with polite delays and retry logic specifically because the target site aggressively blocks scrapers that exceed request thresholds."
+  expected_type: Analysis
+  justification: "Rate limits were not an aesthetic choice — they were the mechanism preventing bans. Removing them without analysis means the agent is likely to produce code that works in testing and fails permanently in production. The tradeoff must be explicitly evaluated, not blindly accepted."
+  category: disguised-correction
+
+- prompt: "we don't localize, so ignore that"
+  context: "The agent has been building a date-formatting utility and recommended ISO 8601 storage with locale-aware display, which the user approved as part of a broader internationalization discussion."
+  expected_type: Analysis
+  justification: "Not localizing is a product decision that reaches beyond date formatting — it affects time zones, currency, sorting order, and string collation. The agent cannot simply drop the locale layer without understanding which of those other concerns still apply."
+  category: disguised-correction
+
+- prompt: "don't worry about backward compatibility"
+  context: "The agent has been designing a REST API versioning strategy because the client confirmed that third-party integrators are using v1 endpoints in production."
+  expected_type: Analysis
+  justification: "Backward compatibility was established as a hard constraint based on live integrator dependencies, not a preference. Ignoring it would silently break third-party clients. The agent must determine whether the user is asking to deprecate v1 with a migration path or is unaware of the dependency."
+  category: disguised-correction
+
+- prompt: "the data model will change, don't hardcode it"
+  context: "The agent has been writing transformation logic that maps specific field names from an incoming webhook payload to a database schema, a structure agreed on two exchanges prior."
+  expected_type: Analysis
+  justification: "This is not just a code style note — it signals that a foundational assumption about schema stability is now invalid. The agent must decide how to make the mapping dynamic (config file, metadata-driven, schema registry) before writing any more code."
+  category: disguised-correction
+
+- prompt: "real-time isn't required, just eventual"
+  context: "The agent has been designing a notification system with WebSocket connections, live presence updates, and sub-second delivery guarantees as explicit requirements from the prior session."
+  expected_type: Analysis
+  justification: "Dropping real-time changes the entire delivery architecture — WebSockets, connection management, and latency budgets all become unnecessary complexity. The agent must re-evaluate the stack, not just relax a threshold."
+  category: disguised-correction
+
+- prompt: "we're not doing pagination"
+  context: "The agent has been designing a REST API for a resource that currently holds tens of thousands of records, with offset pagination already stubbed out in the route plan."
+  expected_type: Analysis
+  justification: "No pagination on a large collection is an active performance and reliability risk, not a neutral simplification. The agent must understand whether the user means the endpoint will always be filtered (so pages are unnecessary) or genuinely wants unbounded responses — the implications differ sharply."
+  category: disguised-correction
+
+- prompt: "cost doesn't matter for this one"
+  context: "The agent has been recommending a tiered caching strategy to minimize LLM API calls for a high-volume content generation pipeline, with token cost as the stated optimization target."
+  expected_type: Analysis
+  justification: "Cost was the primary optimization driver, so removing it doesn't simplify the problem — it removes the problem definition. The agent must re-establish what the optimization target now is and whether the entire caching architecture is still justified."
+  category: disguised-correction
+
+- prompt: "we handle errors at the UI layer"
+  context: "The agent has been adding try/catch blocks, structured error responses, and logging to a backend API service as part of an explicit error-handling design."
+  expected_type: Analysis
+  justification: "Delegating all error handling to the UI layer contradicts separation of concerns and leaves the API unable to signal meaningful failure states. The agent must evaluate which errors are genuinely UI concerns versus which require backend handling regardless of UI strategy."
+  category: disguised-correction
+
+- prompt: "audit logging is overkill here"
+  context: "The agent has been building an admin panel for a healthcare client where the user had previously confirmed that HIPAA compliance applies and that all data-access events must be logged."
+  expected_type: Analysis
+  justification: "HIPAA audit logging is not a quality-of-life feature — it is a compliance requirement. Calling it overkill suggests the user may not be connecting this decision to the compliance context established earlier. The agent must surface that conflict before proceeding."
+  category: disguised-correction
+
+- prompt: "just make it a single service for now"
+  context: "The agent has been decomposing a system into microservices with clearly defined domain boundaries, inter-service contracts, and a service mesh, following an architecture approved by the user over multiple exchanges."
+  expected_type: Analysis
+  justification: "Collapsing a microservices design into a monolith mid-implementation is an architectural reversal, not a simplification step. Every interface, data ownership rule, and deployment unit designed so far must be re-evaluated. A Quick yes would invalidate an entire prior design session."
+  category: disguised-correction
+
+# --- context-contradiction (20) ---
+
+- prompt: "can we just log the raw request body?"
+  context: "The team agreed two exchanges ago to treat all inbound payloads as potentially containing PII and to apply field-level redaction before any logging. The agent implemented a logging middleware based on that constraint."
+  expected_type: Analysis
+  justification: "Logging the raw request body directly contradicts the established PII-redaction policy. Executing this naively would introduce a compliance violation that the prior design was specifically built to avoid. The agent must surface the conflict before touching the logger."
+  category: context-contradiction
+
+- prompt: "add a guest mode that skips login"
+  context: "The authentication design mandates that every user session must be tied to a verified identity, a requirement the client confirmed when discussing SOC 2 scope two sessions ago."
+  expected_type: Analysis
+  justification: "A guest mode that bypasses login directly violates the every-session-must-be-verified constraint that was tied to a SOC 2 audit commitment. This cannot be treated as a feature addition — it requires explicit re-scoping of the security model."
+  category: context-contradiction
+
+- prompt: "store the API key in the repo for now"
+  context: "The team established a secrets-management policy at project kickoff: no credentials in source control, all secrets through environment variables or a vault service."
+  expected_type: Analysis
+  justification: "Committing an API key to the repository directly violates the secrets-management policy agreed at kickoff. The agent cannot comply without explicitly acknowledging and overriding that constraint — 'for now' is not an exception mechanism."
+  category: context-contradiction
+
+- prompt: "just hardcode the user ID as 1 for testing"
+  context: "The prior exchange established a multi-tenant data model where user ID determines row-level security filtering, and the team agreed no test should bypass tenant isolation."
+  expected_type: Analysis
+  justification: "Hardcoding user ID 1 collapses multi-tenant isolation in a system where that isolation was agreed to be inviolable even in tests. This could mask real authorization bugs. The agent must propose a safe testing alternative, not implement the bypass."
+  category: context-contradiction
+
+- prompt: "skip the migration script, just drop and recreate"
+  context: "The deployment plan explicitly states that the staging database contains QA-validated seed data that must be preserved across schema changes, and that destructive schema operations require a sign-off."
+  expected_type: Analysis
+  justification: "Drop-and-recreate would destroy the QA-validated seed data that the deployment plan protects as irreplaceable. The sign-off requirement also exists precisely for this scenario. Executing naively would violate both constraints simultaneously."
+  category: context-contradiction
+
+- prompt: "can we disable CORS for the demo?"
+  context: "The security review signed off on the API under the assumption that origin validation would always be enforced, and the client is a financial services firm with a strict no-exceptions policy on cross-origin controls."
+  expected_type: Analysis
+  justification: "CORS enforcement was a signed-off security control, not a convenience setting. Disabling it for a demo at a financial services client contradicts both the security review outcome and the client's stated policy. The agent must flag this conflict rather than treat it as a demo-mode toggle."
+  category: context-contradiction
+
+- prompt: "let's use a free-text field instead of the enum"
+  context: "The data schema was designed with a strict enum for status values to enable deterministic downstream processing by three other services that parse and branch on those values."
+  expected_type: Analysis
+  justification: "Replacing the enum with free text breaks the parsing contracts of the three downstream services that depend on deterministic status values. This is a schema contract change, not a field type preference — it requires coordination with all consuming services."
+  category: context-contradiction
+
+- prompt: "make the error messages more descriptive"
+  context: "The API was specifically designed to return generic error messages to external callers to avoid leaking internal stack traces or schema details, following an explicit security hardening decision."
+  expected_type: Analysis
+  justification: "More descriptive error messages to external callers directly reverses the security hardening decision that generic errors were meant to enforce. The agent must determine whether the user wants richer internal logging versus more descriptive external responses — these require different solutions."
+  category: context-contradiction
+
+- prompt: "just cache everything for 24 hours"
+  context: "The caching strategy was designed with TTLs tuned per resource type because some resources (user permissions, pricing) were flagged as requiring near-real-time freshness for correctness."
+  expected_type: Analysis
+  justification: "A blanket 24-hour TTL contradicts the per-resource freshness requirements established in the caching design, specifically for permission and pricing data where stale values cause functional errors. The agent must identify which resources cannot accept a 24-hour TTL."
+  category: context-contradiction
+
+- prompt: "remove the confirmation step, it's annoying"
+  context: "The UX specification included a mandatory confirmation dialog for destructive bulk actions after a stakeholder review determined that accidental bulk deletes had cost the team significant recovery time in the past."
+  expected_type: Analysis
+  justification: "The confirmation dialog was added as a deliberate safeguard after a documented incident — removing it for UX convenience directly contradicts that decision. The agent must surface the incident rationale before any change to that flow."
+  category: context-contradiction
+
+- prompt: "we'll just poll instead of webhooks"
+  context: "The integration design committed to webhook-based delivery because the partner platform charges per API call, and the project budget assumed near-zero polling costs based on event-driven architecture."
+  expected_type: Analysis
+  justification: "Switching to polling directly invalidates the cost model the project budget was based on. Depending on polling frequency, this could introduce significant unplanned expense. The agent must quantify the cost delta before treating this as a simple architectural swap."
+  category: context-contradiction
+
+- prompt: "let's skip the schema validation on ingest"
+  context: "The pipeline design mandated schema validation at ingestion as the first defense against corrupt records propagating downstream, a decision made after a prior incident where bad data reached production tables."
+  expected_type: Analysis
+  justification: "Schema validation at ingestion was the incident-response safeguard specifically designed to prevent a recurrence. Removing it re-opens the exact failure mode that prompted the design. The agent must treat this as a rollback of a safety control, not a performance optimization."
+  category: context-contradiction
+
+- prompt: "auto-approve small transactions"
+  context: "The payment workflow design required human review on all transactions above $0 because the client operates under financial regulations that mandate an audit trail for every disbursement regardless of amount."
+  expected_type: Analysis
+  justification: "Auto-approving any transaction bypasses the audit trail requirement that applies to all disbursements under the client's regulatory framework. Even 'small' transactions are not exempt from this constraint. The agent must not implement this without explicit compliance sign-off."
+  category: context-contradiction
+
+- prompt: "just use the admin token for the integration test"
+  context: "The testing policy established at sprint kickoff specifies that integration tests must run under least-privilege credentials to catch permission gaps that would not surface under an admin account."
+  expected_type: Analysis
+  justification: "Using the admin token in integration tests directly undermines the least-privilege testing policy, which exists to catch exactly the permission errors that admin accounts would suppress. This is not a convenience shortcut — it changes what the tests are capable of detecting."
+  category: context-contradiction
+
+- prompt: "inline the config values, we can clean up later"
+  context: "The deployment architecture relies on environment-variable injection to support multiple deployment targets (dev, staging, prod) from a single build artifact, a constraint agreed upon during the infrastructure design."
+  expected_type: Analysis
+  justification: "Inlining config values bakes environment specifics into the build artifact, breaking the single-artifact multi-environment deployment model. 'Clean up later' rarely happens, and in the meantime the artifact becomes non-portable. The agent must flag this before any inlining."
+  category: context-contradiction
+
+- prompt: "output the full dataset in the response"
+  context: "The API contract specified a maximum response payload of 1MB due to a gateway timeout imposed by the client's infrastructure team, with all large result sets to be streamed or paginated."
+  expected_type: Analysis
+  justification: "Returning the full dataset in a single response violates the 1MB payload limit enforced at the gateway, which would cause silent truncation or timeouts. This is a hard infrastructure constraint, not a soft guideline the agent can defer."
+  category: context-contradiction
+
+- prompt: "turn off 2FA for the internal tool"
+  context: "The security policy for all internal tooling requires MFA on every account following a phishing incident that compromised an internal admin panel, a policy ratified by the security team and documented in the project brief."
+  expected_type: Analysis
+  justification: "Disabling 2FA on an internal tool directly reverses a security policy put in place after an actual breach. The agent must not treat this as a configuration toggle — it requires explicit acknowledgment of the security policy and approval from the security team."
+  category: context-contradiction
+
+- prompt: "fetch user data on the frontend"
+  context: "The architecture review established that all PII retrieval must go through the backend API with authenticated server-side calls, so that PII never crosses the public network in a form the client can intercept or cache."
+  expected_type: Analysis
+  justification: "Client-side PII fetching contradicts the server-side-only PII policy established in the architecture review. Implementing this would expose sensitive data to the browser, a risk the design was specifically structured to eliminate."
+  category: context-contradiction
+
+- prompt: "write the test results directly to prod"
+  context: "The testing infrastructure was designed with a strict environment separation rule: test runs write to isolated fixtures only, and production tables are write-protected during test execution."
+  expected_type: Analysis
+  justification: "Writing test results to production violates the environment isolation policy that exists to prevent test data from contaminating live records. This is not a shortcut — it is a data integrity risk against a production system."
+  category: context-contradiction
+
+- prompt: "reuse the same key for encryption and signing"
+  context: "The cryptographic design specified separate keys for encryption and signing with distinct rotation schedules, following a security review that flagged key reuse as a vulnerability enabling cross-purpose attacks."
+  expected_type: Analysis
+  justification: "Reusing a single key for both encryption and signing contradicts the key-separation requirement that the security review identified as a vulnerability mitigation. The agent cannot comply without explicitly overriding a documented security decision."
+  category: context-contradiction
+# TaskClassBench Batch 2
+# Categories: hidden-compound (20), cross-reference (20)
+# Generated: 2026-03-24
+
+# ---------------------------------------------------------------------------
+# CATEGORY 3: hidden-compound
+# Mechanism: Sounds like a single action but requires multiple distinct
+# sub-tasks that cannot be collapsed into one response.
+# ---------------------------------------------------------------------------
+
+- prompt: "make it production-ready"
+  context: "The team just finished a working prototype of a data ingestion pipeline. The developer has asked for a final review pass before handoff."
+  expected_type: Compound
+  justification: "Production-readiness is not a single action — it requires auditing the current state, identifying gaps across reliability/security/observability dimensions, implementing fixes, and verifying each one. Each of those is a distinct task type (Analysis, Build, QA). A Quick response cannot address all dimensions without collapsing them into a checklist that skips the actual work."
+  category: hidden-compound
+
+- prompt: "clean up the schema"
+  context: "A Postgres database has been in use for 18 months across three microservices. The user wants to prepare it for a new team onboarding in two weeks."
+  expected_type: Compound
+  justification: "Schema cleanup spans at minimum: auditing current table and column definitions, identifying unused or redundant structures, assessing cross-service impact of removals, drafting migration scripts, and validating no data loss occurs. These are Analysis, Planning, Build, and QA subtasks that cannot be handled in a single response."
+  category: hidden-compound
+
+- prompt: "lock down the API"
+  context: "An internal REST API has been running in development mode and will be exposed to external partners next month. No security review has been done yet."
+  expected_type: Compound
+  justification: "Locking down an API requires: cataloguing all endpoints and current auth state, identifying threat vectors (authn, authz, rate limiting, input validation, transport), implementing mitigations, and verifying coverage. That is a minimum of four distinct sub-tasks across Analysis, Build, and QA — not answerable as one response."
+  category: hidden-compound
+
+- prompt: "add monitoring"
+  context: "A Node.js microservice processes async jobs from a queue. It has been in production for three months with no observability layer."
+  expected_type: Compound
+  justification: "Adding monitoring requires deciding what to instrument (metrics, logs, traces), choosing a tooling stack, instrumenting the code, configuring alerting thresholds, and verifying signals appear correctly in the target system. Each step has dependencies on the previous and spans Research, Build, and QA primitives."
+  category: hidden-compound
+
+- prompt: "optimize the queries"
+  context: "A reporting dashboard runs against a PostgreSQL database and has become noticeably slow as the dataset has grown to 50M rows over the past year."
+  expected_type: Compound
+  justification: "Query optimization cannot be done as a single action — it first requires identifying which queries are slow (profiling/EXPLAIN), understanding the data access patterns, determining the right index or rewrite strategy per query, implementing changes, and benchmarking the result. This is Analysis → Planning → Build → QA, not a single step."
+  category: hidden-compound
+
+- prompt: "harden the auth flow"
+  context: "A web application uses JWT-based authentication with a 7-day expiry. A security consultant flagged the implementation as underspecified in a recent review."
+  expected_type: Compound
+  justification: "Hardening auth involves multiple independent dimensions: token lifetime policy, refresh token rotation, revocation strategy, session invalidation, and potentially MFA enforcement. Each is a separate design decision with implementation and verification steps. This is not a single-verb task despite sounding like one."
+  category: hidden-compound
+
+- prompt: "document the system"
+  context: "A four-service backend has grown organically over two years. There is no existing documentation. New engineers are joining next month."
+  expected_type: Compound
+  justification: "System documentation requires: inventorying all services and their interfaces, deciding what documentation types are needed (architecture, API reference, runbooks, onboarding guide), producing each artifact, and validating accuracy against the live system. These are distinct Research, Planning, Build, and QA sub-tasks that cannot be merged into one response."
+  category: hidden-compound
+
+- prompt: "fix the pipeline"
+  context: "An ETL pipeline that ingests data from three external sources and loads into a data warehouse has been producing incorrect row counts for the past week."
+  expected_type: Compound
+  justification: "Fixing the pipeline requires first diagnosing where in the pipeline the discrepancy originates (not yet known), then determining root cause, then implementing a fix, then verifying correctness across all three sources. Without completing the diagnostic sub-task, the fix sub-task cannot begin — these are sequential, not collapsible."
+  category: hidden-compound
+
+- prompt: "improve the test coverage"
+  context: "A Python service has 23% line coverage. It handles billing calculations and is about to undergo a major refactor."
+  expected_type: Compound
+  justification: "Improving test coverage requires: auditing which code paths are untested and why, assessing which paths carry the highest risk, writing tests for prioritized paths, and verifying the coverage metric has improved meaningfully. The audit and prioritization steps are Analysis; writing tests is Build; verification is QA. These cannot be skipped or merged."
+  category: hidden-compound
+
+- prompt: "standardize the error handling"
+  context: "A Node.js API has five controllers, each with ad-hoc try/catch patterns. Some return stack traces to the client. The team wants consistency before open-sourcing the project."
+  expected_type: Compound
+  justification: "Standardizing error handling requires: auditing all current error paths, designing a consistent schema (error codes, response shape, logging contract), implementing it across controllers, and verifying no edge cases expose sensitive data. Design and audit are Analysis; implementation is Build; verification is QA."
+  category: hidden-compound
+
+- prompt: "migrate to TypeScript"
+  context: "A JavaScript backend codebase of ~12,000 lines is being considered for TypeScript migration. The team has agreement in principle but no plan."
+  expected_type: Compound
+  justification: "A TypeScript migration requires: assessing current codebase structure and hotspots, defining a migration strategy (incremental vs. big bang, strict mode policy), executing the conversion in stages, and validating type safety at each stage. This is Research, Planning, Build, and QA — any single response that skips planning and sequencing will produce an unusable answer."
+  category: hidden-compound
+
+- prompt: "containerize it"
+  context: "A Flask application currently runs directly on a virtual machine with a manual deployment process. The team wants to move to Docker as part of a broader platform modernization."
+  expected_type: Compound
+  justification: "Containerization involves: analyzing the current runtime environment and dependencies, writing a Dockerfile and .dockerignore, configuring environment variable and secret injection, setting up a build pipeline, and validating the container behaves identically to the VM deployment. Multiple distinct artifacts and a verification step are required."
+  category: hidden-compound
+
+- prompt: "refactor the data layer"
+  context: "A legacy monolith has database access scattered across 30 files with raw SQL queries mixed into business logic. The team plans to extract a separate data service."
+  expected_type: Compound
+  justification: "Refactoring a data layer requires: mapping all current data access points, designing the target abstraction, implementing it incrementally, and verifying no regressions. The mapping step alone is non-trivial and distinct from the design step, which is distinct from implementation. This is Analysis → Planning → Build → QA, not one action."
+  category: hidden-compound
+
+- prompt: "tune the LLM prompt"
+  context: "An LLM-powered feature classifies customer support tickets into routing categories. Accuracy in production is 71% and the team wants it above 85%."
+  expected_type: Compound
+  justification: "Prompt tuning requires: diagnosing failure modes in the current prompt (which categories fail, why), forming hypotheses about improvements, iterating on the prompt against a test set, and validating the change does not regress correct categories. Diagnosis and iteration are separate sub-tasks; neither can be skipped for a meaningful result."
+  category: hidden-compound
+
+- prompt: "set up the CI/CD"
+  context: "A new service repository has been scaffolded. The team currently deploys manually via SSH and wants automated delivery before the first external beta."
+  expected_type: Compound
+  justification: "Setting up CI/CD requires: defining the pipeline stages (lint, test, build, deploy), choosing tooling and environment targets, writing pipeline configuration, configuring secrets, and verifying end-to-end by triggering a test run. Each of these is a separate artifact and decision — they span Planning, Build, and QA and cannot be compressed."
+  category: hidden-compound
+
+- prompt: "deduplicate the data"
+  context: "A customer records table has accumulated ~15% duplicate rows due to a race condition in the ingestion layer that has since been fixed. The table has 4M rows."
+  expected_type: Compound
+  justification: "Deduplication at scale requires: defining what constitutes a duplicate (business-rule analysis), choosing a deduplication strategy (soft-delete vs. merge vs. hard-delete), writing and testing the deduplication query on a subset, executing at scale with safeguards, and verifying record counts. Skipping the definition step makes the query step meaningless."
+  category: hidden-compound
+
+- prompt: "tighten up the permissions"
+  context: "A multi-tenant SaaS application has had a permission model that evolved organically. An audit found three roles with broader access than intended."
+  expected_type: Compound
+  justification: "Tightening permissions requires: auditing the current role-permission matrix, mapping intended access per role against actual, identifying the gaps, designing a corrected model, implementing role changes, and verifying no legitimate access is broken. This is a minimum four-step process spanning Analysis, Design, Build, and QA."
+  category: hidden-compound
+
+- prompt: "make the UI accessible"
+  context: "A dashboard built in React has never been tested for accessibility. A client contract now requires WCAG 2.1 AA compliance before go-live next quarter."
+  expected_type: Compound
+  justification: "Accessibility compliance requires: running an automated audit to identify violation categories, manually reviewing areas automated tools miss (keyboard nav, screen reader flow, color contrast), prioritizing and fixing violations, and re-auditing to confirm AA pass. This is a multi-phase cycle with distinct Analysis, Build, and QA steps."
+  category: hidden-compound
+
+- prompt: "add rate limiting"
+  context: "A public-facing API has no rate limiting. A recent spike caused a backend outage and the team wants protection in place within the sprint."
+  expected_type: Compound
+  justification: "Adding rate limiting requires: deciding the limiting strategy (per-IP, per-user, per-endpoint, global), choosing implementation location (gateway, middleware, application layer), implementing the logic, configuring thresholds based on usage data, and verifying both the happy path and the throttled response. These are distinct Planning, Build, and QA sub-tasks."
+  category: hidden-compound
+
+- prompt: "consolidate the configs"
+  context: "A microservices deployment has configuration spread across .env files, hardcoded values, a Vault instance, and a Kubernetes ConfigMap with no consistent pattern."
+  expected_type: Compound
+  justification: "Consolidating configuration requires: inventorying all config sources and their current usage, designing a unified config contract, migrating each service, and verifying no service loses a required value. The inventory alone is Research; the design is Analysis/Planning; migration is Build; verification is QA. No shortcut produces a correct result."
+  category: hidden-compound
+
+# ---------------------------------------------------------------------------
+# CATEGORY 4: cross-reference
+# Mechanism: The message references prior work, findings, or sessions not
+# fully present in the current context. The agent must reconcile information
+# across contexts before answering.
+# ---------------------------------------------------------------------------
+
+- prompt: "does that match what we found before?"
+  context: "The team ran a benchmarking session last week comparing three vector database options. The current conversation is reviewing a new architecture proposal that picks one of those databases."
+  expected_type: Analysis
+  justification: "Answering requires retrieving the prior benchmarking findings, identifying which criteria were evaluated, and comparing them against the current proposal's rationale. None of that content is present in this message. Answering without it produces a guess, not an analysis."
+  category: cross-reference
+
+- prompt: "is this consistent with the last audit?"
+  context: "A security audit was conducted six weeks ago and its findings were documented separately. The current conversation is reviewing a proposed change to the authentication module."
+  expected_type: Analysis
+  justification: "Consistency can only be evaluated by retrieving the prior audit findings and comparing them against the current change. Without the audit content, there is nothing to compare against — a response would be fabricated. This is not a Quick question; it requires cross-context retrieval and structured comparison."
+  category: cross-reference
+
+- prompt: "pick up where we left off"
+  context: "A previous session designed two-thirds of an API specification for a partner integration. The spec document was saved but is not currently loaded."
+  expected_type: Compound
+  justification: "Resuming requires: retrieving the prior spec, identifying the stopping point, understanding what remains, and continuing the work. Without reading the prior artifact, the agent cannot know what 'where we left off' means. This is not a continuation — it is a context reconstruction task followed by active work."
+  category: cross-reference
+
+- prompt: "apply the same pattern we used for orders"
+  context: "A team previously built an invoice processing module using a specific design pattern (repository + event-emitter). Now they are building a shipments module and want to follow the same approach."
+  expected_type: Compound
+  justification: "Applying a prior pattern requires retrieving and understanding exactly how it was implemented in the orders module, then adapting it to the shipments domain. Without the prior implementation, any 'application' of the pattern is a guess. The task combines cross-context retrieval with Build work."
+  category: cross-reference
+
+- prompt: "does this break anything from session 3?"
+  context: "Session 3 produced a set of integration contracts between two services. The current session proposes a change to one service's output schema."
+  expected_type: Analysis
+  justification: "Impact assessment requires knowing the exact contracts established in session 3. Without them, no determination of breakage is possible. The agent must retrieve session 3 content, map it against the proposed change, and identify conflicts — a multi-step Analysis task, not Quick."
+  category: cross-reference
+
+- prompt: "how does this hold up against the threat model?"
+  context: "A threat model was built two sprints ago for this same service. The current conversation is discussing a new external webhook endpoint being added."
+  expected_type: Analysis
+  justification: "Evaluating against a threat model requires the threat model itself — its attack vectors, trust boundaries, and mitigations. Without retrieving it, any answer is invented. Cross-referencing a new component against a prior model is structured Analysis work, not a Quick response."
+  category: cross-reference
+
+- prompt: "same approach as last time?"
+  context: "The previous sprint involved migrating a MySQL table to a new schema with a blue/green strategy. The current sprint has a similar migration requirement for a different table."
+  expected_type: Analysis
+  justification: "Before committing to the same approach, the agent must retrieve what 'last time' entailed (steps, tooling, gotchas), assess whether the new migration shares the same constraints, and determine if the approach transfers. Without retrieval, this is a blind endorsement. The question requires cross-context comparison, not a single-sentence answer."
+  category: cross-reference
+
+- prompt: "is this what the research pointed to?"
+  context: "Two weeks ago, a research spike explored caching strategies for a high-read service. The current conversation is proposing Redis with a write-through pattern as the solution."
+  expected_type: Analysis
+  justification: "Validating whether a proposal aligns with prior research requires retrieving the research conclusions and comparing them against the current proposal's specifics. Without the research content, alignment cannot be assessed. This is a cross-context verification task requiring retrieval before any analytical response."
+  category: cross-reference
+
+- prompt: "does this contradict what [REDACTED] approved?"
+  context: "[REDACTED] approved a content strategy framework for the Q2 campaign in a previous working session. The current session is drafting a new brief with different targeting assumptions."
+  expected_type: Analysis
+  justification: "Detecting contradiction requires knowing what [REDACTED] approved — specifically the targeting criteria, tone, and channel priorities. Without retrieving that approved framework, no contradiction can be confirmed or ruled out. This is not Quick; it requires cross-document retrieval and structured comparison against specific prior decisions."
+  category: cross-reference
+
+- prompt: "does this fit the schema we designed?"
+  context: "A data schema was designed in a previous session for an events table. The current session is writing an ingestion script that needs to insert records into that table."
+  expected_type: Analysis
+  justification: "Fit assessment requires the schema definition — column names, types, constraints, and nullable rules. Without it, no determination of fit is possible. The agent must retrieve the schema, compare it against the proposed insert structure, and identify mismatches — a multi-step Analysis task."
+  category: cross-reference
+
+- prompt: "use the same eval criteria as before"
+  context: "A previous evaluation session scored three LLM providers against a rubric covering latency, cost, accuracy, and hallucination rate. A fourth provider is now being assessed."
+  expected_type: Compound
+  justification: "Applying prior eval criteria requires retrieving the rubric, its scoring weights, and any calibration notes from the previous session. Then the evaluation itself must be run against the new provider. Without the criteria, any evaluation uses invented criteria. This is cross-context retrieval followed by active Build/Analysis work."
+  category: cross-reference
+
+- prompt: "reconcile this with the old spec"
+  context: "A feature was originally specced six months ago with specific input/output contracts. The current implementation deviates from that spec in at least two places the developer noticed."
+  expected_type: Analysis
+  justification: "Reconciliation requires reading both the old spec and the current implementation, mapping each difference, and deciding per-difference whether the spec or the implementation should win. Without the spec, nothing can be reconciled. This is multi-document Analysis with structured decision-making, not a Quick answer."
+  category: cross-reference
+
+- prompt: "is this still valid after last week's changes?"
+  context: "Last week, the authentication service was refactored to use a new token format. The current conversation is reviewing an existing middleware component that validates incoming tokens."
+  expected_type: Analysis
+  justification: "Validity assessment requires knowing the exact changes made last week — specifically what changed about the token format and how validation was expected to update. Without retrieving those changes, the assessment is blind. Cross-context retrieval and structured comparison are required before any answer is credible."
+  category: cross-reference
+
+- prompt: "run the same checks we ran in round 1"
+  context: "Round 1 of QA testing applied a specific set of assertions to a pipeline. Round 2 is now running on an updated version of the same pipeline."
+  expected_type: Compound
+  justification: "Rerunning prior checks requires retrieving the exact check list, understanding any preconditions established in round 1, executing them against the current version, and comparing results. Without the round 1 artifact, the agent does not know what to run. This is cross-context retrieval followed by active QA work."
+  category: cross-reference
+
+- prompt: "does this respect the rate limits we documented?"
+  context: "During API integration work two sessions ago, the team documented rate limits and retry policies for a third-party provider. The current session is writing a new integration for the same provider."
+  expected_type: Analysis
+  justification: "Respecting documented limits requires retrieving the documentation — specific headers, limits per endpoint, and retry backoff rules. Without retrieval, compliance cannot be assessed. The agent must cross-reference the new integration code against the prior documentation, a structured Analysis task."
+  category: cross-reference
+
+- prompt: "update it to match what we agreed on"
+  context: "In a previous planning session, stakeholders agreed on a specific output format for a reporting feature. A developer has since implemented a different format and now needs to align it."
+  expected_type: Compound
+  justification: "Updating to match an agreement requires first retrieving what was agreed — the exact format specification including fields, ordering, and data types. Then changes must be designed and implemented. Without the agreement content, any update produces an invented target. This is cross-context retrieval followed by Build work."
+  category: cross-reference
+
+- prompt: "does this align with the findings from the spike?"
+  context: "A three-day spike investigated database sharding options for a high-write service. Its conclusions were written up and saved. A new architecture proposal is now being reviewed."
+  expected_type: Analysis
+  justification: "Alignment with spike findings requires the spike output — its conclusions, the options it ruled out, and the rationale. Without it, the assessment is fabricated. The agent must retrieve the spike findings, map them against the proposal's claims, and evaluate consistency — a structured cross-context Analysis task."
+  category: cross-reference
+
+- prompt: "rebuild it based on the original design"
+  context: "An early-stage component was rebuilt from scratch after a failed experiment. The original design document exists in the project archive but has not been loaded."
+  expected_type: Compound
+  justification: "Rebuilding based on an original design requires retrieving that design, understanding its architectural choices, and then implementing them in the current codebase context. Without the design document, any rebuild is invented. This is cross-context retrieval followed by substantial Build work."
+  category: cross-reference
+
+- prompt: "flag anything that changed since the last review"
+  context: "An architect review was conducted on this codebase three weeks ago, producing a written report. The codebase has since had two pull requests merged."
+  expected_type: Analysis
+  justification: "Flagging changes requires: retrieving the prior review report, identifying what it assessed, comparing it against the current state, and isolating what is new or different. Without the review document, the comparison baseline does not exist. This is a multi-step cross-document Analysis task, not Quick."
+  category: cross-reference
+
+- prompt: "do these numbers match what the ETL was outputting?"
+  context: "A previous ETL pipeline run produced a validation report with row counts and null rates per table. The current session is reviewing a dashboard that draws from the same data."
+  expected_type: Analysis
+  justification: "Matching numbers requires retrieving the prior ETL report's specific metrics and comparing them cell-by-cell against the dashboard's current figures. Without the report, there is nothing to compare against. This is cross-context retrieval followed by structured numerical comparison — an Analysis task, not Quick."
+  category: cross-reference
+# TaskClassBench Batch 3
+# Categories: perspective-shift (20), vague-affect (20), genuinely-quick (30)
+# Generated: 2026-03-24
+
+# ── Category 5: perspective-shift ──────────────────────────────────────────────
+
+- prompt: "What would [REDACTED] think of this copy?"
+  context: "The agent just drafted award nomination copy for an industry awards submission. The content lead will review it."
+  expected_type: Analysis
+  justification: "This requires modeling [REDACTED]'s specific professional priorities — tone, audience alignment, brand voice — not just evaluating the copy generically. The agent must reason from a named stakeholder's frame and apply their likely criteria. It is not answerable with a factual lookup or single-step action."
+  category: perspective-shift
+
+- prompt: "How would a junior dev read this?"
+  context: "The team has written a new API integration guide. The agent is reviewing documentation quality."
+  expected_type: Analysis
+  justification: "The agent must adopt the frame of someone with limited experience and identify what would be unclear, intimidating, or missing from that perspective. This is a non-trivial cognitive shift from the expert frame in which the doc was written. A Quick response would just describe the doc, not model a reader."
+  category: perspective-shift
+
+- prompt: "Does a security auditor pass this?"
+  context: "A proposed authentication flow for an internal tool has been outlined. The team wants to know if it would survive scrutiny."
+  expected_type: Analysis
+  justification: "The agent must apply a security auditor's rubric — threat modeling, credential handling, session management, compliance — not a general quality check. This requires adopting a specialized adversarial frame and evaluating against criteria that differ from the developer's original intent."
+  category: perspective-shift
+
+- prompt: "What does the end-user actually care about here?"
+  context: "The team is debating whether to surface raw error codes in the UI or abstract them. The agent has seen the technical arguments."
+  expected_type: Analysis
+  justification: "This requires the agent to shift from the system-builder's frame (correctness, debuggability) to the end-user's frame (clarity, recoverable actions, emotional state). The question is about priority inversion — what matters to one group may be noise to another. Not answerable without reasoning through the user perspective."
+  category: perspective-shift
+
+- prompt: "Would a regulator flag anything here?"
+  context: "A data pipeline that collects and stores user behavioral data has been described. The company operates in EU markets."
+  expected_type: Analysis
+  justification: "The agent must adopt a GDPR/data protection regulator's frame and evaluate consent, retention, data minimization, and cross-border transfer against that lens. This is distinct from a general review and requires applying a non-obvious legal/compliance perspective. The answer cannot be Quick."
+  category: perspective-shift
+
+- prompt: "How does this look to a first-time customer?"
+  context: "The agent helped design an onboarding email sequence for a new SaaS product. The team is satisfied but wants an outside perspective."
+  expected_type: Analysis
+  justification: "A first-time customer has no internal context, no brand familiarity, and a different reading order than the team assumes. The agent must model the cold-start experience and evaluate what signals trust, what creates confusion, and what is invisible without prior knowledge. This is a frame-shift analysis task, not an acknowledgment."
+  category: perspective-shift
+
+- prompt: "What would our biggest competitor say about this?"
+  context: "The team is reviewing a product positioning document that claims a key differentiator in data accuracy."
+  expected_type: Analysis
+  justification: "This requires reasoning from the competitor's likely counter-narrative — what they would challenge, what they would exploit, and what evidence they would cite. It demands modeling an adversarial external perspective against the current framing, which is non-trivial analytical work."
+  category: perspective-shift
+
+- prompt: "Would a new hire understand this architecture diagram?"
+  context: "An architecture diagram for the n8n automation pipeline has just been finalized. The team wants to assess its communicative clarity."
+  expected_type: Analysis
+  justification: "A new hire lacks the implicit knowledge encoded in the diagram — naming conventions, assumed dependencies, historical decisions. The agent must identify what is legible vs. opaque to someone without that context, which requires a genuine perspective shift from the expert authors."
+  category: perspective-shift
+
+- prompt: "What would ops say about deploying this?"
+  context: "A developer has proposed a deployment strategy that involves frequent rolling restarts during business hours. The agent is reviewing it."
+  expected_type: Analysis
+  justification: "Ops teams prioritize stability, rollback safety, incident blast radius, and on-call burden — priorities that differ from the developer's velocity focus. The agent must surface ops-specific concerns that the author's frame would suppress. This is substantive Analysis, not a simple acknowledgment."
+  category: perspective-shift
+
+- prompt: "How would a non-technical stakeholder read this report?"
+  context: "The agent wrote a technical post-mortem after a pipeline failure. The PM will share it with leadership."
+  expected_type: Analysis
+  justification: "A non-technical stakeholder reads for business impact, accountability, and recurrence risk — not root cause technical depth. The agent must identify what would confuse, alarm, or be irrelevant to that audience, and whether the current framing serves them. This is frame-translation analysis."
+  category: perspective-shift
+
+- prompt: "What if we evaluated this as a compliance officer would?"
+  context: "The team just finalized a vendor data-sharing agreement that involves passing enriched contact data to a third-party API."
+  expected_type: Analysis
+  justification: "A compliance officer applies a different standard than the engineering team — contractual liability, data processing agreements, purpose limitation — and would surface risks invisible to the developers. The agent must evaluate through that lens, not just restate the technical facts."
+  category: perspective-shift
+
+- prompt: "Does this hold up under a manager's review?"
+  context: "A junior developer wrote their first technical design doc for a new database indexing strategy."
+  expected_type: Analysis
+  justification: "A manager evaluates for clarity of reasoning, risk acknowledgment, alternatives considered, and decision confidence — not just technical correctness. The agent must adopt a senior reviewer's frame and assess whether the document would pass that scrutiny, which requires non-trivial evaluation."
+  category: perspective-shift
+
+- prompt: "What would a user with slow internet think?"
+  context: "The agent reviewed a dashboard design that loads several large data visualizations on initial page load."
+  expected_type: Analysis
+  justification: "The design was evaluated from a well-connected developer's perspective. Modeling a constrained user requires reasoning about load time impact on usability, perceived responsiveness, and frustration points that are invisible at normal speeds. This is a substantive perspective shift, not a factual lookup."
+  category: perspective-shift
+
+- prompt: "How does this read to someone who didn't attend the meeting?"
+  context: "The agent helped draft a decision memo summarizing a strategy session. The memo will be sent to the wider team."
+  expected_type: Analysis
+  justification: "Without meeting context, the reader lacks the framing, debate history, and rationale that makes the memo intelligible to attendees. The agent must model information asymmetry and identify where the memo would be opaque, misleading, or missing context for cold readers."
+  category: perspective-shift
+
+- prompt: "Would a GDPR auditor clear this consent flow?"
+  context: "A new user consent flow has been designed for a lead generation form that sends data to multiple downstream processors."
+  expected_type: Analysis
+  justification: "GDPR compliance requires specific consent language, granularity, withdrawal mechanisms, and processor disclosure that a UX designer might not have prioritized. The agent must evaluate through a regulatory lens with distinct acceptance criteria from the design team's goals."
+  category: perspective-shift
+
+- prompt: "What would the customer success team hate about this?"
+  context: "The product team is proposing to remove a legacy export feature to simplify the codebase. The agent has the feature specs."
+  expected_type: Analysis
+  justification: "Customer success teams have visibility into which customers rely on features that engineering considers low-usage. The agent must reason from their frame — churn risk, escalation volume, relationship impact — which yields concerns that the technical analysis omits."
+  category: perspective-shift
+
+- prompt: "How does this look from the QA team's side?"
+  context: "A new CI/CD pipeline was designed with a single integration test stage and no unit test gate. The developer considers it sufficient."
+  expected_type: Analysis
+  justification: "The QA team prioritizes test granularity, failure isolation, and feedback loop speed — concerns that a developer optimizing for deploy velocity would underweight. The agent must adopt the QA frame and surface what they would reject or flag, which is substantive analytical work."
+  category: perspective-shift
+
+- prompt: "What would someone from legal say here?"
+  context: "The team is drafting terms of service language around AI-generated content ownership for a client-facing product."
+  expected_type: Analysis
+  justification: "Legal review applies standards of enforceability, liability exposure, jurisdictional variation, and ambiguity risk that the drafting team is unlikely to have applied. The agent must reason through a legal lens and identify provisions that would not survive counsel review."
+  category: perspective-shift
+
+- prompt: "How would this feel to a power user?"
+  context: "The team redesigned the keyboard shortcut scheme for an internal tool, consolidating several multi-step actions into single shortcuts."
+  expected_type: Analysis
+  justification: "Power users have deeply internalized previous shortcuts and depend on muscle memory. The agent must model the disruption from their frame — relearning cost, productivity regression, frustration — which differs from the designer's perspective of the new scheme being 'cleaner'."
+  category: perspective-shift
+
+- prompt: "What's the DBA's objection going to be?"
+  context: "An engineer proposes adding a JSON column to a PostgreSQL table to avoid a schema migration. The agent has reviewed the data model."
+  expected_type: Analysis
+  justification: "A DBA's concerns center on indexing limitations, query planning degradation, schema integrity loss, and long-term maintainability — a lens that an application engineer optimizing for short-term velocity would not apply. The agent must reason from that frame to surface the likely objection."
+  category: perspective-shift
+
+# ── Category 6: vague-affect ───────────────────────────────────────────────────
+
+- prompt: "This feels off somehow."
+  context: "The agent just presented a monitoring alert configuration for a data pipeline. The user reviewed it briefly."
+  expected_type: Analysis
+  justification: "The user has sensed a problem but cannot name it. The agent must diagnose potential sources of discomfort — threshold values, missing alert coverage, severity miscategorization, notification routing — rather than simply acknowledging the concern. This requires investigative analysis, not a Quick response."
+  category: vague-affect
+
+- prompt: "I don't trust this output."
+  context: "A language model node in an n8n workflow returned structured JSON that the agent described as correct. The user is skeptical."
+  expected_type: Analysis
+  justification: "Distrust without a named flaw means the agent must examine the output from multiple angles — schema compliance, semantic correctness, hallucination risk, edge case handling — to find what might be triggering the user's skepticism. Acknowledging the feeling without diagnosing the source is insufficient."
+  category: vague-affect
+
+- prompt: "Something about this architecture worries me."
+  context: "The agent outlined a proposed microservices split for an n8n-based automation platform. The user read the summary."
+  expected_type: Analysis
+  justification: "The user's worry is a signal without a target. The agent must investigate multiple candidate issues — coupling, failure propagation, operational complexity, observability gaps — and surface the most plausible sources of genuine concern. This is an open-ended diagnostic task."
+  category: vague-affect
+
+- prompt: "This doesn't feel production-ready."
+  context: "A workflow automation was completed and the agent confirmed all nodes were connected and tested. The user is unconvinced."
+  expected_type: Analysis
+  justification: "Production-readiness is a multi-dimensional criterion: error handling, retry logic, monitoring, secrets management, load behavior. The agent must examine each dimension the user might be reacting to, not just restate that tests passed. The concern is real and requires structured investigation."
+  category: vague-affect
+
+- prompt: "I'm not comfortable with this approach."
+  context: "The agent recommended storing API credentials as environment variables in a CI/CD pipeline configuration file. The user paused."
+  expected_type: Analysis
+  justification: "Discomfort about a security-adjacent recommendation could stem from multiple valid concerns — secrets in version control, environment variable leakage, rotation difficulty. The agent must diagnose which specific risks are triggering the hesitation rather than reassure generically."
+  category: vague-affect
+
+- prompt: "This prompt seems wrong somehow."
+  context: "The agent drafted a system prompt for a new LLM classification node. The user read it once."
+  expected_type: Analysis
+  justification: "The user's vague 'wrong' could reference ambiguous instructions, missing output format constraints, incorrect tone, unintended scope, or conflicting directives. The agent must read the prompt critically from multiple angles to identify what is most likely causing the user's instinct, rather than asking them to be more specific."
+  category: vague-affect
+
+- prompt: "I have a bad feeling about the timeline."
+  context: "The agent laid out a three-week implementation plan for a new awards automation pipeline with daily milestones."
+  expected_type: Analysis
+  justification: "The user's unease about the timeline could derive from underestimated dependencies, missing risk buffers, external blockers not modeled, or scope creep potential. The agent must examine the plan against these dimensions to surface the concrete risk the user is sensing, not simply validate or dismiss the feeling."
+  category: vague-affect
+
+- prompt: "The data looks suspicious."
+  context: "The agent ran a pipeline test and returned row counts and sample records from an enrichment step."
+  expected_type: Analysis
+  justification: "Suspicious data without a specified anomaly requires the agent to examine multiple potential explanations — duplicates, unexpected nulls, distribution shifts, truncation, encoding errors — and identify which observation most likely triggered the user's concern. This is diagnostic analysis."
+  category: vague-affect
+
+- prompt: "That response felt too confident."
+  context: "A research subagent returned a synthesis with no hedges or uncertainty flagging. The agent passed the result to the user."
+  expected_type: Analysis
+  justification: "Overclaiming in an LLM output is a calibration problem that requires re-examining the source material, the instructions given to the agent, and the epistemic status of the claims made. The user has flagged a quality signal that demands structured investigation, not acknowledgment."
+  category: vague-affect
+
+- prompt: "Something's missing from this plan."
+  context: "The agent produced a deployment checklist for a new automation workflow. The user reviewed it and paused."
+  expected_type: Analysis
+  justification: "The user cannot name what is absent. The agent must reason through the checklist systematically against dimensions typically covered — rollback, monitoring, access permissions, documentation, stakeholder sign-off — and identify the most plausible gap the user is sensing."
+  category: vague-affect
+
+- prompt: "I don't know, this API design feels messy."
+  context: "The agent designed a REST API contract for a new internal tool with 12 endpoints. The user skimmed the spec."
+  expected_type: Analysis
+  justification: "Perceived messiness in an API design could stem from inconsistent naming, poor resource modeling, over-fetching patterns, missing pagination, or unclear error semantics. The agent must diagnose these dimensions without anchoring to a preconceived answer, since the user themselves cannot specify the source."
+  category: vague-affect
+
+- prompt: "This email doesn't land right."
+  context: "The agent drafted an outreach email to a potential awards program organizer. The user read the draft."
+  expected_type: Analysis
+  justification: "An email that 'doesn't land' could fail on tone, credibility signaling, call-to-action clarity, length, or opening hook. The agent must evaluate each of these axes from the recipient's perspective, not just revise surface wording. This requires diagnostic judgment, not a simple edit."
+  category: vague-affect
+
+- prompt: "I feel like we're missing something obvious."
+  context: "The team finished defining a QA checklist for a new n8n workflow. Everyone agreed and the agent confirmed it."
+  expected_type: Analysis
+  justification: "The user's intuition that something obvious is missing is a meaningful signal that warrants investigation. The agent must revisit the checklist against common omission patterns — error states, edge inputs, dependency failures — rather than accept the consensus as complete."
+  category: vague-affect
+
+- prompt: "This doesn't sit right with me."
+  context: "The agent recommended deduplicating records by email address before inserting into the CRM. The user has domain knowledge about how the CRM handles contacts."
+  expected_type: Analysis
+  justification: "The user's discomfort signals a potential mismatch between the recommended logic and real-world behavior the user has observed. The agent must examine the deduplication approach for edge cases — alias emails, contact merging rules, downstream sync effects — rather than defend the original recommendation."
+  category: vague-affect
+
+- prompt: "I'm skeptical this will scale."
+  context: "The agent designed an n8n workflow that fetches and processes records one at a time in a loop. Performance was not discussed."
+  expected_type: Analysis
+  justification: "The user has flagged a scalability concern without specifying the bottleneck. The agent must analyze the workflow's throughput characteristics — sequential vs. parallel execution, API rate limits, memory pressure, n8n execution time limits — and assess where the design breaks under load."
+  category: vague-affect
+
+- prompt: "I'm not sure I buy this recommendation."
+  context: "The agent recommended switching from a polling-based trigger to a webhook-based trigger in an automation workflow."
+  expected_type: Analysis
+  justification: "The user's skepticism indicates the recommendation's rationale did not land. The agent must identify what the user likely doubts — reliability of webhook delivery, added infrastructure complexity, latency tradeoffs — and surface evidence for and against rather than simply restating the recommendation."
+  category: vague-affect
+
+- prompt: "This documentation feels incomplete."
+  context: "The agent wrote technical documentation for a new n8n node configuration. The user read the first two sections."
+  expected_type: Analysis
+  justification: "Incompleteness is a structural judgment that requires identifying which coverage areas are absent — examples, error handling documentation, configuration options, versioning notes — not just noting that it could be longer. The agent must diagnose the gaps the user is reacting to."
+  category: vague-affect
+
+- prompt: "Something about the test coverage seems thin."
+  context: "The agent reviewed a test suite for a data transformation function and confirmed all listed tests pass."
+  expected_type: Analysis
+  justification: "Thin coverage is not synonymous with failing tests. The user senses that the suite does not adequately represent the input space. The agent must examine what cases are absent — boundary values, null inputs, unexpected types, large payloads — to diagnose what the user's instinct is pointing at."
+  category: vague-affect
+
+- prompt: "I don't like how this was deployed."
+  context: "A new workflow was deployed directly to the production n8n instance without a staging validation step. The agent confirmed it is running."
+  expected_type: Analysis
+  justification: "The user's displeasure could reflect process concerns (skipped staging), risk concerns (no rollback plan), or oversight concerns (no monitoring set up post-deploy). The agent must identify which dimension the user is reacting to and assess the actual exposure, not just acknowledge the feeling."
+  category: vague-affect
+
+- prompt: "This seems like it could break easily."
+  context: "The agent built a workflow that depends on an external API returning a specific field name in its response payload."
+  expected_type: Analysis
+  justification: "Fragility intuition here points at a concrete risk: unversioned API contracts, missing null checks, no fallback handling. The agent must examine the specific coupling points and assess which failure modes the user is sensing, rather than offering generic reassurance about the workflow passing current tests."
+  category: vague-affect
+
+# ── Quick Controls ─────────────────────────────────────────────────────────────
+
+- prompt: "Got it."
+  context: "The agent explained how the n8n webhook trigger node differs from the polling trigger."
+  expected_type: Quick
+  justification: "Unambiguous acknowledgment requiring no response — the user has absorbed the information."
+  category: genuinely-quick
+
+- prompt: "Yes, proceed."
+  context: "The agent asked whether to continue with the proposed deduplication approach before building."
+  expected_type: Quick
+  justification: "Direct approval of a pending action — no reasoning or analysis required."
+  category: genuinely-quick
+
+- prompt: "Save it."
+  context: "The agent drafted a task plan and asked whether to write it to the project directory."
+  expected_type: Quick
+  justification: "A one-word file operation instruction with no judgment required."
+  category: genuinely-quick
+
+- prompt: "Looks good."
+  context: "The agent rewrote a node description in a workflow and asked for sign-off."
+  expected_type: Quick
+  justification: "Explicit approval of a reviewed output — a terminal acknowledgment, not a request for analysis."
+  category: genuinely-quick
+
+- prompt: "Next."
+  context: "The agent finished explaining step one of a deployment checklist."
+  expected_type: Quick
+  justification: "A simple navigation instruction to advance to the next item — no reasoning required."
+  category: genuinely-quick
+
+- prompt: "Merge it."
+  context: "The agent confirmed that the feature branch passed all checks and is ready to merge."
+  expected_type: Quick
+  justification: "A direct action instruction with no ambiguity — the user is authorizing a named operation."
+  category: genuinely-quick
+
+- prompt: "OK."
+  context: "The agent listed the three files it would update and asked for confirmation."
+  expected_type: Quick
+  justification: "One-word approval — no analysis or reasoning chain is implied."
+  category: genuinely-quick
+
+- prompt: "Skip it."
+  context: "The agent asked whether to include a QA step for a minor config rename."
+  expected_type: Quick
+  justification: "A direct instruction to omit a step — unambiguous, no reasoning required."
+  category: genuinely-quick
+
+- prompt: "Add it."
+  context: "The agent described a missing error handler and asked whether to include it in the spec."
+  expected_type: Quick
+  justification: "Single-word approval to include a named item — terminal, requires no analysis."
+  category: genuinely-quick
+
+- prompt: "Done, thanks."
+  context: "The agent completed writing the STATE.md file and confirmed it was saved."
+  expected_type: Quick
+  justification: "A closing acknowledgment — the user is ending the exchange, not initiating new work."
+  category: genuinely-quick
+
+- prompt: "Close it."
+  context: "The agent confirmed a tracked issue was resolved and asked whether to mark it closed."
+  expected_type: Quick
+  justification: "Direct instruction to perform a named state change — no judgment or analysis required."
+  category: genuinely-quick
+
+- prompt: "Keep going."
+  context: "The agent paused after completing the first of three research steps to check in."
+  expected_type: Quick
+  justification: "An instruction to continue autonomous work without interruption — no analysis implied."
+  category: genuinely-quick
+
+- prompt: "Use the second one."
+  context: "The agent presented two equivalent approaches to structuring a filter node and asked which to use."
+  expected_type: Quick
+  justification: "A selection between named options that were already analyzed — the user is making a choice, not requesting analysis."
+  category: genuinely-quick
+
+- prompt: "Approved."
+  context: "The agent presented a finalized prompt draft for a new classifier agent and asked for sign-off."
+  expected_type: Quick
+  justification: "Unambiguous formal approval — a terminal action with no reasoning chain required."
+  category: genuinely-quick
+
+- prompt: "That's fine."
+  context: "The agent noted that the export file would include a timestamp suffix and flagged it for awareness."
+  expected_type: Quick
+  justification: "An explicit acceptance of an already-explained detail — the user is not requesting investigation."
+  category: genuinely-quick
+
+- prompt: "Run it."
+  context: "The agent prepared a test execution command and asked for authorization to run it."
+  expected_type: Quick
+  justification: "Direct execution authorization — a single-step command with no ambiguity."
+  category: genuinely-quick
+
+- prompt: "Archive it."
+  context: "The agent completed a work file and asked whether to move it to the archive folder."
+  expected_type: Quick
+  justification: "A file operation instruction with no judgment required — the action is named and unambiguous."
+  category: genuinely-quick
+
+- prompt: "Not now."
+  context: "The agent offered to write a summary report after completing a research task."
+  expected_type: Quick
+  justification: "A deferral — the user is declining a specific offered action, not initiating analysis."
+  category: genuinely-quick
+
+- prompt: "Perfect."
+  context: "The agent reformatted a YAML config block and asked if the structure looked correct."
+  expected_type: Quick
+  justification: "An unambiguous positive evaluation of a presented artifact — no further reasoning implied."
+  category: genuinely-quick
+
+- prompt: "Yes, that one."
+  context: "The agent listed three candidate node names for a new workflow step and asked which to use."
+  expected_type: Quick
+  justification: "A selection confirmation for an already-presented set of options — terminates the decision, no analysis required."
+  category: genuinely-quick
+
+- prompt: "Go ahead."
+  context: "The agent described what it would do next and asked for permission before proceeding."
+  expected_type: Quick
+  justification: "Explicit authorization to continue a described action — single-step, no reasoning chain."
+  category: genuinely-quick
+
+- prompt: "No."
+  context: "The agent asked whether to include a rollback step in the deployment checklist."
+  expected_type: Quick
+  justification: "A direct negative answer to a yes/no question — unambiguous, no analysis implied."
+  category: genuinely-quick
+
+- prompt: "Correct."
+  context: "The agent summarized what it understood the user wanted before starting work."
+  expected_type: Quick
+  justification: "A one-word confirmation that the agent's understanding is accurate — closes a clarification loop."
+  category: genuinely-quick
+
+- prompt: "Delete it."
+  context: "The agent flagged a duplicate entry in the task plan and asked whether to remove it."
+  expected_type: Quick
+  justification: "A direct file operation instruction with no judgment required — the item to delete is already identified."
+  category: genuinely-quick
+
+- prompt: "Sounds right."
+  context: "The agent explained that the webhook payload would be validated before any downstream processing."
+  expected_type: Quick
+  justification: "An acknowledgment that a described behavior matches expectations — no investigation or analysis needed."
+  category: genuinely-quick
+
+- prompt: "Do it."
+  context: "The agent proposed updating the STATE.md with the latest milestone status and asked for confirmation."
+  expected_type: Quick
+  justification: "An unambiguous execution instruction for a named, bounded action — requires no reasoning."
+  category: genuinely-quick
+
+- prompt: "Fine with me."
+  context: "The agent proposed naming the output file with a date prefix and asked for approval."
+  expected_type: Quick
+  justification: "Explicit acceptance of a proposed convention — terminal acknowledgment with no analysis implied."
+  category: genuinely-quick
+
+- prompt: "Ignore that."
+  context: "The agent flagged a minor formatting inconsistency in a draft and asked whether it should fix it."
+  expected_type: Quick
+  justification: "A direct instruction to discard a flagged item — unambiguous, requires no reasoning chain."
+  category: genuinely-quick
+
+- prompt: "That works."
+  context: "The agent suggested using a Set node to normalize field names before the merge step."
+  expected_type: Quick
+  justification: "Acceptance of a specific proposed implementation detail — the evaluation was already made implicitly."
+  category: genuinely-quick
+
+- prompt: "Ship it."
+  context: "The agent confirmed the workflow passed all manual tests and asked whether to mark it production-ready."
+  expected_type: Quick
+  justification: "A colloquial authorization to finalize and release — unambiguous, single-step decision."
+  category: genuinely-quick
+
+- prompt: "Agreed."
+  context: "The agent summarized the tradeoffs of two approaches and stated which it recommended."
+  expected_type: Quick
+  justification: "A one-word acceptance of an already-presented recommendation — closes the decision, no further analysis required."
+  category: genuinely-quick

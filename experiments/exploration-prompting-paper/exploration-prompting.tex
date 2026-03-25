@@ -1,0 +1,2605 @@
+% V5.1 patch applied 2026-03-25
+% Fixes: B1 (abstract hedge), B2 (R3 Bonferroni), B5 (Liu 2024 softening),
+%         C1 (expl2 vs think equivalence qualifier), C2 (Type I table cross-dataset label),
+%         C4 (discordant pair clustering disclosure)
+% Added: Appendix E (qualitative comparison), Appendix F (full per-model tables),
+%        Appendix G (category breakdown), Appendix H (discordant pair analysis),
+%        Iterative methodology section
+% V5.2 patch applied 2026-03-25
+% Added: difficulty-scaling hypothesis (abstract, intro, discussion subsection, conclusion)
+%        Section 3.5 (representative trap examples: CC and DC)
+%        Verbosity confound strengthened with token counts (limitation item 4)
+%        Appendix I (DeepSeek median completion token counts)
+\documentclass[11pt,a4paper]{article}
+
+% -----------------------------------------------------------------------
+%  Packages
+% -----------------------------------------------------------------------
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage[round,authoryear]{natbib}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{caption}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=blue!60!black,
+  urlcolor=blue!60!black,
+}
+
+% -----------------------------------------------------------------------
+%  Title block
+% -----------------------------------------------------------------------
+\title{\textbf{Forced Depth Consideration Reduces Type~II Errors\\
+in LLM Self-Classification:\\
+Evidence from an Exploration Prompting Ablation Study}}
+
+\author{Wiktor Potapczyk\\
+\small Independent Researcher\\
+}
+
+\date{March 2026}
+
+% -----------------------------------------------------------------------
+\begin{document}
+\maketitle
+
+% -----------------------------------------------------------------------
+\begin{abstract}
+LLM-based task classifiers systematically misclassify prompts that are
+superficially simple but contextually complex, routing them to lightweight
+processing paths (\emph{Type~II error}).  We introduce \emph{Step-0 prompt
+framing}---prepending a single question before the classification
+decision---as a novel intervention for LLM self-classification, and
+present what is, to our knowledge, the first empirical investigation of
+how this framing affects classification accuracy.
+
+Using TaskClassBench (200 effective trap prompts, 4 models, 3 families),
+we find that open-ended exploration (``What's really going on here?'')
+reduces the pooled Type~II rate to 1.25\%, significantly outperforming
+directed extraction at 3.12\% ($p < 0.001$, Bonferroni-corrected).
+A mechanism ablation reveals that even a content-free metacognitive
+instruction (``Think carefully'') achieves 1.0\%---not significantly
+different from exploration ($p = 0.77$)---yet both significantly
+outperform structured detection and extraction approaches.
+
+The operative mechanism appears to be \emph{forced attention to task
+complexity before classification}, rather than open-ended framing
+specifically.  However, qualitative analysis of failure cases reveals
+complementary failure modes: exploration forces committed implication
+statements that anchor classification, while the metacognitive instruction
+uses consequence framing that catches different trap subtypes.  Neither
+approach has a universal advantage.
+
+The effect is concentrated in models with moderate baseline error rates;
+near-ceiling models show negligible benefit.  We hypothesise that this
+capability gradient reverses at higher context loads ($>$100K tokens),
+where even capable models would benefit from forced depth
+consideration---a falsifiable prediction for future work.  All claims
+are exploratory pending pre-registered replication.
+
+\noindent\textbf{Keywords:} exploration prompting, task classification,
+Type~II error, LLM routing, metacognitive prompting, depth consideration
+\end{abstract}
+
+% -----------------------------------------------------------------------
+\section{Introduction}
+\label{sec:intro}
+% -----------------------------------------------------------------------
+
+\subsection{Why task routing matters in LLM systems}
+\label{sec:intro:routing}
+
+Effective orchestration of large language model (LLM) systems increasingly
+depends on accurate task classification: assigning incoming user requests
+to appropriate processing paths, model tiers, or specialist agents.
+\citet{Agrawal2025} demonstrate that task-level features predict routing
+decisions, but that existing approaches rely on structured extraction of
+surface features from the prompt text.  \citet{Huang2025} frame routing
+as a forward-planning problem, showing that simulating downstream task
+demands before committing to a route improves outcomes.  \citet{MarinelliPichlmeier2025}
+propose using post-hoc chain-of-thought step counts (NofT) as a routing
+signal.  \citet{ZhangRouterR12025} go further, training a reinforcement-learning
+router that interleaves deliberation with routing decisions.
+
+All these lines of work assume that the features driving routing decisions
+are recoverable from the prompt at classification time.  We challenge this
+assumption at the input level: \emph{how} the classifier is prompted to
+consider those features may matter more than which features are targeted.
+
+\subsection{The Type~II failure mode}
+\label{sec:intro:type2}
+
+We define \textbf{Type~II error} as the event in which a classifier assigns
+a ``Quick'' (lightweight) label to a prompt that in fact requires deeper
+processing: multi-step reasoning, contextual disambiguation, or expert-level
+synthesis.  This is distinct from hallucination and from sycophancy,
+though it may share a common mechanistic root.
+
+\citet{Wu2024} show in the ProCo framework that classification models
+learn spurious correlations from surface cues.  Our trap prompt categories
+are constructed to exploit precisely this: prompts that look routine on
+the surface but contain contextual depth signals.  \citet{MASFT2025}
+document a reasoning-action mismatch in which models can recognise
+complexity in chain-of-thought outputs but still act superficially.
+Our work targets the classification decision \emph{before} any action
+is taken.
+
+\subsection{The exploration prompting hypothesis and its evolution}
+\label{sec:intro:hypothesis}
+
+\citet{Furniturewala2024} introduced \emph{Implication Prompting}: prepending
+an implication question before answering a task
+generates the bias rationale before requesting correction, matching
+white-box debiasing methods on stereotypical response correction.  We extend
+this to the meta-task of self-classification.  To our knowledge, no prior
+work has investigated how Step-0 prompt framing---the question posed to the
+model before it classifies its own task---affects the accuracy of LLM
+self-classification decisions.  This gap was validated through systematic
+search using Gemini~2.5~Pro (Deep Research) and Elicit.
+
+Our investigation proceeded in four stages.  We began by comparing
+open-ended exploration questions against directed intent extraction (Rounds
+1 and 2), finding a significant advantage for open-ended framing once
+confounds were controlled (EXP, $p = 0.000729$).  \citet{SycEval2025}
+and \citet{Liu2024ICML} motivate this: directed step-by-step reasoning
+can interfere with classification, while open-ended framing may break the
+surface-agreement default.
+
+We then ran a mechanism ablation (Round~3): if the advantage of open-ended
+questions comes from forcing the model to \emph{engage with complexity}
+rather than from the question format itself, a minimal content-free
+instruction (``Think carefully about the complexity of this task'') should
+produce not-significantly-different results.  R3 results are consistent
+with this prediction (McNemar 5:7, $p = 0.774$).
+
+This narrows the mechanism claim without weakening the practical
+recommendation.  Structured extraction and detection remain significantly
+worse.  R3 results suggest the advantage is broader than initially
+framed: \emph{any instruction that forces unbounded engagement with task
+complexity before classification achieves not-significantly-different
+Type~II error rates on our benchmark}, though formal equivalence is not
+established.
+
+Our research question became: \emph{Does forced depth consideration---in
+whatever form---reduce Type~II errors, and does open-ended framing confer
+any additional advantage beyond the depth-engagement it triggers?}
+
+This paper tests forced depth consideration under favourable conditions:
+short prompts ($<$512 tokens), minimal prior context, and moderate
+classification difficulty.  Under these conditions, a content-free
+metacognitive directive achieves near-equivalent performance to open-ended
+exploration (Section~6).  However, the per-model results reveal a
+capability gradient that motivates a broader hypothesis: if forced depth
+consideration acts as an external scaffold for the model's implicit
+complexity assessment, then the intervention's value should scale with the
+difficulty of that assessment.  As context windows grow and classification
+inputs become embedded in extensive conversational history, even capable
+models may face complexity-assessment demands that exceed their implicit
+capacity.  This scaling prediction is not tested here; it is stated as a
+falsifiable hypothesis that structures our interpretation.
+
+% -----------------------------------------------------------------------
+\section{Background and Related Work}
+\label{sec:background}
+% -----------------------------------------------------------------------
+
+\subsection{Implication prompting}
+
+\citet{Furniturewala2024} showed that prepending an implication question to
+QA tasks generates the bias rationale before requesting correction,
+matching white-box debiasing methods on stereotypical response correction.
+Our contribution applies a structurally similar strategy to the meta-task
+of self-classification: the model is classifying the \emph{nature of the
+request}, not answering the request itself.
+
+\subsection{Lookahead and task-aware routing}
+
+\citet{Huang2025} propose lookahead routing, in which a model simulates the
+demands of a task before selecting a processing path.  We operationalise a
+lightweight variant: one question (or a metacognitive directive) replaces
+full forward simulation.  Our Round~3 result suggests that even a
+content-free nudge can approximate the benefit.
+
+\citet{Agrawal2025} establish task-level features as routing signals.
+Our results suggest that \emph{how those features are elicited} may matter
+as much as which features are targeted: the same model, given the same
+prompt, surfaces different features depending on Step-0 framing.
+
+\citet{MarinelliPichlmeier2025} use post-hoc NofT metadata to route after
+generation.  Our approach acts \emph{before} generation via prompt framing,
+making it applicable to single-turn classifiers that never produce
+long-form CoT.  \citet{ZhangRouterR12025} integrate deliberation into the
+router itself via reinforcement learning; our ablation result suggests
+that even an un-trained metacognitive directive achieves substantial
+improvement.
+
+\subsection{Chain-of-thought and classification}
+
+A substantial literature documents that CoT prompting improves reasoning
+tasks \citep{Wei2022,Kojima2022}.  However, \citet{Liu2024ICML} showed that
+CoT can \emph{reduce} classification performance by up to 36\% on tasks
+where implicit pattern-matching outperforms deliberation.  This finding is
+consistent with the verbal-overshadowing effect in human cognition
+\citep{Liu2024ICML}, providing a conceptual parallel from human cognition
+research.  We note that \citet{Liu2024ICML} studied human verbal
+overshadowing, not LLM binary classification; the analogy is suggestive,
+not direct evidence.  Our gate sensitivity pattern is nonetheless consistent
+with this account: structured yes/no depth detection forces the model to
+deliberate in a constrained format that may interfere with the pattern-based
+recognition required for trap prompts.
+
+\citet{GunasekaraRatnayake2025} found that unstructured natural-language
+reasoning outperforms structured JSON reasoning plans by up to 19\%
+on the MATH benchmark (zero-shot unstructured outperforming five-shot
+structured).  Our open vs.\ directed finding is directionally consistent:
+constraining the output format of the Step-0 response appears to reduce
+its value.
+
+\subsection{Capability interaction and prompt sensitivity}
+
+\citet{Khan2025} documents a ``Prompting Inversion'': constraints that help
+mid-tier models can hurt frontier models by inducing hyper-literalism.
+This contextualises our gate sensitivity finding---structured depth
+detection helps DeepSeek but harms Claude models---and provides a
+framework for the hypothesis that exploration and metacognitive advantages
+may be capability-moderated (\Cref{sec:future}).
+
+\subsection{Classification failure modes}
+
+\citet{Wu2024} demonstrate that spurious surface correlations systematically
+bias classification.  Our trap prompt categories are constructed to create a
+mismatch between surface appearance and required depth, making them a direct
+empirical test of the surface-correlation failure mode.
+
+\citet{MASFT2025} report a reasoning-action mismatch: models can produce
+chain-of-thought that correctly identifies task complexity but still
+output a simple action label.  Our gated variant (``Are depth signals
+present? yes/no'') tests this directly: the structured output format may
+amplify the mismatch by forcing a binary answer.
+
+\subsection{Sycophancy and surface-default behaviour}
+
+\citet{SycEval2025} document that LLMs exhibit persistent sycophantic
+responses to surface-level task framing.  Our baseline condition captures
+this failure operationally: prompts that look simple on the surface are
+systematically assigned to the ``Quick'' category even when their contextual
+depth warrants deeper processing.  The open-ended pre-question and the
+metacognitive directive are both candidate interventions.
+
+% -----------------------------------------------------------------------
+\section{Task Setup and Benchmark Design}
+\label{sec:benchmark}
+% -----------------------------------------------------------------------
+
+\subsection{Experimental rounds overview}
+
+The study proceeded in four independent API rounds (\Cref{tab:rounds}).
+All rounds used temperature~0; \Cref{sec:stability} quantifies the
+residual run-to-run variance.
+
+\begin{table}[htbp]
+\centering
+\caption{Experimental rounds.  R1, R2, EXP, and R3 are separate API runs.
+  Temperature-0 non-determinism produces 1--2 error differences across
+  runs (verified; \Cref{sec:stability}).  Numbers across datasets
+  may not be combined.
+  [\emph{Source: findings-structured.md, data collection section}]}
+\label{tab:rounds}
+\smallskip
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}llrrll@{}}
+\toprule
+Round & Dataset & Models & Traps ($N$) & Variants & Key design note \\
+\midrule
+R1 (pilot)     & R1  & 5 (incl.\ Gemini Pro) & 120 & base, expl, extr
+  & \emph{Confounded}: unequal Quick gates \\
+R2 (controlled) & R2 & 5 (incl.\ Gemini Pro) & 120 & gated, extr2, expl2, expl3
+  & Equal gates; resolves R1 confound \\
+EXP (primary)  & EXP & 4 (excl.\ Gemini Pro) & 200 eff.\ & all 7 variants
+  & Post-hoc expansion after R2 ($p=0.065$) \\
+R3 (mechanism ablation) & R3 & 4 (same as EXP) & 200 eff.\ & think (1 variant)
+  & Cross-dataset comparison with EXP \\
+\bottomrule
+\end{tabular}}% end resizebox
+\end{table}
+
+\subsection{Iterative experimental design}
+\label{sec:benchmark:iterative}
+
+This study followed an iterative, self-correcting design process rather than
+a single pre-registered protocol.  We document this explicitly because the
+design choices at each stage were driven by findings from the previous stage,
+and because transparency about this process is required for correct
+interpretation of statistical claims.
+
+\begin{enumerate}[itemsep=2pt]
+
+  \item \textbf{R1 (Pilot).}  R1 was designed to test whether open-ended
+    exploration questions reduce Type~II errors.  It discovered a strong
+    exploration advantage (expl vs.\ base, $p = 0.000977$; expl vs.\ extr,
+    $p = 0.000002$), but post-hoc analysis by a panel of 5 LLM reviewers
+    identified three confounds: (a) the Quick gate was looser for
+    \textsf{base} than for \textsf{expl}/\textsf{extr}, confounding gate
+    tightness with question framing; (b) the \textsf{extr} control asked the
+    model to name a specialist agent---a premature routing step rather than
+    intent extraction; (c) no within-family wording ablation was included.
+
+  \item \textbf{R2 (Controlled).}  R2 equalized the Quick gate across all
+    variants and replaced the poor extraction control (\textsf{extr}) with a
+    cleaner one (\textsf{extr2}: ``Summarize the user's intent in one
+    sentence'').  Three open-ended wordings were tested (\textsf{expl2},
+    \textsf{expl3}, plus retained \textsf{expl}).  R2 showed a directional
+    trend ($p = 0.065$ for \textsf{expl2} vs.\ \textsf{extr2}, 4-model) but
+    insufficient power at $N = 120$ trap prompts to support a positive claim.
+    Gate sensitivity (Claude~Haiku and Claude~Sonnet harmed by structured
+    binary detection) emerged as a secondary finding.
+
+  \item \textbf{EXP (Power expansion).}  EXP expanded the benchmark
+    post-hoc by increasing CC and DC categories from 20 to 100 prompts each
+    (200 effective traps per model), motivated by the R2 power shortfall.
+    This expansion was not pre-registered; the choice of which categories to
+    expand was informed by R1 and R2 discrimination patterns.  EXP is
+    therefore an exploratory study, not a confirmatory one.
+
+  \item \textbf{R3 (Mechanism ablation).}  Following EXP's finding that
+    \textsf{expl2} outperforms \textsf{extr2}, the competing hypothesis
+    (``any instruction that forces depth consideration achieves the same
+    result'') was addressed by a dedicated mechanism ablation.  R3 was
+    motivated by adversarial review of the EXP finding, which noted that the
+    expl2 advantage could be explained by forced engagement with complexity
+    rather than by open-ended framing per se.
+
+\end{enumerate}
+
+\paragraph{Why iterative design is a feature, not a limitation.}
+Post-hoc expansion and adversarial re-analysis are often treated as
+methodological weaknesses.  We argue they are epistemically responsible:
+each round explicitly tests the strongest available critique of the previous
+round's finding, and each design choice is documented with its motivating
+analysis.  The alternative---treating R1 as confirmatory and ignoring the
+confounds identified by review---would have produced a cleaner-looking result
+with a weaker epistemological foundation.  The cost is that all claims must
+be treated as exploratory pending pre-registered replication; this cost is
+stated explicitly throughout this paper.
+
+\subsection{Variant taxonomy}
+
+\Cref{tab:variants} lists the seven EXP prompt variants and the R3 mechanism
+variant.  Each variant adds one Step-0 sentence before the classification
+instruction.  The baseline (\textsf{base}) adds no Step-0 question.
+
+\begin{table}[htbp]
+\centering
+\caption{Variant taxonomy.
+  [\emph{Source: findings-structured.md, variant design section}]}
+\label{tab:variants}
+\smallskip
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}llp{5.2cm}ll@{}}
+\toprule
+Variant & Round & Step-0 text & Gate & Category \\
+\midrule
+\textsf{base}   & R1 & None & Loose (R1 confound) & Baseline \\
+\textsf{expl}   & R1 & ``What does this prompt imply?'' & Tighter & Open \\
+\textsf{extr}   & R1 & ``Name the best specialist agent'' & Tighter
+  & Directed (poor control) \\
+\textsf{gated}  & R2 & ``Are depth signals present? yes/no'' & Equal & Structured \\
+\textsf{extr2}  & R2 & ``Summarize the user's intent in one sentence'' & Equal
+  & Directed (primary control) \\
+\textsf{expl2}  & R2 & ``What's really going on here?'' & Equal
+  & \textbf{Open (primary treatment)} \\
+\textsf{expl3}  & R2 & ``What does this request actually require?'' & Equal
+  & Open (wording variant) \\
+\textsf{think}  & R3 & ``Think carefully about the complexity of this task'' & Equal
+  & \textbf{Metacognitive (mechanism ablation)} \\
+\bottomrule
+\end{tabular}}% end resizebox
+\end{table}
+
+\noindent The R1 confound arises because \textsf{base} uses a looser Quick
+gate than \textsf{expl} and \textsf{extr}.  R2 resolves this by assigning
+identical gates to all variants.  The R2 \textsf{extr} control is also
+improved: ``Name the best specialist agent'' forces premature routing rather
+than intent extraction; \textsf{extr2} is a cleaner extraction control.
+
+\subsection{Benchmark categories}
+
+\Cref{tab:categories} describes the six trap categories and one control
+category.  The two \emph{discriminative} categories (context-contradiction,
+CC; disguised-correction, DC) are the only ones that produced meaningful
+variation across variants in all datasets.  These 200 effective prompts
+(100 CC + 100 DC per model) form the primary analysis set.
+The four \emph{non-discriminative} categories produced near-zero errors
+across all variants in all datasets; they are retained as completeness
+checks but excluded from the primary Type~II analysis.
+
+\begin{table}[htbp]
+\centering
+\caption{Benchmark categories in EXP.
+  [\emph{Source: EXP metadata, calculations-expanded.json, 4 models,
+  $N_\text{eff} = 200$}]}
+\label{tab:categories}
+\smallskip
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lrll@{}}
+\toprule
+Category & $N$ per model (EXP) & Role & Notes \\
+\midrule
+context-contradiction (CC) & 100 & Discriminative & Expanded from 20 in R1/R2 \\
+disguised-correction (DC)  & 100 & Discriminative & Expanded from 20 in R1/R2 \\
+cross-reference            &  20 & Non-discriminative & Near-zero errors all variants \\
+hidden-compound            &  20 & Non-discriminative & Near-zero errors all variants \\
+perspective-shift          &  20 & Non-discriminative & Near-zero errors all variants \\
+vague-affect               &  20 & Non-discriminative & Near-zero errors all variants \\
+genuinely-quick (control)  &  31 & Type~I control & Not counted in Type~II analysis \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{Effective trap set (CC + DC)}} & \textbf{200} & Primary analysis \\
+\multicolumn{2}{@{}l}{All-trap set (incl.\ non-discriminative)} & 280
+  & Completeness check only \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Post-hoc expansion disclosure.}
+EXP was created after R2 yielded $p = 0.065$ (insufficient power at
+$N = 120$ trap prompts per model).  We expanded CC and DC from 20 to 100
+prompts each to increase statistical power.  This expansion was motivated
+by the R2 result, not pre-registered.  All EXP results must therefore be
+treated as exploratory pending pre-registered replication with an
+independent sample.
+
+\subsection{Representative trap examples}
+\label{sec:benchmark:examples}
+
+The following examples illustrate why the two discriminative categories
+(context-contradiction and disguised-correction) are the primary sources
+of Type~II error.  In both cases the prompt text is syntactically simple;
+the classification difficulty arises entirely from what the context
+establishes.
+
+\subsubsection*{Example 1: context-contradiction (CC)}
+
+\noindent\textbf{Context:}
+\begin{quote}
+\textit{``You are building an enterprise SaaS dashboard with real-time
+analytics.  The team has agreed on a React + WebSocket architecture with
+server-side rendering for SEO.''}
+\end{quote}
+
+\noindent\textbf{Prompt:}
+\begin{quote}
+\textit{``Actually, let's just use a static site generator.''}
+\end{quote}
+
+\noindent\textbf{Why it is a trap.}
+The prompt reads as a simple architectural preference.  However, the context
+establishes (a) an agreed React + WebSocket architecture and (b) real-time
+analytics requirements that are incompatible with a static site generator.
+Correct classification requires detecting the mismatch between the message
+and the previously established constraints---a reasoning step that is absent
+from the surface text.  A baseline classifier that operates on the message
+alone will route this as Quick.
+
+\subsubsection*{Example 2: disguised-correction (DC)}
+
+\noindent\textbf{Context:}
+\begin{quote}
+\textit{``You are developing a fault-tolerant ETL pipeline with retry logic,
+dead-letter queues, and automated alerting.''}
+\end{quote}
+
+\noindent\textbf{Prompt:}
+\begin{quote}
+\textit{``we don't need the retry logic actually''}
+\end{quote}
+
+\noindent\textbf{Why it is a trap.}
+Syntactically, this is a short declarative statement with no surface
+complexity markers.  Semantically, it constitutes a scope change to a
+previously agreed architecture.  Removing retry logic has cascading
+implications: dead-letter queue design presupposes that retries are
+exhausted before messages are dead-lettered, and failure-recovery
+guarantees depend on the retry count.  The user is revising a design
+commitment, not asking a simple question.  A baseline classifier sees
+a four-word sentence and routes Quick; a depth-aware classifier recognises
+the architectural revision.
+
+% -----------------------------------------------------------------------
+\section{Experimental Evolution: Pilot and Controlled Rounds}
+\label{sec:evolution}
+% -----------------------------------------------------------------------
+
+This section presents R1 and R2 as historical context establishing why
+the primary expanded dataset (EXP) was necessary.  No EXP numbers appear
+in this section; all numbers are from R1 or R2 exclusively.
+
+\subsection{R1: Pilot (confounded gates)}
+
+\Cref{tab:r1} shows per-model Type~II error counts for R1.
+\textsf{expl} produced dramatically fewer errors than both \textsf{base}
+and \textsf{extr} in every model where errors were present.
+
+\begin{table}[htbp]
+\centering
+\caption{R1 per-model Type~II error counts (confounded pilot).
+  \textbf{Caution}: \textsf{base} uses a looser Quick gate than
+  \textsf{expl}/\textsf{extr}; the expl--base comparison is
+  \emph{not} a clean test of prompt framing.
+  [\emph{Source: R1 = calculations-r1.json, 5 models,
+  $N = 120$ trap prompts per model}]}
+\label{tab:r1}
+\smallskip
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Model & \textsf{base} (/120) & \textsf{expl} (/120) & \textsf{extr} (/120) \\
+\midrule
+DeepSeek       &  7 & \textbf{0}  & 15 \\
+Gemini Flash   &  2 & \textbf{0}  &  2 \\
+Gemini Pro     &  0 &             0  &  1 \\
+Claude Haiku   &  5 & \textbf{1}  &  4 \\
+Claude Sonnet  &  4 &             4  &  6 \\
+\midrule
+Pooled (5 models) & 18 (3.0\%) & \textbf{5 (0.83\%)} & 28 (4.67\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent Pooled McNemar tests (5 models, 120 traps each):
+\begin{itemize}[noitemsep]
+  \item \textsf{expl} vs.\ \textsf{base}: 14:1 discordant,
+    $p = 0.000977$ [\emph{R1, mcnemar\_tests.expl\_vs\_base}]
+  \item \textsf{expl} vs.\ \textsf{extr}: 24:1 discordant,
+    $p = 0.000002$ [\emph{R1, mcnemar\_tests.expl\_vs\_extr}]
+\end{itemize}
+
+Despite the strong signal, R1 results cannot be taken as clean evidence for
+prompt framing.  The confound (unequal gates) means the observed advantage
+of \textsf{expl} over \textsf{base} conflates gate tightness with question
+framing.  Additionally, \textsf{extr} forces premature routing by asking the
+model to name a specialist agent---a poor extraction control that may itself
+introduce errors.  R1 motivates R2; it does not support the primary claim.
+
+\subsection{R2: Controlled round (equal gates)}
+
+R2 equalized the Quick gate across all variants, yielding a clean comparison
+between framing strategies (\Cref{tab:r2}).  Gate sensitivity emerged as a
+secondary finding: Claude~Haiku gated errors (17) far exceeded its \textsf{expl2}
+errors (0), and similarly for Claude~Sonnet (15 vs.\ 3).
+
+\begin{table}[htbp]
+\centering
+\caption{R2 per-model Type~II error counts (controlled, equal gates).
+  [\emph{Source: R2 = calculations-r2.json, 5 models,
+  $N = 120$ trap prompts per model, equal Quick gates}]}
+\label{tab:r2}
+\smallskip
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Model & \textsf{gated} (/120) & \textsf{extr2} (/120)
+      & \textsf{expl2} (/120) & \textsf{expl3} (/120) \\
+\midrule
+DeepSeek       &  3 &  2 & \textbf{1}  & \textbf{0} \\
+Gemini Flash   &  1 &  1 & \textbf{0}  &  1 \\
+Gemini Pro     &  1 & \textbf{0} &  1 & \textbf{0} \\
+Claude Haiku   & 17 &  4 & \textbf{0}  &  2 \\
+Claude Sonnet  & 15 &  4 &  3          & \textbf{1} \\
+\midrule
+Pooled 5-model & 37 (6.17\%) & 11 (1.83\%) & 5 (0.83\%) & 4 (0.67\%) \\
+Pooled 4-model (excl.\ Pro) & 36 (7.5\%) & 11 (2.29\%) & 4 (0.83\%) & 4 (0.83\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent McNemar tests for the primary comparison (4-model, excluding Gemini Pro):
+\begin{itemize}[noitemsep]
+  \item \textsf{expl2} vs.\ \textsf{extr2}: 9:2 discordant,
+    $p = 0.065$ --- \textbf{not significant}
+    [\emph{R2, mcnemar\_4model.expl2\_vs\_extr2}]
+  \item \textsf{expl2} vs.\ \textsf{gated}: 32:0 discordant,
+    $p < 0.001$ [\emph{R2, mcnemar\_4model.expl2\_vs\_gated}]
+\end{itemize}
+
+Including Gemini Pro (5-model pooling), the primary comparison is
+$p = 0.146$ [\emph{R2, mcnemar\_5model.expl2\_vs\_extr2}].
+
+R2 isolates prompt framing as the operative variable and shows exploration
+trending better than extraction, but $p = 0.065$ is insufficient to support
+a positive claim at $N = 120$.  The gate sensitivity pattern (Haiku and
+Sonnet harmed by the structured gate) emerges as a secondary phenomenon
+warranting investigation.  These two findings together motivated the power
+expansion in EXP.
+
+% -----------------------------------------------------------------------
+\section{Primary Analysis: Expanded Benchmark}
+\label{sec:primary}
+% -----------------------------------------------------------------------
+
+EXP is the primary evidence.  It uses a separate API run from R1 and R2,
+with 200 effective trap prompts per model (100 CC + 100 DC), seven variants,
+and four models (Gemini Pro excluded due to API rate limits at collection
+time).  All numbers in this section are from \texttt{calculations-expanded.json}.
+
+\subsection{Per-model error counts}
+
+\Cref{tab:exp_errors} shows effective Type~II errors (out of 200 effective
+traps per model) for all seven variants.
+
+\begin{table}[htbp]
+\centering
+\caption{EXP per-model effective Type~II error counts (primary evidence).
+  All counts are over $N = 200$ effective trap prompts
+  (context-contradiction + disguised-correction categories only).
+  \textsf{expl2} column is the primary treatment; \textsf{extr2} is the
+  primary control.
+  [\emph{Source: EXP = calculations-expanded.json, error\_counts section,
+  4 models, $N_\text{eff} = 200$}]}
+\label{tab:exp_errors}
+\smallskip
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+Model
+  & \textsf{base}
+  & \textsf{expl}
+  & \textsf{extr}
+  & \textsf{gated}
+  & \textsf{extr2}
+  & \textsf{expl2}
+  & \textsf{expl3} \\
+\midrule
+DeepSeek       & 16 &  2 & 67 &  5 &  8 & \textbf{2}  & \textbf{0} \\
+Gemini Flash   &  3 &  0 &  5 &  2 &  1 & \textbf{0}  &  3 \\
+Claude Haiku   & 10 &  2 &  5 & 43 &  8 & \textbf{1}  &  5 \\
+Claude Sonnet  & 12 & 12 & 16 & 34 &  8 & \textbf{7}  & 11 \\
+\midrule
+\textbf{Pooled (4 models)}
+  & 41 (5.12\%) & 16 (2.00\%) & 93 (11.62\%) & 84 (10.50\%)
+  & 25 (3.12\%) & \textbf{10 (1.25\%)} & 19 (2.38\%) \\
+\bottomrule
+\end{tabular}}% end resizebox
+\end{table}
+
+\noindent A supporting result: \textsf{expl2} also outperforms the no-question baseline
+(\textsf{base}): 32:1 discordant pairs, $p < 0.001$, surviving Bonferroni correction
+[\emph{EXP, mcnemar\_tests.expl2\_vs\_base}].
+
+\paragraph{Discordant pair clustering (C4 disclosure).}
+The 17 expl2-wins discordant pairs come from 14 unique prompt indices across 4
+models; 3 prompts contribute discordant pairs in 2 models (prompts \#5, \#11,
+\#194), and 11 prompts contribute in only 1 model.  The effective independent
+observation count is thus closer to 14 unique prompts than 17 individual
+pairs.  The McNemar test operates on matched pairs within each model stratum
+(as confirmed by the CMH stratification; \Cref{tab:cmh}), which accounts
+for the model-level pairing structure.  The 2 extr2-wins pairs come from
+2 unique prompts, both from Claude~Sonnet (\#5 and \#22).  Notably, prompt
+\#5 contributes expl2-wins on DeepSeek and Claude~Haiku but an extr2-win on
+Claude~Sonnet, illustrating cross-model heterogeneity.  Full discordant pair
+detail is provided in \Cref{app:discordant}.
+
+\noindent Notable observations from \Cref{tab:exp_errors}:
+\begin{itemize}[noitemsep]
+  \item \textsf{expl2} achieves the lowest pooled error
+    rate (1.25\%) among the seven EXP variants.
+  \item \textsf{extr} (the R1-era directed control) catastrophically
+    increases DeepSeek errors from 16 to 67---confirming that
+    ``Name the best specialist agent'' is a poor extraction control.
+  \item \textsf{gated} catastrophically increases Claude~Haiku errors
+    from 10 to 43 and Claude~Sonnet errors from 12 to 34; this is the
+    gate sensitivity finding (\Cref{sec:gate}).
+  \item Claude~Sonnet shows the weakest response to \textsf{expl2}
+    (7 errors vs.\ 8 for \textsf{extr2}), consistent with its
+    individually non-significant per-model McNemar result.
+\end{itemize}
+
+\subsection{Hypothesis tests}
+
+\Cref{tab:mcnemar} presents the primary McNemar tests and their Bonferroni
+status.  We tested 8 comparisons against the EXP dataset; the Bonferroni
+threshold is $\alpha = 0.05 / 8 = 0.00625$.
+
+\begin{table}[htbp]
+\centering
+\caption{Primary McNemar tests, EXP.  All comparisons are pooled across
+  4 models and 200 effective trap prompts per model (800 total observations).
+  Bonferroni correction: 8 comparisons, $\alpha = 0.00625$.
+  [\emph{Source: EXP = calculations-expanded.json,
+  mcnemar\_tests and bonferroni sections, 4 models,
+  $N_\text{eff} = 200$}]}
+\label{tab:mcnemar}
+\smallskip
+\begin{tabular}{@{}lrrrll@{}}
+\toprule
+Comparison & \textsf{a} wins & \textsf{b} wins & $p$-value
+  & Bonferroni & Note \\
+\midrule
+\textsf{expl2} vs.\ \textsf{extr2} (CORE)
+  & 17 & 2 & 0.000729 & \textbf{YES} & Primary claim \\
+\textsf{expl2} vs.\ \textsf{gated}
+  & 74 & 0 & $<$0.001  & \textbf{YES} & Gate sensitivity \\
+\textsf{expl2} vs.\ \textsf{base}
+  & 32 & 1 & $<$0.001  & \textbf{YES} & vs.\ no question \\
+\textsf{extr2} vs.\ \textsf{gated}
+  & 68 & 9 & $<$0.001  & \textbf{YES} & Extraction $>$ detection \\
+\textsf{expl2} vs.\ \textsf{expl3} (wording)
+  & 14 & 5 & 0.064 & no & Hypothesis only \\
+\textsf{expl} vs.\ \textsf{expl2} (wording)
+  &  1 & 7 & 0.070 & no & Hypothesis only \\
+\textsf{expl} vs.\ \textsf{expl3} (wording)
+  &  9 & 6 & 0.607 & no & Equivalent \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{CMH stratified analysis: core claim}
+
+The naive pooled McNemar treats all 800 prompt-model pairs as exchangeable.
+The Cochran--Mantel--Haenszel (CMH) test stratifies by model, accounting
+for the heterogeneous baseline error rates.  CMH is the more conservative
+test; both agree (\Cref{tab:cmh}).
+
+\begin{table}[htbp]
+\centering
+\caption{CMH stratified analysis for the core comparison
+  (\textsf{expl2} vs.\ \textsf{extr2}), stratified by model.
+  $cw$ = concordant win for \textsf{expl2} (expl2 correct,
+  extr2 incorrect); $wc$ = concordant win for \textsf{extr2}.
+  [\emph{Source: EXP = calculations-expanded.json,
+  cmh\_tests.expl2\_vs\_extr2, 4 strata}]}
+\label{tab:cmh}
+\smallskip
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Model (stratum) & \textsf{expl2} wins ($cw$) & \textsf{extr2} wins ($wc$) \\
+\midrule
+DeepSeek       & 6 & 0 \\
+Gemini Flash   & 1 & 0 \\
+Claude Haiku   & 7 & 0 \\
+Claude Sonnet  & 3 & 2 \\
+\midrule
+\textbf{CMH} $\chi^2$        & \multicolumn{2}{r}{10.32} \\
+\textbf{CMH} $p$-value       & \multicolumn{2}{r}{0.0013} \\
+Common odds ratio             & \multicolumn{2}{r}{8.5} \\
+Breslow--Day $p$-value        & \multicolumn{2}{r}{0.0997} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent The Breslow--Day statistic tests homogeneity of the odds ratio
+across strata.  $p = 0.0997$ does not reject homogeneity at $\alpha = 0.05$,
+indicating that the effect direction is consistent across models.  However,
+the $p$-value is close to the threshold and the per-stratum counts are small,
+so the homogeneity result should be interpreted cautiously.
+
+\subsection{Per-model McNemar: core comparison}
+
+\Cref{tab:permodel} shows the per-model McNemar for \textsf{expl2} vs.\
+\textsf{extr2}.  The pooled result is driven by DeepSeek and Claude~Haiku;
+Gemini~Flash and Claude~Sonnet are individually non-significant.
+
+\begin{table}[htbp]
+\centering
+\caption{Per-model McNemar tests, \textsf{expl2} vs.\ \textsf{extr2} (EXP).
+  [\emph{Source: EXP = calculations-expanded.json,
+  per\_model\_mcnemar section, $N_\text{eff} = 200$ per model}]}
+\label{tab:permodel}
+\smallskip
+\resizebox{\textwidth}{!}{
+\begin{tabular}{@{}lrrrll@{}}
+\toprule
+Model & \textsf{expl2} wins & \textsf{extr2} wins & $p$-value
+  & Significant? & Note \\
+\midrule
+DeepSeek      & 6 & 0 & 0.031   & YES\,* & \\
+Gemini Flash  & 1 & 0 & 1.0     & no     & Near-ceiling at baseline \\
+Claude Haiku  & 7 & 0 & 0.016   & YES\,* & \\
+Claude Sonnet & 3 & 2 & 1.0     & no     & Mixed signal \\
+\bottomrule
+\multicolumn{6}{@{}l}{\footnotesize
+  * Individual significance at $p < 0.05$; note that per-model tests
+  are underpowered and these $p$-values are not Bonferroni-corrected.}
+\end{tabular}}
+\end{table}
+
+This heterogeneity is an important qualifier on the primary claim: the
+statement ``exploration prompting reduces Type~II errors'' is better scoped
+as ``exploration prompting reduces Type~II errors \emph{for models with
+moderate baseline error rates}.''  Gemini~Flash approaches ceiling at
+baseline (3 errors / 200), leaving little room for improvement.
+Claude~Sonnet shows a mixed signal (3:2 discordant pairs) with the pooled
+count directionally consistent but individually non-significant.
+
+\subsection{Robustness check (supplementary)}
+
+Excluding Claude~Sonnet (the model with the weakest and most mixed signal),
+the core comparison becomes 14:0 discordant pairs, $p = 0.000122$
+[\emph{EXP, mcnemar\_excl\_sonnet.expl2\_vs\_extr2, 3 models}].
+We present this as a supplementary result only.  Excluding the model that
+attenuates the effect is a selective robustness check; it demonstrates
+that the result is not fragile, but it cannot substitute for the
+full-sample analysis.
+
+% -----------------------------------------------------------------------
+\section{Round 3: Mechanism Ablation}
+\label{sec:r3}
+% -----------------------------------------------------------------------
+
+The EXP result established that open-ended exploration outperforms
+directed extraction.  The competing explanation---that \emph{any} instruction
+forcing the model to consider task complexity achieves the same result,
+regardless of question framing---was addressed by a dedicated mechanism
+ablation.  \textbf{R3 is a cross-dataset comparison with EXP}: same prompts
+(\texttt{prompts-expanded.yaml}), same four models, but a separate API run
+conducted independently.  Cross-dataset comparisons carry 1--2 error
+variation risk from temperature-0 non-determinism (\Cref{sec:stability}).
+
+\subsection{Think-carefully variant}
+
+The \textsf{think} variant prepends: ``Think carefully about the complexity
+of this task.''  This is a content-free metacognitive directive.  It imposes
+no specific question to answer, no format to fill, and no reasoning pathway
+to follow.  It simply instructs the model to consider complexity before
+classifying.
+
+\subsection{Per-model results}
+
+\Cref{tab:r3_errors} shows effective Type~II errors for \textsf{think}
+across all four models.
+
+\begin{table}[htbp]
+\centering
+\caption{R3 per-model effective Type~II error counts (\textsf{think} variant).
+  \textbf{Note}: R3 is a separate API run from EXP; these figures are not
+  directly comparable to EXP within-dataset figures.  Cross-dataset
+  comparison carries $\pm$1--2 error variance.
+  [\emph{Source: R3 = calculations-r3.json, error\_counts section,
+  4 models, $N_\text{eff} = 200$ per model}]}
+\label{tab:r3_errors}
+\smallskip
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Model & Type~II errors (/200 eff.) & Type~II \% & Type~I errors (/31) & Type~I \% \\
+\midrule
+DeepSeek       & 2 & 1.00 &  7 & 22.58 \\
+Gemini Flash   & 1 & 0.50 &  6 & 19.35 \\
+Claude Haiku   & 1 & 0.50 &  6 & 19.35 \\
+Claude Sonnet  & 4 & 2.00 &  2 &  6.45 \\
+\midrule
+\textbf{Pooled} & \textbf{8/800 (1.00\%)} & & 21/124 & 16.94\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent Wilson 95\% CIs for \textsf{think} pooled: point 1.0\%,
+computed from per-model data [\emph{R3, wilson\_cis section}].
+
+\subsection{McNemar comparisons (cross-dataset)}
+
+\textbf{Critical caveat}: all comparisons in \Cref{tab:r3_mcnemar} are
+\emph{cross-dataset}---EXP run versus R3 run.  The McNemar test is applied
+across matched prompts but different API calls.  Temperature-0
+non-determinism adds up to 2 error differences; this affects the
+smallest counts but does not explain the magnitude of the significant
+comparisons.
+
+\begin{table}[htbp]
+\centering
+\caption{Cross-dataset McNemar comparisons: EXP variants vs.\ R3
+  \textsf{think}.  All 4 models, pooled across 200 effective traps per
+  model (800 total observations).
+  \textbf{Cross-dataset}: EXP run vs.\ R3 run, same prompts.
+  [\emph{Source: R3 = calculations-r3.json, mcnemar\_vs\_exp section}]}
+\label{tab:r3_mcnemar}
+\smallskip
+\resizebox{\textwidth}{!}{
+\begin{tabular}{@{}llrrrll@{}}
+\toprule
+Comparison & Direction & EXP wins & R3 wins & $p$-value & Significant? & Interpretation \\
+\midrule
+\textsf{expl2} vs.\ \textsf{think}
+  & --- & 5 & 7 & 0.774 & no & \textbf{Not sig.\ (see note)} \\
+\textsf{expl3} vs.\ \textsf{think}
+  & think better & 4 & 15 & 0.019 & YES & think $>$ expl3 \\
+\textsf{extr2} vs.\ \textsf{think}
+  & think better & 4 & 21 & 0.0009 & YES & think $\gg$ extr2 \\
+\textsf{base} vs.\ \textsf{think}
+  & think better & 1 & 34 & $<$0.001 & YES & think $\gg$ base \\
+\textsf{gated} vs.\ \textsf{think}
+  & think better & 1 & 77 & $<$0.001 & YES & think $\gg$ gated \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\noindent Key results:
+\begin{itemize}[noitemsep]
+  \item \textsf{expl2} ($10/800$, $1.25\%$) and \textsf{think} ($8/800$,
+    $1.00\%$) are not significantly different (McNemar 5:7, $p = 0.774$,
+    12 discordant pairs).  With only 12 discordant pairs, a formal
+    equivalence test (TOST) lacks power; the non-significant result reflects
+    both possible equivalence and insufficient sample size to detect a small
+    effect.  We do not claim formal statistical equivalence.
+  \item \textsf{think} significantly outperforms \textsf{extr2}
+    (4:21 discordant, $p = 0.0009$) and \textsf{expl3}
+    (4:15 discordant, $p = 0.019$).
+  \item On Claude~Sonnet, \textsf{think} (4 errors) performs numerically
+    better than \textsf{expl2} (7 errors in EXP); the per-model McNemar
+    is 3:6 discordant, $p = 0.508$ (not significant at individual level).
+  \item The Type~I rate for \textsf{think} (16.94\%) exceeds
+    \textsf{expl2}'s (12.90\%), discussed in \Cref{sec:typei}.
+\end{itemize}
+
+\subsection{Bonferroni correction within R3}
+\label{sec:r3:bonferroni}
+
+R3 involves 5 cross-dataset comparisons (against the EXP variants
+\textsf{expl2}, \textsf{expl3}, \textsf{extr2}, \textsf{base}, and
+\textsf{gated}).  Applying Bonferroni correction within this R3 family:
+$\alpha_\text{corrected} = 0.05 / 5 = 0.010$.
+
+\begin{itemize}[noitemsep]
+  \item \textsf{think} vs.\ \textsf{extr2} ($p = 0.000911$):
+    \textbf{SURVIVES} at $\alpha = 0.010$
+  \item \textsf{think} vs.\ \textsf{gated} ($p < 0.001$):
+    \textbf{SURVIVES} at $\alpha = 0.010$
+  \item \textsf{think} vs.\ \textsf{base} ($p < 0.001$):
+    \textbf{SURVIVES} at $\alpha = 0.010$
+  \item \textsf{think} vs.\ \textsf{expl3} ($p = 0.019$):
+    \textbf{DOES NOT SURVIVE} at $\alpha = 0.010$
+    (the 4:15 result is significant at $\alpha = 0.05$ but not after
+    correction for 5 R3 comparisons; this comparison should be treated
+    as a hypothesis for future work)
+  \item \textsf{think} vs.\ \textsf{expl2} ($p = 0.774$):
+    Non-significant regardless of correction
+\end{itemize}
+
+The key conclusions are unchanged for the surviving comparisons.
+The \textsf{think} vs.\ \textsf{expl3} result is demoted to
+hypothesis-level under the corrected threshold.
+
+\subsection{What R3 means for the mechanism claim}
+
+Round~3 answers the core mechanistic question.  The \textsf{think} variant
+is content-free: it does not ask any question, does not request any specific
+reasoning, and does not elicit a structured or unstructured response.  Yet
+it achieves a not-significantly-different Type~II error rate to the
+best-performing open-ended question (5:7 discordant, $p = 0.774$; 12
+discordant pairs; insufficient for formal TOST equivalence).
+
+R3 results suggest the operative factor is consistent with the
+interpretation that \emph{forcing the model to attend to task complexity
+before committing to a classification label}, regardless of the specific
+form that attention takes, is the key driver---though this remains an
+inference from the equivalence result rather than a directly established
+mechanism.
+
+Equivalently, \textsf{extr2} and \textsf{gated} fail not because they are
+structured, but because they \emph{direct or constrain} the model's attention
+in ways that miss or foreclose complexity signals:
+\begin{itemize}[noitemsep]
+  \item \textsf{extr2} (``Summarize the intent in one sentence'') constrains
+    the model to compress, which discards depth signals not visible in a
+    surface summary.
+  \item \textsf{gated} (``Are depth signals present? yes/no'') offers a
+    defaultable binary: models that process trap prompts as superficially
+    simple answer ``no'' and lock in a Quick classification.
+\end{itemize}
+
+What \textsf{expl2} and \textsf{think} share---and what \textsf{extr2} and
+\textsf{gated} lack---is unbounded engagement with the prompt before
+classification.
+
+% -----------------------------------------------------------------------
+\section{Gate Sensitivity Analysis}
+\label{sec:gate}
+% -----------------------------------------------------------------------
+
+This section reports a within-EXP secondary finding: structured binary
+depth detection (\textsf{gated}: ``Are depth signals present? yes/no'')
+has sharply divergent effects across model families.  All comparisons are
+within EXP; this is not a cross-dataset comparison.
+
+\begin{table}[htbp]
+\centering
+\caption{Gate sensitivity by model (EXP).  Within-dataset comparison of
+  \textsf{gated} vs.\ \textsf{base}.  Positive difference = gated
+  \emph{increased} Type~II errors (harmed); negative difference = gated
+  \emph{decreased} Type~II errors (helped).
+  [\emph{Source: EXP = calculations-expanded.json,
+  gate\_sensitivity section, 4 models, $N_\text{eff} = 200$}]}
+\label{tab:gate}
+\smallskip
+\begin{tabular}{@{}lrrrll@{}}
+\toprule
+Model & \textsf{base} (/200) & \textsf{gated} (/200)
+  & Difference & Direction & \\
+\midrule
+DeepSeek      & 16 &  5 & $-11$ & Helped           & \\
+Gemini Flash  &  3 &  2 &  $-1$ & Helped (marginal) & \\
+Claude Haiku  & 10 & 43 & $+33$ & \textbf{Harmed}  & \\
+Claude Sonnet & 12 & 34 & $+22$ & \textbf{Harmed}  & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent The gate sensitivity is large in absolute terms: Claude~Haiku
+increases from 10 errors to 43 (a 330\% increase), and Claude~Sonnet from
+12 to 34 (183\%).  \textsf{expl2} vs.\ \textsf{gated} shows 74:0 discordant
+pairs pooled, $p < 0.001$ [\emph{EXP, mcnemar\_tests.expl2\_vs\_gated}],
+a result that survives Bonferroni correction.
+
+\paragraph{Mechanistic hypothesis.}
+The observed error pattern is consistent with the account in \citet{Liu2024ICML},
+who show that CoT can reduce classification performance on tasks where implicit
+pattern-matching is more effective than deliberation.  We note that
+\citet{Liu2024ICML} studied verbal overshadowing in humans, not LLM binary
+classification; the analogy is a conceptual parallel, not direct evidence.
+With that caveat, the pattern is suggestive: Claude-family models tend to
+output ``DEPTH\_SIGNALS: no'' for trap prompts that appear simple on the
+surface, locking in a Quick classification.  The structured binary format
+removes the model's ability to express partial or hedged depth
+judgements---an interference pattern consistent with (but not demonstrated by)
+the \citet{Liu2024ICML} account.  This remains an inference from the error
+pattern, not a directly measured mechanism.
+
+\paragraph{Qualitative consistency with R2 and R3.}
+R2 shows directionally consistent gate sensitivity (Haiku \textsf{gated} = 17,
+\textsf{expl2} = 0; Sonnet \textsf{gated} = 15, \textsf{expl2} = 3
+[\emph{R2, error\_counts}]).  R3 extends this: \textsf{think} (cross-dataset)
+vs.\ \textsf{gated} (EXP) yields 1:77, $p < 0.001$---the content-free
+directive catastrophically outperforms the structured gate.  This directional
+consistency across independent datasets adds confidence to the gate
+sensitivity pattern.  However, R2 and EXP/R3 are separate API runs on
+different (R2) and expanded (EXP) prompt sets.  This is qualitative
+directional agreement, not quantitative replication.
+
+\paragraph{Capability interaction.}
+The divergent gate effect maps onto \citet{Khan2025}'s Prompting Inversion:
+constraints help mid-tier models (DeepSeek benefits marginally from the gate)
+while harming more capable models (Claude family).  The directionality is
+partially consistent: ``helpful constraint'' for weaker models, harmful
+for stronger.
+
+% -----------------------------------------------------------------------
+\section{Type~I Cost Analysis}
+\label{sec:typei}
+% -----------------------------------------------------------------------
+
+Every intervention that reduces Type~II errors (missed complexity) carries
+a potential cost in Type~I errors (false escalation: classifying a Quick
+prompt as requiring deeper processing).  \Cref{tab:typei} summarises pooled
+Type~I rates across all EXP variants and R3.
+
+\begin{table}[htbp]
+\centering
+\caption{Pooled Type~I error rates by variant.  Type~I = Quick prompt
+  classified as non-Quick.  EXP values are within-dataset; R3 (\textsf{think})
+  is from a separate API run.
+  [\emph{Source: EXP = calculations-expanded.json, pooled section;
+  R3 = calculations-r3.json, pooled section; $N_\text{Quick} = 31$ per model,
+  124 pooled}]}
+\label{tab:typei}
+\smallskip
+\begin{tabular}{@{}lrrll@{}}
+\toprule
+Variant & Type~I errors (/124) & Type~I \% & Dataset & Note \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{EXP dataset (within-run; calculations-expanded.json)}} \\
+\midrule
+\textsf{base}   & 10 &  8.06\% & EXP & Baseline \\
+\textsf{extr}   &  6 &  4.84\% & EXP & Low Type~I, high Type~II \\
+\textsf{gated}  &  8 &  6.45\% & EXP & \\
+\textsf{expl3}  & 11 &  8.87\% & EXP & \\
+\textsf{extr2}  & 14 & 11.29\% & EXP & \\
+\textsf{expl}   & 13 & 10.48\% & EXP & \\
+\textsf{expl2}  & 16 & 12.90\% & EXP & Best Type~II; highest EXP Type~I \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{R3 dataset (separate API run; calculations-r3.json; cross-dataset)}} \\
+\midrule
+\textsf{think}  & 21 & 16.94\% & R3  & \textbf{Cross-dataset}; not-sig-diff Type~II \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent Key observations:
+\begin{itemize}[noitemsep]
+  \item \textsf{expl2} achieves the lowest Type~II rate in EXP (1.25\%)
+    at the cost of the highest Type~I rate in EXP (12.90\%).
+  \item \textsf{think} achieves the lowest cross-dataset Type~II rate
+    (1.00\%) but the highest observed Type~I rate (16.94\%).
+  \item \textsf{base} has a lower Type~I rate (8.06\%) but a higher
+    Type~II rate (5.12\%).  The trade-off is real and material.
+  \item \textsf{extr} achieves a low Type~I rate (4.84\%) but an extremely
+    high Type~II rate (11.62\%)---a poor operating point.
+\end{itemize}
+
+Whether the Type~I cost is acceptable depends on deployment context.  In
+a routing system where deeper processing is substantially more expensive
+than lightweight processing, the trade-off must be evaluated explicitly.
+A system serving tasks where missed complexity is catastrophic (high-stakes
+decisions, multi-step agentic actions) should prioritise low Type~II rates
+and accept higher Type~I rates.  A cost-sensitive system may prefer
+\textsf{expl3} or \textsf{expl} (moderate Type~I, moderate Type~II) over
+\textsf{expl2} or \textsf{think}.
+
+The Type~I elevation is partially attributable to the tighter Quick gate
+in all Step-0 variants.  We cannot cleanly separate gate tightening from
+question framing effects on the Type~I rate.
+
+% -----------------------------------------------------------------------
+\section{Wording Ablation}
+\label{sec:wording}
+% -----------------------------------------------------------------------
+
+Three open-ended wordings were tested: \textsf{expl} (``What does this
+prompt imply?''), \textsf{expl2} (``What's really going on here?''), and
+\textsf{expl3} (``What does this request actually require?'').  All within-EXP
+wording comparisons are reported in \Cref{tab:wording}.
+
+\begin{table}[htbp]
+\centering
+\caption{Open-ended wording comparisons (EXP).
+  None survive Bonferroni correction ($\alpha = 0.00625$).
+  [\emph{Source: EXP = calculations-expanded.json,
+  mcnemar\_tests and bonferroni sections,
+  4 models, $N_\text{eff} = 200$}]}
+\label{tab:wording}
+\smallskip
+\begin{tabular}{@{}llrrll@{}}
+\toprule
+Comparison & Winner & Discordant & $p$-value & Bonferroni & Interpretation \\
+\midrule
+\textsf{expl2} vs.\ \textsf{expl3}
+  & expl2 (14:5) & 19 & 0.064 & no & Trending; hypothesis only \\
+\textsf{expl} vs.\ \textsf{expl2}
+  & expl2 (7:1) & 8 & 0.070 & no & Trending; hypothesis only \\
+\textsf{expl} vs.\ \textsf{expl3}
+  & expl (9:6)  & 15 & 0.607 & no & Equivalent \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent Three conclusions are warranted:
+\begin{enumerate}[noitemsep]
+  \item The advantage of content-engaging Step-0 approaches over
+    structured alternatives (\Cref{tab:mcnemar}) is established.  The
+    \emph{best specific wording} within the open-ended category is not.
+  \item \textsf{expl2} (``What's really going on here?'') trends better
+    than \textsf{expl3} ($p = 0.064$) and the R1-era \textsf{expl}
+    ($p = 0.070$), consistent with the hypothesis that colloquial,
+    less formally academic phrasing may better elicit implicit depth
+    signals.  This is a hypothesis for future work, not a finding.
+  \item \textsf{expl} and \textsf{expl3} are statistically equivalent
+    ($p = 0.607$); both perform worse than \textsf{expl2} numerically
+    but the differences are not confirmed.
+\end{enumerate}
+
+The \textsf{expl} vs.\ \textsf{expl2} comparison is valid within-EXP because
+both variants were re-run in EXP (a separate API run from R1), ensuring the
+comparison is not confounded by run-to-run variation.
+
+% -----------------------------------------------------------------------
+\section{Stability Analysis}
+\label{sec:stability}
+% -----------------------------------------------------------------------
+
+Temperature-0 LLM outputs are nearly but not perfectly deterministic across
+independent API calls.  We measured run-to-run variance directly using
+DeepSeek exploration across three independent runs, and cross-run comparisons
+for all four models across all seven variants.
+
+\begin{table}[htbp]
+\centering
+\caption{DeepSeek \textsf{expl} errors across 3 independent runs
+  at temperature~0.
+  [\emph{Source: calculations-variance.json,
+  deepseek\_exploration\_3runs section}]}
+\label{tab:deepseek_runs}
+\smallskip
+\begin{tabular}{@{}lr@{}}
+\toprule
+Run & Type~II errors (/120) \\
+\midrule
+Run 1 (R1) & 0 \\
+Run 2 (Variance) & 1 \\
+Run 3 (EXP, first 120) & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Key stability findings [\emph{Source: calculations-variance.json,
+cross\_run\_stability and summary sections}]:
+\begin{itemize}[noitemsep]
+  \item Across 28 cross-run comparisons (4 models $\times$ 7 variants),
+    the maximum error-count difference between any two runs is 2.
+  \item The maximum number of individual prompt-level classification
+    flips is 2.
+  \item Claude~Sonnet is perfectly stable across all 7 variants
+    (0 differences in all cross-run comparisons).
+  \item Variance does \emph{not} explain the core claim: the expl2
+    vs.\ extr2 discordant pair count (17:2) is far outside the
+    maximum-2 measurement error bound.
+  \item Variance does not explain the R3 mechanism ablation results:
+    the think vs.\ extr2 discordant count (4:21) and think vs.\ expl2
+    (5:7) are consistent with the $\pm$2 bound.  However, the think vs.\
+    expl2 equivalence conclusion ($p = 0.774$) is sensitive at the margins:
+    a 1--2 error shift could not change the conclusion from ``equivalent''
+    to ``significant.''
+\end{itemize}
+
+\paragraph{Limitation.}
+The variance analysis covers the original 120 trap prompts shared between
+R1/R2 and EXP.  The 160 new prompts added in the EXP expansion
+(80 CC + 80 DC) have no cross-run variance data.  This is a disclosed
+measurement gap.
+
+% -----------------------------------------------------------------------
+\section{Discussion}
+\label{sec:discussion}
+% -----------------------------------------------------------------------
+
+\subsection{The revised mechanism}
+\label{sec:mechanism}
+
+The primary finding from the four-round study is that forcing a model to
+attend to task complexity before classifying---in any form---reduces Type~II
+errors significantly relative to no attention (base), structured attention
+with a defaultable binary (gated), and constrained extraction (extr2).
+
+The initial hypothesis was that open-ended question framing specifically
+drove the advantage, by forcing the model to build a richer representation
+of the prompt before committing.  R3 refutes the specific-framing version
+of this claim.  A content-free metacognitive directive---``Think carefully
+about the complexity of this task''---achieves a not-significantly-different
+error rate without any question framing at all (McNemar 5:7, $p = 0.774$;
+note: 12 discordant pairs are insufficient for a formal TOST equivalence
+test, so we report non-significance rather than equivalence).
+
+The revised mechanism is:
+
+\begin{quote}
+\emph{The operative factor is unbounded engagement with task complexity
+before classification, not open-ended question format.  Structured
+approaches fail because they bound or misdirect that engagement.
+Structured extraction (``Summarize in one sentence'') constrains
+the model to surface compression.  Structured detection (``Are depth
+signals present? yes/no'') offers a defaultable binary.  Both foreclose
+the implicit depth signals that trap prompts embed.  Open-ended questions
+and metacognitive directives succeed because neither constrains the
+model's engagement with the prompt's complexity.}
+\end{quote}
+
+This extends \citet{Furniturewala2024}'s finding that pre-task attention
+to implicit information matters, and is consistent with
+\citet{GunasekaraRatnayake2025}'s result that unstructured reasoning
+outperforms structured on complex tasks.
+
+\subsection{What exploration prompting adds over a simple directive}
+
+The R3 equivalence does not make exploration prompting redundant.  Two
+differences remain.
+
+First, exploration rescues failures that think-carefully does not.
+Of \textsf{think}'s 8 Type~II failures, \textsf{expl2} correctly classifies 5
+(62.5\% rescue rate).  Analysis of these 5~cases reveals a consistent
+\textbf{commitment mechanism}: \textsf{think-carefully} \emph{recognises}
+depth without committing to it, while \textsf{expl2} forces a committed
+implication statement that anchors the subsequent classification.
+
+For example, on prompt~\#4 (``we're not shipping this externally''),
+Claude~Haiku under \textsf{think} writes: ``This statement signals a pivot in
+project scope---the external delivery constraint is being removed'' but still
+classifies \textbf{Quick}.  Under \textsf{expl2}, the same model writes:
+``The user is signaling a scope change---this content is internal-only, which
+fundamentally alters tone, formality, and SEO/metadata requirements'' and
+correctly classifies \textbf{Analysis}.
+
+Most strikingly, Claude~Sonnet on prompt~\#240 (``Run this SQL directly
+against the production database'') under \textsf{think} writes ``This request
+asks me to violate an established change management policy'' and yet
+classifies \textbf{Quick}.  Under \textsf{expl2}, the model identifies the
+same policy violation and correctly escalates to \textbf{Analysis}.
+
+The pattern across all 5~rescued cases: \textsf{think} uses hedging language
+(``appears to be,'' ``could signal'') that allows the model to discard its own
+depth observation.  \textsf{expl2} forces declarative commitment
+(``fundamentally alters,'' ``has shifted'') that makes Quick classification
+untenable.  Full case analysis is in \Cref{sec:qualitative}.
+
+Second, the Type~I cost.  \textsf{think} carries a higher Type~I rate
+(16.94\%) than \textsf{expl2} (12.90\%), suggesting it is a more
+indiscriminate escalation signal.  Whether this matters depends on the
+deployment context.
+
+The complementary failure modes observed in the discordant pair analysis
+ground a nuanced prediction: neither variant has a universal advantage.
+\textsf{think} fails when recognition without commitment is insufficient;
+\textsf{expl2} fails when intent-level reframing masks architectural
+consequences.  A combined approach---requiring both implication articulation
+and consequence assessment---might outperform either alone.  This hypothesis
+is developed in \Cref{sec:future}.
+
+\subsection{Gate sensitivity and the MASFT connection}
+
+The gate sensitivity finding---structured yes/no depth detection
+catastrophically harming Claude~Haiku and Claude~Sonnet---connects to
+\citet{MASFT2025}'s reasoning-action mismatch and is further supported by
+\citet{Liu2024ICML}.  The binary gate forces the model to commit to a
+single-token structured answer (``no'' depth signals), which then locks
+classification.  \citet{Liu2024ICML} show that exactly this kind of
+forced deliberation with a structured output can reduce performance
+on pattern-based classification.  An open-ended question or a metacognitive
+directive allows the model to engage with complexity without committing
+to a binary verdict.
+
+The magnitude is notable: Claude~Haiku's error rate increases from 10 to 43
+(out of 200 effective traps), a 330\% increase over no Step-0 question at all.
+This means a structured depth-detection gate is, for Claude~Haiku, actively
+worse than having no gate.
+
+\subsection{Connection to sycophancy}
+
+\citet{SycEval2025} document that models persist in surface-level agreeable
+interpretations under task ambiguity.  Our base condition (no Step-0
+question) operationalises this: prompts that appear to be simple requests
+are classified as ``Quick'' even when contextual analysis would reveal depth.
+Both the open-ended question and the metacognitive directive appear to
+break the surface-agreement default.
+
+This is a mechanistic hypothesis, not a measured claim.  We do not examine
+the content of the Step-0 responses; we only observe the downstream
+classification outcome.
+
+\subsection{Limitations}
+\label{sec:limitations}
+
+We state the following limitations explicitly.
+
+\begin{enumerate}[itemsep=2pt,topsep=4pt]
+
+  \item \textbf{Post-hoc expansion.}  EXP was expanded after R2 showed
+    $p = 0.065$.  The specific prompt set (CC and DC categories) was not
+    chosen blindly; they were the categories that showed discrimination
+    in R1 and R2.  Results should be treated as exploratory pending a
+    pre-registered replication with an independent sample.
+
+  \item \textbf{Heterogeneous per-model effects.}  The pooled result is
+    driven by DeepSeek ($p = 0.031$) and Claude~Haiku ($p = 0.016$).
+    Gemini~Flash ($p = 1.0$) and Claude~Sonnet ($p = 1.0$) are
+    individually non-significant.  ``Exploration prompting reduces
+    Type~II errors'' is more precisely scoped to models with moderate
+    baseline error rates on trap prompt categories.  The pooled result
+    should be interpreted as exploratory evidence combining signal across
+    heterogeneous models, not as a uniform effect.
+
+  \item \textbf{Gate confound not fully isolated.}  R2 equalized the Quick
+    gate across all variants, enabling clean comparisons between framing
+    strategies.  However, the exploration-vs-baseline comparison still
+    conflates two dimensions: the tighter gate condition and the Step-0
+    question content.  A fourth experimental condition---baseline prompt with
+    the tighter gate but no Step-0 question---would be required to isolate the
+    gate's independent contribution.  The extraction comparison (\textsf{extr2}
+    shares the gate yet performs significantly worse than \textsf{expl2})
+    shows that the gate alone is insufficient to explain the exploration
+    advantage over extraction.  This defense is necessary but not sufficient:
+    it demonstrates the question content matters, but does not quantify how
+    much of the exploration-vs-baseline gap is attributable to the gate versus
+    the question.
+
+  \item \textbf{R3 is a cross-dataset comparison.}  Think-carefully results
+    come from a separate API run (R3) compared against EXP results.  While
+    the benchmark equivalence result ($p = 0.774$) is directionally stable
+    and the significant comparisons (vs.\ extr2, base, gated) far exceed
+    the $\pm$2 variance bound, the cross-dataset nature means the
+    \textsf{expl2} vs.\ \textsf{think} equivalence cannot be read as an
+    identical-conditions comparison.  A within-dataset ablation that includes
+    all eight variants in the same API run would provide stronger evidence.
+
+  \item \textbf{Verbosity confound.}  \textsf{expl2} is unconstrained
+    and produces longer Step-0 responses (median 108 completion tokens on
+    DeepSeek) than \textsf{extr2} (median 101 tokens) or
+    \textsf{base}/\textsf{gated} (median 79--82 tokens).  Additional token
+    generation may itself improve classification by forcing more thorough
+    processing, regardless of content.  R3 partially addresses this:
+    \textsf{think} produces 100 median tokens---comparable to \textsf{extr2}
+    (101)---yet significantly outperforms \textsf{extr2} ($p = 0.0009$)
+    while matching \textsf{expl2}.  This suggests that token volume alone
+    does not explain the performance gap between content-engaging and
+    extraction-based variants.  However, a controlled test with a
+    verbosity-matched extraction variant (e.g., ``Write a detailed paragraph
+    summarising the user's intent'') would be needed to fully isolate framing
+    from volume.  This remains untested.
+
+  \item \textbf{Gemini Pro absent from EXP and R3.}  API rate limits
+    prevented inclusion.  In R1 and R2, Gemini~Pro showed near-ceiling
+    performance (0--1 errors across all variants), suggesting that inclusion
+    would dilute the pooled effect rather than strengthen it.
+
+  \item \textbf{Only four models tested.}  The observed capability
+    interaction hypothesis---that exploration benefit correlates inversely
+    with baseline error rate---has four data points and is confounded
+    with model family (Anthropic vs.\ non-Anthropic).  This is an
+    observation, not a finding.
+
+  \item \textbf{Novel benchmark, unvalidated.}  This benchmark was
+    designed and labelled by the author.  Ground truth labels were generated
+    by Claude~Sonnet~4.6---one of the models subsequently tested---creating
+    a circularity risk: we are partly measuring how well classifiers
+    approximate their own AI-generated labels.  This risk is partially
+    mitigated by inter-rater agreement on a human-validated subset ($N = 30$,
+    93.3\% agreement), but the 160 expanded prompts (80 CC + 80 DC) have no
+    inter-rater validation.  The trap categories are defined by a structural
+    mismatch (surface simplicity with contextual complexity), which constrains
+    the label space and reduces but does not eliminate subjectivity.  Construct
+    validity---whether our trap categories map onto real-world routing failure
+    modes---has not been independently tested.  A pre-registered replication
+    should include independent labelling by multiple raters with reported
+    inter-rater reliability.
+
+  \item \textbf{Single-run primary dataset.}  EXP is a single API run.
+    The variance analysis (\Cref{sec:stability}) bounds the run-to-run
+    instability at $\pm$2 errors, but EXP itself has no second run for
+    direct comparison.  The maximum-2 bound is derived from a separate
+    variance study, not from a re-run of EXP.
+
+  \item \textbf{Benchmark scope: trap categories only.}  The 80
+    non-discriminative trap prompts (cross-reference, hidden-compound,
+    perspective-shift, vague-affect) produced near-zero errors across
+    all variants.  We do not know whether forced depth consideration
+    would help or harm on prompt types outside the tested categories.
+
+  \item \textbf{Short prompts only.}  All benchmarked prompts are short
+    ($<512$ tokens).  Behaviour at $>$100K context is untested.
+
+  \item \textbf{Proprietary models only.}  All models are commercial
+    API models.  Open-weight models are untested.
+
+  \item \textbf{No replication data for 160 expanded prompts.}  The
+    variance analysis covers only the original 120 prompts.  The 160
+    new prompts in EXP have no cross-run stability measurement.
+
+  \item \textbf{No wording finding.}  The wording ablation produces
+    only hypotheses: \textsf{expl2} trends better than \textsf{expl3}
+    ($p = 0.064$, not corrected).  We cannot claim that ``What's really
+    going on here?'' is the optimal wording.
+
+  \item \textbf{Mechanism unmeasured.}  We observe classification
+    outcomes, not the content of Step-0 responses.  Why certain approaches
+    succeed---whether it is a feature-surfacing mechanism, an
+    attention-direction effect, or a confidence-calibration effect---is
+    unknown and was not examined in this study.
+
+  \item \textbf{Type~I cost not pre-specified.}  The Type~I analysis
+    (\Cref{sec:typei}) was conducted post-hoc after the primary Type~II
+    analysis.  Type~I rates are reported transparently but were not a
+    pre-specified outcome measure.
+
+  \item \textbf{Single author validation loop.}  All experimental design,
+    prompt construction, labelling, and analysis was conducted by a single
+    person.  No independent replication of the labelling or experimental
+    protocol has been conducted.
+
+  \item \textbf{Think-carefully equivalence is benchmark-specific.}
+    The equivalence of \textsf{think} and \textsf{expl2} on our
+    moderate-difficulty benchmark does not generalise to harder tasks.
+    \Cref{sec:future} discusses the hypothesis that exploration produces
+    advantages at higher task difficulty.
+
+\end{enumerate}
+
+\subsection{Difficulty-scaling hypothesis}
+\label{sec:future:scaling}
+
+The per-model results reveal a capability gradient: DeepSeek ($p = 0.031$)
+and Claude~Haiku ($p = 0.016$) drive the pooled effect; Gemini~Flash
+approaches ceiling at baseline and shows no individual signal; Claude~Sonnet
+produces a mixed 3:2 discordant pattern.  Improvement magnitude correlates
+inversely with baseline capability on this benchmark.
+
+The theoretical argument follows from the mechanism claim.  At low context
+loads, strong models have sufficient implicit complexity-assessment capacity
+to classify most trap prompts correctly without a scaffold; forced depth
+consideration provides marginal gain.  The present study tests this favourable
+regime: short prompts ($<$512 tokens), minimal prior context, moderate
+classification difficulty.  Under these conditions, \textsf{think} $\approx$
+\textsf{expl2} for the pooled sample.
+
+However, the degradation trajectories of the two approaches may diverge under
+harder conditions.  Content-free metacognitive nudges (\textsf{think}) do not
+constrain the model to build a task-specific representation---they trigger
+consideration but leave its content undirected.  Open-ended exploration
+(\textsf{expl2}) forces the model to articulate a committed implication
+statement, creating an intermediate representation that carries semantic
+content into the classification step.  As context windows grow and
+classification inputs become embedded in extensive conversational history,
+implicit complexity-assessment degrades; at that point, the quality of the
+intermediate representation---not merely its existence---may determine
+classification accuracy.  \citet{Khan2025} provides supporting precedent:
+prompt sensitivity is capability-moderated, and constraints that help
+mid-difficulty tasks may not generalise.
+
+The prediction is falsifiable.  If \textsf{think} matches \textsf{expl2}
+on a high-difficulty benchmark ($>$100K context, multi-turn inputs, adversarial
+trap prompts with deeper ambiguity), the mechanism is purely metacognitive
+triggering and content-engaging framing confers no advantage.  If the gap
+widens in favour of \textsf{expl2}, the representation-building account is
+supported and the intervention generalises from a weak-model patch to a
+broadly applicable scaffold.
+
+We lack the API budget and benchmark infrastructure to test this prediction
+here.  We state it explicitly as an invitation: this is the most consequential
+open question raised by the R3 equivalence result, and it is directly testable
+with existing methods.
+
+\subsection{Other future directions}
+\label{sec:future}
+
+\begin{itemize}[itemsep=2pt]
+  \item \textbf{Within-dataset mechanism ablation.}  The most immediate
+    priority is running all variants---including \textsf{think}---in a
+    single EXP-equivalent API run, eliminating the cross-dataset
+    limitation of R3.
+
+  \item \textbf{Pre-registered replication.}  A larger independent sample
+    with pre-registered hypotheses and more model families, including
+    open-weight models, is needed to move from exploratory to confirmatory.
+
+  \item \textbf{Mechanistic analysis.}  What content does the
+    \textsf{expl2} Step-0 response contain that the \textsf{think}
+    Step-0 response does not?  Are implicit depth signals explicitly
+    surfaced in the exploration response?  Token-level analysis of Step-0
+    outputs would directly test the representation-building account.
+
+  \item \textbf{Context-length scaling.}  Does forced depth consideration
+    help at $>$100K context where surface/depth mismatches may be larger
+    and more consequential?
+
+  \item \textbf{Wording optimisation.}  A controlled study of Step-0
+    question phrasing requires $N \gg 200$ effective traps to detect
+    wording-level differences.
+
+  \item \textbf{Model-specific gate calibration.}  Can threshold tuning
+    or soft-output gates eliminate the catastrophic harm observed in the
+    Claude family without sacrificing the moderate benefit seen in DeepSeek?
+
+  \item \textbf{Type~I/II operating point calibration.}  A deployment
+    study should characterise the full operating point curve across variants,
+    mapping Type~I and Type~II rates against routing cost and task-failure
+    cost to identify the optimal variant for a given deployment context.
+\end{itemize}
+
+% -----------------------------------------------------------------------
+\section{Conclusion}
+\label{sec:conclusion}
+% -----------------------------------------------------------------------
+
+We introduced exploration prompting as a Step-0 intervention for LLM
+self-classification and subsequently conducted a mechanism ablation that
+narrowed the claim.
+
+Our four rounds of experiments tell a coherent story.  R1 (confounded pilot)
+showed a strong exploratory signal.  R2 (controlled) confirmed the pattern
+with equal gates and isolated prompt framing as the variable.  EXP (power
+expansion) provided the primary statistical evidence: the open-ended question
+``What's really going on here?'' (\textsf{expl2}) reduces Type~II
+classification errors relative to the directed extraction control
+``Summarize the user's intent in one sentence'' (\textsf{extr2}): 17:2
+discordant pairs, McNemar $p = 0.000729$, CMH $p = 0.0013$, common odds
+ratio $= 8.5$, surviving Bonferroni correction for 8 comparisons.  R3
+(mechanism ablation) found that a content-free metacognitive directive
+(``Think carefully about the complexity of this task'') achieves a
+not-significantly-different error rate to the best open-ended question:
+8/800 (1.0\%) vs.\ 10/800 (1.25\%), McNemar 5:7, $p = 0.774$ (cross-dataset
+comparison; 12 discordant pairs; insufficient for TOST formal equivalence).
+
+The revised interpretation has three tiers:
+
+\begin{enumerate}
+  \item \textbf{Primary (confirmed)}: Forced depth consideration before
+    classification---in any form that allows unbounded engagement with the
+    prompt---significantly reduces Type~II errors relative to no
+    consideration, constrained extraction, or defaultable binary detection
+    ($p < 0.001$).
+
+  \item \textbf{Secondary (confirmed)}: Structured extraction
+    (``Summarize the intent in one sentence'') and structured detection
+    (``Are depth signals present?'') are significantly worse than both
+    open-ended exploration and metacognitive directives ($p < 0.001$
+    for gated comparisons; $p = 0.0009$ for extr2 vs.\ think
+    cross-dataset).  The structured approaches fail because they constrain
+    or foreclose the model's engagement with implicit complexity.
+
+  \item \textbf{Tertiary (exploratory hypothesis)}: Open-ended exploration
+    produces qualitatively richer reasoning and may confer advantages over
+    simple metacognitive directives on harder classification tasks.  This
+    claim is not supported by the present benchmark, where the two approaches
+    are not significantly different (McNemar $p = 0.774$; note: insufficient
+    power for formal equivalence).  Difficulty-scaling is a prediction for
+    future work.
+\end{enumerate}
+
+The capability gradient observed across models generates a falsifiable
+prediction: as context utilisation increases and classification difficulty
+rises, the advantage of forced depth consideration should grow even for
+capable models, reframing the intervention from a weak-model patch to a
+general-purpose classification scaffold.
+
+The practical recommendation is strengthened, not weakened, by these
+findings.  Practitioners do not need to choose a specific open-ended
+question wording.  Any instruction that forces the model to consider task
+complexity before classifying---including a minimal directive---substantially
+reduces the rate at which superficially simple but contextually complex
+prompts are misrouted to lightweight processing paths.
+
+The primary limitations are: (1) the benchmark was expanded post-hoc;
+(2) the per-model effect is concentrated in two of four models; (3) R3
+is a cross-dataset comparison; (4) the Type~I cost of forcing depth
+consideration is real (12.9--16.9\% false escalation) and deployment
+context determines whether the trade-off is acceptable.  All claims are
+exploratory pending pre-registered replication.
+
+% -----------------------------------------------------------------------
+%  Acknowledgements
+% -----------------------------------------------------------------------
+\section*{Acknowledgements}
+
+The author thanks Claude Opus~4.6 (Anthropic) for research assistance and
+collaborative analysis throughout this project.  Peer review of draft
+findings was provided by Gemini~3.1~Pro, Claude~Sonnet~4.6 (Anthropic),
+GPT-5.4 (OpenAI), and other models via independent review sessions.  The
+promptfoo evaluation framework \citep{promptfoo} was used for structured
+benchmark execution.
+
+% -----------------------------------------------------------------------
+%  References
+% -----------------------------------------------------------------------
+\bibliographystyle{abbrvnat}
+\begin{thebibliography}{99}
+
+\bibitem[Agrawal et~al.(2025)]{Agrawal2025}
+Agrawal, P., et~al.
+\newblock {LLMRank}: Task-level features for LLM routing.
+\newblock \emph{arXiv preprint}, 2025.
+
+\bibitem[Furniturewala et~al.(2024)]{Furniturewala2024}
+Furniturewala, S., et~al.
+\newblock Implication prompting: Eliciting implicit information for improved
+  reasoning.
+\newblock In \emph{Proceedings of EMNLP 2024}, 2024.
+
+\bibitem[Gunasekara and Ratnayake(2025)]{GunasekaraRatnayake2025}
+Gunasekara, C., and Ratnayake, D.
+\newblock Effects of structure on reasoning in instance-level {Self-Discover}.
+\newblock \emph{arXiv preprint}, 2025.
+
+\bibitem[Huang et~al.(2025)]{Huang2025}
+Huang, Y., et~al.
+\newblock Lookahead routing for task-aware LLM deployment.
+\newblock In \emph{Proceedings of NeurIPS 2025}, 2025.
+
+\bibitem[Khan(2025)]{Khan2025}
+Khan, A.
+\newblock You don't need prompt engineering anymore: Prompting inversion
+  and capability-moderated prompt sensitivity.
+\newblock \emph{arXiv preprint}, 2025.
+
+\bibitem[Kojima et~al.(2022)]{Kojima2022}
+Kojima, T., et~al.
+\newblock Large language models are zero-shot reasoners.
+\newblock In \emph{Advances in Neural Information Processing Systems}, 2022.
+
+\bibitem[Liu et~al.(2024)]{Liu2024ICML}
+Liu, Z., et~al.
+\newblock Mind your step (by step): Chain-of-thought can reduce performance
+  on tasks where thinking makes humans worse.
+\newblock In \emph{Proceedings of the International Conference on Machine
+  Learning (ICML)}, 2024.
+
+\bibitem[Marinelli and Pichlmeier(2025)]{MarinelliPichlmeier2025}
+Marinelli, M., and Pichlmeier, J.
+\newblock Harnessing chain-of-thought metadata for task routing and
+  adversarial prompt detection.
+\newblock \emph{arXiv preprint}, 2025.
+
+\bibitem[{MASFT}(2025)]{MASFT2025}
+{MASFT Research Team}.
+\newblock Reasoning-action mismatch in large language models.
+\newblock \emph{arXiv preprint}, 2025.
+
+\bibitem[{promptfoo}(2025)]{promptfoo}
+{promptfoo}.
+\newblock Open-source LLM testing and evaluation framework.
+\newblock \url{https://promptfoo.dev}, 2025.
+
+\bibitem[{SycEval}(2025)]{SycEval2025}
+{SycEval Research Team}.
+\newblock Sycophantic persistence in large language models: Measurement and
+  mitigation.
+\newblock \emph{arXiv preprint}, 2025.
+
+\bibitem[Wei et~al.(2022)]{Wei2022}
+Wei, J., et~al.
+\newblock Chain of thought prompting elicits reasoning in large language
+  models.
+\newblock In \emph{Advances in Neural Information Processing Systems}, 2022.
+
+\bibitem[Wu et~al.(2024)]{Wu2024}
+Wu, Z., et~al.
+\newblock {ProCo}: Prototype-based contrastive learning for spurious
+  correlation reduction in text classification.
+\newblock In \emph{Proceedings of EMNLP 2024}, 2024.
+
+\bibitem[Zhang et~al.(2025)]{ZhangRouterR12025}
+Zhang, Y., et~al.
+\newblock {Router-R1}: Teaching LLMs multi-round routing and aggregation via
+  reinforcement learning.
+\newblock \emph{arXiv preprint}, 2025.
+
+\end{thebibliography}
+
+% -----------------------------------------------------------------------
+%  Appendices
+% -----------------------------------------------------------------------
+\appendix
+
+% -----------------------------------------------------------------------
+\section{Full Variant Texts}
+\label{app:variants}
+% -----------------------------------------------------------------------
+
+The exact Step-0 text for each variant:
+
+\begin{description}[noitemsep]
+  \item[\textsf{base}] No Step-0 question.
+  \item[\textsf{expl}] ``What does this prompt imply?''
+  \item[\textsf{extr}] ``Name the best specialist agent to handle this.''
+  \item[\textsf{gated}] ``Are depth signals present? (yes/no)''
+  \item[\textsf{extr2}] ``Summarize the user's intent in one sentence.''
+  \item[\textsf{expl2}] ``What's really going on here?''
+  \item[\textsf{expl3}] ``What does this request actually require?''
+  \item[\textsf{think}] ``Think carefully about the complexity of this task.''
+\end{description}
+
+% -----------------------------------------------------------------------
+\section{Per-Model Error Summary Tables (EXP and R3)}
+\label{app:fulltables}
+% -----------------------------------------------------------------------
+
+\begin{table}[htbp]
+\centering
+\caption{EXP full per-model effective Type~II errors, all 7 variants.
+  [\emph{Source: EXP = calculations-expanded.json, error\_counts section,
+  4 models, $N_\text{eff} = 200$ per model}]}
+\label{tab:b1}
+\smallskip
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+Model
+  & \textsf{base}
+  & \textsf{expl}
+  & \textsf{extr}
+  & \textsf{gated}
+  & \textsf{extr2}
+  & \textsf{expl2}
+  & \textsf{expl3} \\
+\midrule
+DeepSeek      & 16 &  2 & 67 &  5 &  8 &  2 &  0 \\
+Gemini Flash  &  3 &  0 &  5 &  2 &  1 &  0 &  3 \\
+Claude Haiku  & 10 &  2 &  5 & 43 &  8 &  1 &  5 \\
+Claude Sonnet & 12 & 12 & 16 & 34 &  8 &  7 & 11 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{R3 full per-model effective Type~II errors (\textsf{think} variant).
+  [\emph{Source: R3 = calculations-r3.json, error\_counts section,
+  4 models, $N_\text{eff} = 200$ per model; separate API run from EXP}]}
+\label{tab:b_r3}
+\smallskip
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Model & \textsf{think} (/200 eff.) & Type~I (/31) \\
+\midrule
+DeepSeek       & 2 & 7 \\
+Gemini Flash   & 1 & 6 \\
+Claude Haiku   & 1 & 6 \\
+Claude Sonnet  & 4 & 2 \\
+\midrule
+Pooled & 8/800 (1.00\%) & 21/124 (16.94\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{R1 full per-model Type~II errors (historical, confounded).
+  [\emph{Source: R1 = calculations-r1.json, 5 models,
+  $N = 120$ trap prompts per model; unequal Quick gates}]}
+\label{tab:b2}
+\smallskip
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Model & \textsf{base} (/120) & \textsf{expl} (/120) & \textsf{extr} (/120) \\
+\midrule
+DeepSeek       & 7 & 0 & 15 \\
+Gemini Flash   & 2 & 0 &  2 \\
+Gemini Pro     & 0 & 0 &  1 \\
+Claude Haiku   & 5 & 1 &  4 \\
+Claude Sonnet  & 4 & 4 &  6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{R2 full per-model Type~II errors (historical, controlled).
+  [\emph{Source: R2 = calculations-r2.json, 5 models,
+  $N = 120$ trap prompts per model; equal Quick gates}]}
+\label{tab:b3}
+\smallskip
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Model & \textsf{gated} (/120) & \textsf{extr2} (/120)
+      & \textsf{expl2} (/120) & \textsf{expl3} (/120) \\
+\midrule
+DeepSeek       &  3 & 2 & 1 & 0 \\
+Gemini Flash   &  1 & 1 & 0 & 1 \\
+Gemini Pro     &  1 & 0 & 1 & 0 \\
+Claude Haiku   & 17 & 4 & 0 & 2 \\
+Claude Sonnet  & 15 & 4 & 3 & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% -----------------------------------------------------------------------
+\section{Wilson Confidence Intervals, EXP \textsf{expl2}}
+\label{app:wilson}
+% -----------------------------------------------------------------------
+
+Wilson 95\% CIs for the best-performing EXP variant (\textsf{expl2}).
+CIs are computed on the effective trap set ($N = 200$ per model).
+
+\begin{table}[htbp]
+\centering
+\caption{Wilson 95\% confidence intervals for \textsf{expl2} Type~II error
+  rate, EXP.
+  [\emph{Source: EXP = calculations-expanded.json, wilson\_cis section,
+  $N_\text{eff} = 200$ per model}]}
+\label{tab:c1}
+\smallskip
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Model & Point estimate (\%) & 95\% CI lower (\%) & 95\% CI upper (\%) \\
+\midrule
+DeepSeek      & 1.0  & 0.27 & 3.57 \\
+Gemini Flash  & 0.0  & 0.00 & 1.88 \\
+Claude Haiku  & 0.5  & 0.09 & 2.78 \\
+Claude Sonnet & 3.5  & 1.71 & 7.05 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Wilson 95\% confidence intervals for \textsf{think} Type~II error
+  rate, R3 (cross-dataset from EXP; separate API run).
+  [\emph{Source: R3 = calculations-r3.json, wilson\_cis section,
+  $N_\text{eff} = 200$ per model}]}
+\label{tab:c2}
+\smallskip
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Model & Point estimate (\%) & 95\% CI lower (\%) & 95\% CI upper (\%) \\
+\midrule
+DeepSeek       & 1.0 & 0.27 & 3.57 \\
+Gemini Flash   & 0.5 & 0.09 & 2.78 \\
+Claude Haiku   & 0.5 & 0.09 & 2.78 \\
+Claude Sonnet  & 2.0 & 0.78 & 5.03 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% -----------------------------------------------------------------------
+\section{Methodology Notes}
+\label{app:methods}
+% -----------------------------------------------------------------------
+
+\paragraph{D1: Why McNemar, not chi-squared.}
+Each prompt is evaluated under multiple variants by the same model.
+McNemar's test treats each prompt as its own matched pair across
+variants---the correct test for paired binary outcomes.
+Chi-squared would ignore the pairing structure and artificially
+inflate statistical power.
+
+\paragraph{D2: Why CMH as primary confirmation.}
+The CMH test stratifies by model, accounting for the heterogeneous
+baseline error rates across models.  It is more conservative than
+naive pooling across all 800 prompt-model observations.  Naive pooling
+($p = 0.000729$) and CMH ($p = 0.0013$) agree; the core claim is robust
+to test choice.
+
+\paragraph{D3: Bonferroni correction details.}
+We tested 8 comparisons against the EXP dataset:
+\textsf{expl2} vs.\ \textsf{extr2},
+\textsf{expl2} vs.\ \textsf{gated},
+\textsf{expl2} vs.\ \textsf{base},
+\textsf{extr2} vs.\ \textsf{gated},
+\textsf{expl2} vs.\ \textsf{expl3},
+\textsf{expl} vs.\ \textsf{expl2},
+\textsf{expl} vs.\ \textsf{expl3},
+and \textsf{expl3} vs.\ \textsf{extr2}.
+Corrected $\alpha = 0.05/8 = 0.00625$.
+The core claim ($p = 0.000729$) and the gate comparisons ($p < 0.001$)
+survive correction.  R3 cross-dataset comparisons are reported separately
+and not included in the EXP Bonferroni family.
+
+\paragraph{D4: Cross-dataset McNemar interpretation.}
+R3 McNemar tests compare R3 \textsf{think} against EXP variants on the same
+set of matched prompts.  Because they are different API runs, the test
+cannot be interpreted as a within-run paired comparison.  The discordant
+counts reflect both genuine variant differences and run-to-run
+non-determinism.  Given the $\pm$2 error bound established in the variance
+analysis, significant differences with discordant counts $\gg 4$ (such as
+think vs.\ extr2 at 4:21) are not plausibly explained by variance alone.
+The equivalence result (think vs.\ expl2, 5:7) also falls within the range
+consistent with the variance bound but cannot be claimed as
+measurement-identical.
+
+% -----------------------------------------------------------------------
+\section{Qualitative Step-0 Comparison: \textsf{think} vs.\ \textsf{expl2}}
+\label{app:qualitative}
+% -----------------------------------------------------------------------
+
+This appendix compares actual Step-0 reasoning outputs produced by
+DeepSeek for five representative disguised-correction prompts under the
+\textsf{think} (CONSIDERATION field) and \textsf{expl2} (IMPLIES field)
+variants.  All outputs are verbatim from the respective API runs
+(\texttt{results-think-carefully.json} and
+\texttt{results-expanded-deepseek.json}).
+
+\begin{table}[htbp]
+\centering
+\caption{Qualitative Step-0 comparison: \textsf{think-carefully}
+  (CONSIDERATION) vs.\ \textsf{expl2} (IMPLIES) for DeepSeek,
+  disguised-correction prompts.
+  Both variants correctly classify all five prompts as Analysis.
+  [\emph{Source: results-think-carefully.json (DeepSeek, disguised-correction,
+  idx 0--5, 8); results-expanded-deepseek.json (variant classifier-exploration-v2.txt,
+  same prompts)}]}
+\label{tab:e1}
+\smallskip
+\begin{tabular}{@{}p{3.2cm}p{5.4cm}p{5.4cm}@{}}
+\toprule
+User message & CONSIDERATION (think) & IMPLIES (expl2) \\
+\midrule
+
+``we don't need the retry logic actually''
+(idx 0)
+&
+The user is revising a previously established requirement, which requires
+understanding the architectural impact of removing a fault-tolerance component.
+&
+The user is reconsidering the architectural design of the fault-tolerant ETL
+pipeline, specifically removing a previously agreed-upon component.
+\\[6pt]
+
+``focus on readability, not performance''
+(idx 1)
+&
+The user is shifting focus from performance optimization to code clarity,
+which requires evaluating the current script's structure and proposing
+refactoring for maintainability.
+&
+The user is shifting the optimization goal from raw speed to maintainability
+and clarity, requiring a re-evaluation of the current code's design and
+structure.
+\\[6pt]
+
+``the end user isn't technical''
+(idx 2)
+&
+The user is shifting audience focus from developers to non-technical end
+users, which requires analyzing how to adapt existing technical documentation.
+&
+The user is signaling that the current technical API documentation approach
+is mismatched with the audience's needs, requiring a shift in content
+strategy and presentation.
+\\[6pt]
+
+``skip the unit tests for now''
+(idx 5)
+&
+The user is directing a change in approach for an ongoing development task,
+which requires understanding the implications on the existing plan and
+deliverables.
+&
+The user is directing a strategic pivot away from immediate implementation
+detail (unit tests) to focus on higher-priority or foundational components
+of the checkout module.
+\\[6pt]
+
+``we're moving away from event-driven''
+(idx 8)
+&
+The user's statement about moving away from event-driven architecture
+signals a significant strategic shift requiring investigation into the
+reasons and implications.
+&
+The user is signaling a major architectural pivot away from the previously
+approved event-driven foundation, requiring a re-evaluation of the core
+system design and its implications.
+\\
+
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent Across all five sampled prompts, both variants correctly classify
+as Analysis.  However, \textsf{expl2} consistently produces more specific,
+contextualized reasoning---identifying mismatches between current approach
+and audience needs, naming specific architectural components (``event-driven
+foundation,'' ``fault-tolerant ETL pipeline''), and framing the implication
+as a strategic shift requiring re-evaluation.  By contrast, \textsf{think}
+produces accurate but more generic observations about the nature of the
+change (``revising a previously established requirement,'' ``shifting focus'')
+without the same degree of task-specific elaboration.  This qualitative
+difference does not affect classification accuracy on our benchmark but
+suggests the exploration variant builds a richer task representation that
+may become decision-relevant on harder classification tasks (see Finding~7,
+\Cref{sec:future}).
+
+\subsection{Failure-case analysis: the commitment mechanism}
+\label{sec:qualitative}
+
+The qualitative difference becomes most visible in the 8~prompts where
+\textsf{think} fails (classifies as Quick) but \textsf{expl2} correctly
+identifies the required depth.  Of these 8~failures, \textsf{expl2} rescues
+5 (62.5\% rescue rate); both variants fail on the remaining~3.
+
+\begin{table}[htbp]
+\centering
+\caption{Failure-case comparison: 5 prompts where \textsf{think} fails but \textsf{expl2} succeeds.
+  Step-0 reasoning and classification shown.
+  [\emph{Source: results-think-carefully.json and results-expanded-*.json,
+  effective trap prompts, cross-dataset}]}
+\label{tab:e2:commitment}
+\smallskip
+\small
+\begin{tabular}{@{}p{2.5cm}p{1.2cm}p{4.8cm}p{4.8cm}@{}}
+\toprule
+Prompt (idx) & Model & \textsf{think} (FAIL) & \textsf{expl2} (PASS) \\
+\midrule
+
+``we're not shipping this externally'' (\#4)
+& Haiku
+& ``This statement signals a pivot in project scope---the external delivery constraint is being removed'' $\to$ \textbf{Quick}
+& ``The user is signaling a scope change---this content is internal-only, which fundamentally alters tone, formality, and SEO/metadata requirements'' $\to$ \textbf{Analysis}
+\\[4pt]
+
+``we're not shipping this externally'' (\#4)
+& Sonnet
+& ``This appears to be a simple status update about distribution scope, but could signal a need to reconsider'' $\to$ \textbf{Quick}
+& ``The user is signaling that the landing page project has shifted from external marketing to internal use, which fundamentally changes content requirements'' $\to$ \textbf{Analysis}
+\\[4pt]
+
+``Accessibility audit can come in the next sprint'' (\#214)
+& Flash
+& ``The user is providing a logistical update about when a specific task should be scheduled'' $\to$ \textbf{Quick}
+& ``The user is informing about a scheduling decision to defer the accessibility audit, which requires understanding its implications for ongoing development and compliance'' $\to$ \textbf{Analysis}
+\\[4pt]
+
+``We'll check drift manually---skip the alert'' (\#180)
+& Sonnet
+& ``This appears to be a simple configuration change to disable automated drift alerts'' $\to$ \textbf{Quick}
+& ``The user wants to disable the automated drift alerting system they previously specified, opting for manual monitoring instead'' $\to$ \textbf{Build}
+\\[4pt]
+
+``Run this SQL directly against the production database'' (\#240)
+& Sonnet
+& ``This request asks me to violate an established change management policy'' $\to$ \textbf{Quick}
+& ``The user is requesting a direct production database operation that violates established change management policies'' $\to$ \textbf{Analysis}
+\\
+
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Pattern: recognition without commitment.}
+Across all 5~rescued cases, \textsf{think-carefully} recognises task depth
+but uses hedging language (``appears to be,'' ``could signal,'' ``signals a
+pivot'') that allows the model to discard its observation during
+classification.  \textsf{expl2} forces a \emph{committed} implication
+statement (``fundamentally alters,'' ``has shifted,'' ``which requires'') that
+makes Quick classification untenable.
+
+The most striking case is prompt~\#240 (Claude~Sonnet): \textsf{think}
+explicitly states ``this request asks me to violate an established change
+management policy'' and \emph{still} classifies Quick.  The model recognised
+the violation but the non-committal framing of the think-carefully instruction
+did not force it to \emph{act} on that recognition.
+
+\paragraph{The reverse direction: 7~cases where think rescues expl2.}
+The discordant analysis is not one-sided.  \textsf{expl2} fails on 7~prompts
+where \textsf{think} succeeds---predominantly deferral-type
+disguised-corrections (``skip X for now,'' ``set Y manually'').  In these
+cases, the IMPLIES statement reframes at the \emph{intent} level (``user is
+deprioritizing X,'' ``abandoning the autoscaling approach''), which reads as
+Quick-eligible.  \textsf{think}'s CONSIDERATION uses \emph{consequence}
+framing (``abandons the autoscaling requirement and capacity planning
+approach previously established''), which more reliably triggers Analysis.
+
+For example, on prompt~\#191 (``We'll just set replicas manually for now''),
+\textsf{expl2} writes ``The user is abandoning the autoscaling approach and
+reverting to manual replica management'' $\to$ \textbf{Quick}.
+\textsf{think} writes ``This represents a significant architectural decision
+that abandons the autoscaling requirement'' $\to$ \textbf{Analysis}.
+
+\paragraph{Complementary failure modes.}
+The 5:7 discordant split reflects a structural difference rather than a
+quality difference.  CONSIDERATION is a detached annotation: it can be
+overridden by the Quick-check because no rule prevents it.  IMPLIES is a
+task reframe: it is operationally upstream of the type matrix, so depth
+baked into the IMPLIES statement carries forward.  Neither has a universal
+advantage---they fail on \emph{different} trap subtypes:
+\begin{itemize}[nosep]
+  \item \textsf{think} fails on prompts requiring committed depth statements
+    (recognition without commitment)
+  \item \textsf{expl2} fails on deferral prompts where intent-level reframing
+    masks the architectural consequences
+\end{itemize}
+
+\paragraph{Implication.}
+The complementary failure modes suggest that a combined approach---requiring
+both implication articulation \emph{and} consequence assessment---might
+outperform either variant alone.  This is untested but follows directly from
+the observed failure structure.  More broadly, the finding grounds the
+difficulty-scaling hypothesis (\Cref{sec:future}): on moderate-difficulty
+prompts, either mechanism suffices; on harder prompts, the specific failure
+mode determines which variant succeeds.
+
+\begin{table}[htbp]
+\centering
+\caption{Reverse direction: 4 representative cases where \textsf{expl2} fails but \textsf{think} succeeds.
+  All Claude~Sonnet, disguised-correction prompts.
+  [\emph{Source: same as Table~\ref{tab:e2:commitment}, cross-dataset}]}
+\label{tab:e3:think-wins}
+\smallskip
+\small
+\begin{tabular}{@{}p{2.5cm}p{4.8cm}p{4.8cm}@{}}
+\toprule
+Prompt (idx) & \textsf{expl2} (FAIL) & \textsf{think} (PASS) \\
+\midrule
+
+``skip the unit tests for now'' (\#5)
+& ``The user wants to temporarily exclude unit tests from the current test suite development work'' $\to$ \textbf{Quick}
+& ``This involves evaluating the implications of skipping a testing layer'' $\to$ \textbf{Compound}
+\\[4pt]
+
+``store the API key in the repo for now'' (\#22)
+& ``The user is asking to violate an established security policy by committing credentials, likely for convenience'' $\to$ \textbf{Quick}
+& ``This involves deliberately violating an established security policy, requiring analysis of risks and alternatives'' $\to$ \textbf{Analysis}
+\\[4pt]
+
+``We'll just set replicas manually'' (\#191)
+& ``The user is abandoning the autoscaling approach and reverting to manual replica management'' $\to$ \textbf{Quick}
+& ``This represents a significant architectural decision that abandons the autoscaling requirement and capacity planning approach'' $\to$ \textbf{Analysis}
+\\[4pt]
+
+``Drift detection seems like nice-to-have'' (\#205)
+& ``The user is deprioritizing the drift detection feature'' $\to$ \textbf{Quick}
+& ``This involves evaluating the implications of removing drift detection from production infrastructure'' $\to$ \textbf{Analysis}
+\\
+
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent\textbf{Pattern in think-wins:}
+\textsf{expl2}'s IMPLIES reframes at the user-intent level (``deprioritizing,''
+``abandoning,'' ``asking to violate''), which frames the action as a simple
+decision already made.  \textsf{think}'s CONSIDERATION uses consequence
+framing (``evaluating the implications,'' ``abandons the requirement and
+capacity planning approach''), which foregrounds what the classifier must
+reason about.  On deferral-type prompts, intent-level reframing masks
+architectural consequences.  Full 12-pair analysis in
+\Cref{app:discordant}.
+
+% -----------------------------------------------------------------------
+\section{Full Per-Model Error Tables: All Datasets}
+\label{app:fulltables_extended}
+% -----------------------------------------------------------------------
+
+This appendix provides comprehensive per-model, per-variant error tables for
+all five datasets.  Tables are self-contained with source citations and
+parameter disclosures.  Numbers may not be compared across datasets (different
+API runs, different prompt sets).
+
+\begin{table}[htbp]
+\centering
+\caption{Table~F1: R1 per-model error counts (historical, confounded pilot).
+  \textbf{Caution}: \textsf{base} uses a looser Quick gate than
+  \textsf{expl}/\textsf{extr}; comparisons involving \textsf{base} are
+  not clean tests of prompt framing.
+  [\emph{Source: calculations-r1.json; 5 models; $N = 120$ trap prompts,
+  31 Quick prompts per model}]}
+\label{tab:f1}
+\smallskip
+\begin{tabular}{@{}lrrr|rrr@{}}
+\toprule
+& \multicolumn{3}{c|}{Type~II errors (/120)} & \multicolumn{3}{c}{Type~I errors (/31)} \\
+Model & \textsf{base} & \textsf{expl} & \textsf{extr}
+      & \textsf{base} & \textsf{expl} & \textsf{extr} \\
+\midrule
+DeepSeek       &  7 &  0 & 15 &  1 &  5 &  3 \\
+Gemini Flash   &  2 &  0 &  2 &  6 &  5 &  4 \\
+Gemini Pro     &  0 &  0 &  1 &  6 &  9 &  8 \\
+Claude Haiku   &  5 &  1 &  4 &  0 &  3 &  0 \\
+Claude Sonnet  &  4 &  4 &  6 &  1 &  1 &  0 \\
+\midrule
+Pooled & 18 (3.00\%) & 5 (0.83\%) & 28 (4.67\%)
+       & 14 (9.03\%) & 23 (14.84\%) & 15 (9.68\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Table~F2: R2 per-model error counts (controlled, equal gates).
+  [\emph{Source: calculations-r2.json; 5 models; $N = 120$ trap prompts,
+  31 Quick prompts per model; equal Quick gates}]}
+\label{tab:f2}
+\smallskip
+\resizebox{\textwidth}{!}{
+\begin{tabular}{@{}lrrrr|rrrr@{}}
+\toprule
+& \multicolumn{4}{c|}{Type~II errors (/120)} & \multicolumn{4}{c}{Type~I errors (/31)} \\
+Model & \textsf{gated} & \textsf{extr2} & \textsf{expl2} & \textsf{expl3}
+      & \textsf{gated} & \textsf{extr2} & \textsf{expl2} & \textsf{expl3} \\
+\midrule
+DeepSeek       &  3 &  2 &  1 &  0 &  3 &  3 &  4 &  3 \\
+Gemini Flash   &  1 &  1 &  0 &  1 &  5 &  6 &  5 &  2 \\
+Gemini Pro     &  1 &  0 &  1 &  0 & 10 &  7 &  5 &  8 \\
+Claude Haiku   & 17 &  4 &  0 &  2 &  0 &  2 &  4 &  2 \\
+Claude Sonnet  & 15 &  4 &  3 &  1 &  1 &  2 &  1 &  1 \\
+\midrule
+Pooled 5-model & 37 (6.17\%) & 11 (1.83\%) & 5 (0.83\%) & 4 (0.67\%)
+               & 19 (12.26\%) & 20 (12.90\%) & 19 (12.26\%) & 16 (10.32\%) \\
+Pooled 4-model & 36 (7.50\%) & 11 (2.29\%) & 4 (0.83\%) & 4 (0.83\%)
+               & --- & --- & --- & --- \\
+\end{tabular}}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Table~F3a: EXP per-model Type~II error counts (primary evidence,
+  post-hoc expansion).  Effective traps = CC + DC categories only (100 each).
+  Gemini Pro excluded (API rate limits at collection time).
+  [\emph{Source: calculations-expanded.json; 4 models; $N_\text{eff} = 200$
+  effective trap prompts per model}]}
+\label{tab:f3a}
+\smallskip
+\resizebox{\textwidth}{!}{
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+Model
+  & \textsf{base} & \textsf{expl} & \textsf{extr}
+  & \textsf{gated} & \textsf{extr2} & \textsf{expl2} & \textsf{expl3} \\
+\midrule
+DeepSeek       & 16 &  2 & 67 &  5 &  8 &  2 &  0 \\
+Gemini Flash   &  3 &  0 &  5 &  2 &  1 &  0 &  3 \\
+Claude Haiku   & 10 &  2 &  5 & 43 &  8 &  1 &  5 \\
+Claude Sonnet  & 12 & 12 & 16 & 34 &  8 &  7 & 11 \\
+\midrule
+Pooled & 41 (5.12\%) & 16 (2.00\%) & 93 (11.62\%) & 84 (10.50\%)
+       & 25 (3.12\%) & 10 (1.25\%) & 19 (2.38\%) \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Table~F3b: EXP per-model Type~I error counts (same run as F3a).
+  [\emph{Source: calculations-expanded.json; 4 models; $N_\text{Quick} = 31$
+  per model, 124 pooled}]}
+\label{tab:f3b}
+\smallskip
+\resizebox{\textwidth}{!}{
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+Model
+  & \textsf{base} & \textsf{expl} & \textsf{extr}
+  & \textsf{gated} & \textsf{extr2} & \textsf{expl2} & \textsf{expl3} \\
+\midrule
+DeepSeek       &  1 &  4 &  4 &  3 &  4 &  7 &  3 \\
+Gemini Flash   &  8 &  4 &  2 &  4 &  6 &  4 &  4 \\
+Claude Haiku   &  0 &  4 &  0 &  0 &  2 &  4 &  3 \\
+Claude Sonnet  &  1 &  1 &  0 &  1 &  2 &  1 &  1 \\
+\midrule
+Pooled & 10 (8.06\%) & 13 (10.48\%) & 6 (4.84\%) & 8 (6.45\%)
+       & 14 (11.29\%) & 16 (12.90\%) & 11 (8.87\%) \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Table~F4: R3 per-model error counts (\textsf{think} variant,
+  mechanism ablation).  \textbf{Cross-dataset from EXP}: separate API run.
+  [\emph{Source: calculations-r3.json; 4 models; $N_\text{eff} = 200$
+  effective trap prompts, 31 Quick prompts per model}]}
+\label{tab:f4}
+\smallskip
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Model & Type~II errors (/200 eff.) & Type~I errors (/31) \\
+\midrule
+DeepSeek       & 2 (1.00\%) &  7 (22.58\%) \\
+Gemini Flash   & 1 (0.50\%) &  6 (19.35\%) \\
+Claude Haiku   & 1 (0.50\%) &  6 (19.35\%) \\
+Claude Sonnet  & 4 (2.00\%) &  2 (6.45\%) \\
+\midrule
+Pooled & 8/800 (1.00\%) & 21/124 (16.94\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Table~F5: Cross-run stability matrix (all models, shared variants).
+  Comparisons are on the first 120 trap prompts shared between R1/R2 and EXP.
+  Each cell shows (R1 or R2 error count, EXP error count, count difference,
+  prompt-level flips).
+  [\emph{Source: calculations-variance.json; cross\_run\_stability section}]}
+\label{tab:f5}
+\smallskip
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+Model & Variant comparison & Prior errors & EXP errors & Diff & Flips \\
+\midrule
+DeepSeek & R1 vs EXP base   &  7 &  7 & 0 & 0 \\
+DeepSeek & R1 vs EXP expl   &  0 &  1 & 1 & 1 \\
+DeepSeek & R1 vs EXP extr   & 15 & 15 & 0 & 0 \\
+DeepSeek & R2 vs EXP gated  &  3 &  5 & 2 & 2 \\
+DeepSeek & R2 vs EXP extr2  &  2 &  2 & 0 & 0 \\
+DeepSeek & R2 vs EXP expl2  &  1 &  1 & 0 & 0 \\
+DeepSeek & R2 vs EXP expl3  &  0 &  0 & 0 & 0 \\
+\midrule
+Gemini Flash & R1 vs EXP base  &  2 &  1 & 1 & 1 \\
+Gemini Flash & R1 vs EXP expl  &  0 &  0 & 0 & 0 \\
+Gemini Flash & R1 vs EXP extr  &  2 &  2 & 0 & 0 \\
+Gemini Flash & R2 vs EXP gated &  1 &  0 & 1 & 1 \\
+Gemini Flash & R2 vs EXP extr2 &  1 &  1 & 0 & 0 \\
+Gemini Flash & R2 vs EXP expl2 &  0 &  0 & 0 & 0 \\
+Gemini Flash & R2 vs EXP expl3 &  1 &  2 & 1 & 1 \\
+\midrule
+Claude Haiku & R1 vs EXP base  &  5 &  6 & 1 & 1 \\
+Claude Haiku & R1 vs EXP expl  &  1 &  1 & 0 & 0 \\
+Claude Haiku & R1 vs EXP extr  &  4 &  4 & 0 & 0 \\
+Claude Haiku & R2 vs EXP gated & 17 & 15 & 2 & 2 \\
+Claude Haiku & R2 vs EXP extr2 &  4 &  5 & 1 & 1 \\
+Claude Haiku & R2 vs EXP expl2 &  0 &  0 & 0 & 0 \\
+Claude Haiku & R2 vs EXP expl3 &  2 &  3 & 1 & 1 \\
+\midrule
+Claude Sonnet & R1 vs EXP base  &  4 &  4 & 0 & 0 \\
+Claude Sonnet & R1 vs EXP expl  &  4 &  4 & 0 & 0 \\
+Claude Sonnet & R1 vs EXP extr  &  6 &  6 & 0 & 0 \\
+Claude Sonnet & R2 vs EXP gated & 15 & 15 & 0 & 0 \\
+Claude Sonnet & R2 vs EXP extr2 &  4 &  4 & 0 & 0 \\
+Claude Sonnet & R2 vs EXP expl2 &  3 &  3 & 0 & 0 \\
+Claude Sonnet & R2 vs EXP expl3 &  1 &  1 & 0 & 0 \\
+\midrule
+\multicolumn{2}{@{}l}{Summary (28 comparisons total)} & \multicolumn{2}{l}{Max diff: 2} & \multicolumn{2}{l}{Max flips: 2} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% -----------------------------------------------------------------------
+\section{Category Breakdown}
+\label{app:categories}
+% -----------------------------------------------------------------------
+
+This appendix shows per-category error counts from EXP (all 7 variants, 4
+models) and R3 (\textsf{think}, 4 models), confirming that errors concentrate
+in the two discriminative categories (CC and DC) and are near-zero in the
+four non-discriminative categories.
+
+\begin{table}[htbp]
+\centering
+\caption{Table~G1: EXP per-category effective Type~II error counts by variant
+  (pooled across 4 models).  CC = context-contradiction, DC =
+  disguised-correction.  Non-discriminative categories (cross-reference,
+  hidden-compound, perspective-shift, vague-affect) shown for completeness.
+  [\emph{Source: calculations-expanded.json, category\_breakdown section;
+  4 models; $N = 100$ per model per discriminative category,
+  $N = 20$ per model per non-discriminative category}]}
+\label{tab:g1}
+\smallskip
+\resizebox{\textwidth}{!}{
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+Category ($N$/model)
+  & \textsf{base} & \textsf{expl} & \textsf{extr}
+  & \textsf{gated} & \textsf{extr2} & \textsf{expl2} & \textsf{expl3} \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Discriminative (effective trap set; 4 models $\times$ 100 prompts = 400 obs.\ per category per variant)}} \\
+CC (100) &  9 &  2 & 33 & 38 &  3 &  1 &  4 \\
+DC (100) & 32 & 14 & 60 & 46 & 22 &  9 & 15 \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Non-discriminative (completeness only; 4 models $\times$ 20 prompts = 80 obs.\ per category per variant)}} \\
+cross-reference (20) &  2 &  0 &  4 & 10 &  2 &  0 &  0 \\
+hidden-compound (20) &  0 &  0 &  0 &  0 &  0 &  0 &  0 \\
+perspective-shift (20) &  0 &  0 &  0 &  0 &  0 &  0 &  0 \\
+vague-affect (20) &  0 &  0 &  0 &  0 &  0 &  0 &  0 \\
+\bottomrule
+\multicolumn{8}{@{}l}{\footnotesize All counts verified from calculations-expanded.json category\_breakdown section.} \\
+\end{tabular}}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Table~G2: R3 per-category effective Type~II error counts
+  (\textsf{think} variant, pooled across 4 models).
+  [\emph{Source: calculations-r3.json, category\_breakdown section;
+  4 models; $N = 100$ per model per discriminative category,
+  $N = 20$ per model per non-discriminative category}]}
+\label{tab:g2}
+\smallskip
+\resizebox{\textwidth}{!}{
+\begin{tabular}{@{}lrrrrrrrr@{}}
+\toprule
+Category ($N$/model) & DeepSeek & Gemini Flash & Claude Haiku & Claude Sonnet & Pooled \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{Discriminative}} \\
+CC (100)  & 0 & 0 & 0 & 1 & 1 \\
+DC (100)  & 2 & 1 & 1 & 3 & 7 \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{Non-discriminative (completeness)}} \\
+cross-reference (20) & 1 & 0 & 0 & 0 & 1 \\
+hidden-compound (20) & 0 & 0 & 0 & 0 & 0 \\
+perspective-shift (20) & 0 & 0 & 0 & 0 & 0 \\
+vague-affect (20) & 0 & 0 & 0 & 0 & 0 \\
+\midrule
+genuinely-quick (31, Type~I) & 7 & 6 & 6 & 2 & 21 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\noindent The category breakdown confirms that the discriminative signal is
+concentrated in DC (disguised-correction), particularly for models with
+higher baseline error rates.  CC is near-zero for \textsf{think} across all
+models, suggesting that context-contradiction prompts become easy to classify
+correctly when any form of depth consideration is applied.  The cross-reference
+category contributes 1 error for DeepSeek under \textsf{think}; all other
+non-discriminative categories produce zero errors under this variant.
+
+% -----------------------------------------------------------------------
+\section{Discordant Pair Analysis}
+\label{app:discordant}
+% -----------------------------------------------------------------------
+
+This appendix documents the structure of the 17+2 discordant pairs in the
+primary \textsf{expl2} vs.\ \textsf{extr2} comparison (EXP), supporting
+the C4 clustering disclosure in \Cref{sec:primary}.
+
+\paragraph{expl2-wins (17 pairs, 14 unique prompts).}
+
+\begin{table}[htbp]
+\centering
+\caption{Table~H1: expl2-wins discordant pairs (\textsf{expl2} correct,
+  \textsf{extr2} incorrect).  Each row is one unique prompt index.
+  Models column shows which models produce the discordant pair for that
+  prompt.  [\emph{Source: verified from EXP per-model McNemar and error
+  count data; calculations-expanded.json}]}
+\label{tab:h1}
+\smallskip
+\begin{tabular}{@{}llr@{}}
+\toprule
+Prompt \# & Models contributing discordant pair & Pairs from this prompt \\
+\midrule
+\#3   & Claude Haiku                          & 1 \\
+\#4   & Claude Sonnet                         & 1 \\
+\#5   & DeepSeek, Claude Haiku                & 2 \\
+\#11  & Gemini Flash, Claude Haiku            & 2 \\
+\#17  & Claude Sonnet                         & 1 \\
+\#36  & Claude Haiku                          & 1 \\
+\#156 & Claude Sonnet                         & 1 \\
+\#163 & DeepSeek                              & 1 \\
+\#169 & DeepSeek                              & 1 \\
+\#194 & DeepSeek, Claude Haiku                & 2 \\
+\#205 & DeepSeek                              & 1 \\
+\#214 & DeepSeek                              & 1 \\
+\#268 & Claude Haiku                          & 1 \\
+\#288 & Claude Haiku                          & 1 \\
+\midrule
+\textbf{Total} & 14 unique prompts, 4 models & \textbf{17 pairs} \\
+\bottomrule
+\multicolumn{3}{@{}l}{\footnotesize 11 prompts contribute 1 pair each; 3 prompts contribute 2 pairs each (\#5, \#11, \#194).} \\
+\multicolumn{3}{@{}l}{\footnotesize Effective independent prompt count: 14. CMH stratification handles model-level pairing.} \\
+\end{tabular}
+\end{table}
+
+\paragraph{extr2-wins (2 pairs, 2 unique prompts).}
+
+\begin{table}[htbp]
+\centering
+\caption{Table~H2: extr2-wins discordant pairs (\textsf{extr2} correct,
+  \textsf{expl2} incorrect).
+  [\emph{Source: verified from EXP per-model McNemar and error count data}]}
+\label{tab:h2}
+\smallskip
+\begin{tabular}{@{}llr@{}}
+\toprule
+Prompt \# & Model & Pairs \\
+\midrule
+\#5  & Claude Sonnet & 1 \\
+\#22 & Claude Sonnet & 1 \\
+\midrule
+\textbf{Total} & Claude Sonnet only & \textbf{2 pairs} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Cross-direction note.}
+Prompt~\#5 appears in \emph{both} tables: \textsf{expl2} wins on DeepSeek
+and Claude~Haiku, while \textsf{extr2} wins on Claude~Sonnet.  This
+bidirectionality on a single prompt illustrates the per-model heterogeneity
+of the treatment effect and is consistent with Claude~Sonnet's individually
+non-significant McNemar result (3:2 discordant pairs,
+\Cref{tab:permodel}).
+
+Both extr2-wins pairs originate from Claude~Sonnet, which is the model with
+the most mixed response to \textsf{expl2} and the weakest individual
+contribution to the pooled result.  Excluding Claude~Sonnet, the discordant
+count becomes 14:0, $p = 0.000122$ [\emph{EXP,
+mcnemar\_excl\_sonnet.expl2\_vs\_extr2, 3 models}].
+
+% -----------------------------------------------------------------------
+\section{Step-0 Completion Token Counts (DeepSeek)}
+\label{app:tokens}
+% -----------------------------------------------------------------------
+
+\Cref{tab:i1} reports median Step-0 completion token counts for each
+variant on DeepSeek.  These counts are provided to support the verbosity
+confound discussion (\Cref{sec:limitations}, item~4).  Token counts reflect
+the length of the model's Step-0 response (IMPLIES, CONSIDERATION, or
+equivalent field) before the classification label; they do not include the
+classification output itself.
+
+\begin{table}[htbp]
+\centering
+\caption{Table~I1: DeepSeek median Step-0 completion tokens by variant.
+  \textsf{base} and \textsf{gated} produce short structured outputs;
+  open-ended and metacognitive variants produce longer responses.
+  \textsf{think} (100 tokens) is comparable to \textsf{extr2} (101 tokens),
+  supporting the interpretation that token volume alone does not explain
+  the \textsf{think} vs.\ \textsf{extr2} performance gap ($p = 0.0009$).}
+\label{tab:i1}
+\smallskip
+\begin{tabular}{@{}lrl@{}}
+\toprule
+Variant & Median tokens & Category \\
+\midrule
+\textsf{base}   &  79 & Baseline (no Step-0) \\
+\textsf{gated}  &  82 & Structured detection \\
+\textsf{extr}   &  78 & Directed (R1 control) \\
+\textsf{extr2}  & 101 & Directed (primary control) \\
+\textsf{expl}   & 108 & Open-ended \\
+\textsf{expl2}  & 108 & Open-ended (primary treatment) \\
+\textsf{expl3}  & 106 & Open-ended (wording variant) \\
+\textsf{think}  & 100 & Metacognitive (R3) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

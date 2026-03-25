@@ -1,0 +1,1855 @@
+{
+  "metadata": {
+    "dataset": "Expanded",
+    "source_files": {
+      "DeepSeek": "results-expanded-deepseek.json",
+      "Gemini Flash": "results-expanded-gemini-flash.json",
+      "Claude Haiku": "results-expanded-claude-haiku.json",
+      "Claude Sonnet": "results-expanded-claude-sonnet.json"
+    },
+    "n_prompts": 311,
+    "n_effective_traps": 200,
+    "n_all_traps": 280,
+    "n_quick": 31,
+    "effective_categories": [
+      "context-contradiction",
+      "disguised-correction"
+    ],
+    "all_variants": [
+      "base",
+      "expl",
+      "extr",
+      "gated",
+      "extr2",
+      "expl2",
+      "expl3"
+    ],
+    "models": [
+      "DeepSeek",
+      "Gemini Flash",
+      "Claude Haiku",
+      "Claude Sonnet"
+    ],
+    "n_models": 4,
+    "note": "Gemini Pro NOT included (API rate limits). This is a SEPARATE run from R1/R2.",
+    "computed_at": "2026-03-24T23:09:37.348703",
+    "script": "compute-expanded.py",
+    "prompt_file": "prompts-expanded.yaml"
+  },
+  "error_counts": {
+    "DeepSeek": {
+      "base": {
+        "effective_type2_errors": 16,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 17,
+        "all_trap_type2_total": 280,
+        "type1_errors": 1,
+        "type1_total": 31
+      },
+      "expl": {
+        "effective_type2_errors": 2,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 2,
+        "all_trap_type2_total": 280,
+        "type1_errors": 4,
+        "type1_total": 31
+      },
+      "extr": {
+        "effective_type2_errors": 67,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 69,
+        "all_trap_type2_total": 280,
+        "type1_errors": 4,
+        "type1_total": 31
+      },
+      "gated": {
+        "effective_type2_errors": 5,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 6,
+        "all_trap_type2_total": 280,
+        "type1_errors": 3,
+        "type1_total": 31
+      },
+      "extr2": {
+        "effective_type2_errors": 8,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 8,
+        "all_trap_type2_total": 280,
+        "type1_errors": 4,
+        "type1_total": 31
+      },
+      "expl2": {
+        "effective_type2_errors": 2,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 2,
+        "all_trap_type2_total": 280,
+        "type1_errors": 7,
+        "type1_total": 31
+      },
+      "expl3": {
+        "effective_type2_errors": 0,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 0,
+        "all_trap_type2_total": 280,
+        "type1_errors": 3,
+        "type1_total": 31
+      }
+    },
+    "Gemini Flash": {
+      "base": {
+        "effective_type2_errors": 3,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 3,
+        "all_trap_type2_total": 280,
+        "type1_errors": 8,
+        "type1_total": 31
+      },
+      "expl": {
+        "effective_type2_errors": 0,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 0,
+        "all_trap_type2_total": 280,
+        "type1_errors": 4,
+        "type1_total": 31
+      },
+      "extr": {
+        "effective_type2_errors": 5,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 5,
+        "all_trap_type2_total": 280,
+        "type1_errors": 2,
+        "type1_total": 31
+      },
+      "gated": {
+        "effective_type2_errors": 2,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 2,
+        "all_trap_type2_total": 280,
+        "type1_errors": 4,
+        "type1_total": 31
+      },
+      "extr2": {
+        "effective_type2_errors": 1,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 1,
+        "all_trap_type2_total": 280,
+        "type1_errors": 6,
+        "type1_total": 31
+      },
+      "expl2": {
+        "effective_type2_errors": 0,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 0,
+        "all_trap_type2_total": 280,
+        "type1_errors": 4,
+        "type1_total": 31
+      },
+      "expl3": {
+        "effective_type2_errors": 3,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 3,
+        "all_trap_type2_total": 280,
+        "type1_errors": 4,
+        "type1_total": 31
+      }
+    },
+    "Claude Haiku": {
+      "base": {
+        "effective_type2_errors": 10,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 11,
+        "all_trap_type2_total": 280,
+        "type1_errors": 0,
+        "type1_total": 31
+      },
+      "expl": {
+        "effective_type2_errors": 2,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 2,
+        "all_trap_type2_total": 280,
+        "type1_errors": 4,
+        "type1_total": 31
+      },
+      "extr": {
+        "effective_type2_errors": 5,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 6,
+        "all_trap_type2_total": 280,
+        "type1_errors": 0,
+        "type1_total": 31
+      },
+      "gated": {
+        "effective_type2_errors": 43,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 48,
+        "all_trap_type2_total": 280,
+        "type1_errors": 0,
+        "type1_total": 31
+      },
+      "extr2": {
+        "effective_type2_errors": 8,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 9,
+        "all_trap_type2_total": 280,
+        "type1_errors": 2,
+        "type1_total": 31
+      },
+      "expl2": {
+        "effective_type2_errors": 1,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 1,
+        "all_trap_type2_total": 280,
+        "type1_errors": 4,
+        "type1_total": 31
+      },
+      "expl3": {
+        "effective_type2_errors": 5,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 5,
+        "all_trap_type2_total": 280,
+        "type1_errors": 3,
+        "type1_total": 31
+      }
+    },
+    "Claude Sonnet": {
+      "base": {
+        "effective_type2_errors": 12,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 12,
+        "all_trap_type2_total": 280,
+        "type1_errors": 1,
+        "type1_total": 31
+      },
+      "expl": {
+        "effective_type2_errors": 12,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 12,
+        "all_trap_type2_total": 280,
+        "type1_errors": 1,
+        "type1_total": 31
+      },
+      "extr": {
+        "effective_type2_errors": 16,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 17,
+        "all_trap_type2_total": 280,
+        "type1_errors": 0,
+        "type1_total": 31
+      },
+      "gated": {
+        "effective_type2_errors": 34,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 38,
+        "all_trap_type2_total": 280,
+        "type1_errors": 1,
+        "type1_total": 31
+      },
+      "extr2": {
+        "effective_type2_errors": 8,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 9,
+        "all_trap_type2_total": 280,
+        "type1_errors": 2,
+        "type1_total": 31
+      },
+      "expl2": {
+        "effective_type2_errors": 7,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 7,
+        "all_trap_type2_total": 280,
+        "type1_errors": 1,
+        "type1_total": 31
+      },
+      "expl3": {
+        "effective_type2_errors": 11,
+        "effective_type2_total": 200,
+        "all_trap_type2_errors": 11,
+        "all_trap_type2_total": 280,
+        "type1_errors": 1,
+        "type1_total": 31
+      }
+    }
+  },
+  "pooled": {
+    "base": {
+      "effective_type2_errors": 41,
+      "effective_type2_total": 800,
+      "effective_type2_pct": 5.12,
+      "type1_errors": 10,
+      "type1_total": 124,
+      "type1_pct": 8.06
+    },
+    "expl": {
+      "effective_type2_errors": 16,
+      "effective_type2_total": 800,
+      "effective_type2_pct": 2.0,
+      "type1_errors": 13,
+      "type1_total": 124,
+      "type1_pct": 10.48
+    },
+    "extr": {
+      "effective_type2_errors": 93,
+      "effective_type2_total": 800,
+      "effective_type2_pct": 11.62,
+      "type1_errors": 6,
+      "type1_total": 124,
+      "type1_pct": 4.84
+    },
+    "gated": {
+      "effective_type2_errors": 84,
+      "effective_type2_total": 800,
+      "effective_type2_pct": 10.5,
+      "type1_errors": 8,
+      "type1_total": 124,
+      "type1_pct": 6.45
+    },
+    "extr2": {
+      "effective_type2_errors": 25,
+      "effective_type2_total": 800,
+      "effective_type2_pct": 3.12,
+      "type1_errors": 14,
+      "type1_total": 124,
+      "type1_pct": 11.29
+    },
+    "expl2": {
+      "effective_type2_errors": 10,
+      "effective_type2_total": 800,
+      "effective_type2_pct": 1.25,
+      "type1_errors": 16,
+      "type1_total": 124,
+      "type1_pct": 12.9
+    },
+    "expl3": {
+      "effective_type2_errors": 19,
+      "effective_type2_total": 800,
+      "effective_type2_pct": 2.38,
+      "type1_errors": 11,
+      "type1_total": 124,
+      "type1_pct": 8.87
+    }
+  },
+  "mcnemar_tests": {
+    "expl2_vs_extr2": {
+      "var_a": "expl2",
+      "var_b": "extr2",
+      "a_wins": 17,
+      "b_wins": 2,
+      "n_discordant": 19,
+      "p_value": 0.000729,
+      "significant_005": true,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku",
+        "Claude Sonnet"
+      ],
+      "n_models": 4,
+      "idx_set_size": 200
+    },
+    "expl3_vs_extr2": {
+      "var_a": "expl3",
+      "var_b": "extr2",
+      "a_wins": 17,
+      "b_wins": 11,
+      "n_discordant": 28,
+      "p_value": 0.344928,
+      "significant_005": false,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku",
+        "Claude Sonnet"
+      ],
+      "n_models": 4,
+      "idx_set_size": 200
+    },
+    "expl2_vs_gated": {
+      "var_a": "expl2",
+      "var_b": "gated",
+      "a_wins": 74,
+      "b_wins": 0,
+      "n_discordant": 74,
+      "p_value": 0.0,
+      "significant_005": true,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku",
+        "Claude Sonnet"
+      ],
+      "n_models": 4,
+      "idx_set_size": 200
+    },
+    "expl2_vs_base": {
+      "var_a": "expl2",
+      "var_b": "base",
+      "a_wins": 32,
+      "b_wins": 1,
+      "n_discordant": 33,
+      "p_value": 0.0,
+      "significant_005": true,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku",
+        "Claude Sonnet"
+      ],
+      "n_models": 4,
+      "idx_set_size": 200
+    },
+    "extr2_vs_gated": {
+      "var_a": "extr2",
+      "var_b": "gated",
+      "a_wins": 68,
+      "b_wins": 9,
+      "n_discordant": 77,
+      "p_value": 0.0,
+      "significant_005": true,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku",
+        "Claude Sonnet"
+      ],
+      "n_models": 4,
+      "idx_set_size": 200
+    },
+    "expl2_vs_expl3_wording": {
+      "var_a": "expl2",
+      "var_b": "expl3",
+      "a_wins": 14,
+      "b_wins": 5,
+      "n_discordant": 19,
+      "p_value": 0.063568,
+      "significant_005": false,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku",
+        "Claude Sonnet"
+      ],
+      "n_models": 4,
+      "idx_set_size": 200
+    },
+    "expl_vs_expl2_wording": {
+      "var_a": "expl",
+      "var_b": "expl2",
+      "a_wins": 1,
+      "b_wins": 7,
+      "n_discordant": 8,
+      "p_value": 0.070312,
+      "significant_005": false,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku",
+        "Claude Sonnet"
+      ],
+      "n_models": 4,
+      "idx_set_size": 200
+    },
+    "expl_vs_expl3_wording": {
+      "var_a": "expl",
+      "var_b": "expl3",
+      "a_wins": 9,
+      "b_wins": 6,
+      "n_discordant": 15,
+      "p_value": 0.607239,
+      "significant_005": false,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku",
+        "Claude Sonnet"
+      ],
+      "n_models": 4,
+      "idx_set_size": 200
+    }
+  },
+  "mcnemar_excl_sonnet": {
+    "expl2_vs_extr2": {
+      "var_a": "expl2",
+      "var_b": "extr2",
+      "a_wins": 14,
+      "b_wins": 0,
+      "n_discordant": 14,
+      "p_value": 0.000122,
+      "significant_005": true,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku"
+      ],
+      "n_models": 3,
+      "idx_set_size": 200
+    },
+    "expl3_vs_extr2": {
+      "var_a": "expl3",
+      "var_b": "extr2",
+      "a_wins": 14,
+      "b_wins": 5,
+      "n_discordant": 19,
+      "p_value": 0.063568,
+      "significant_005": false,
+      "models": [
+        "DeepSeek",
+        "Gemini Flash",
+        "Claude Haiku"
+      ],
+      "n_models": 3,
+      "idx_set_size": 200
+    }
+  },
+  "per_model_mcnemar": {
+    "DeepSeek": {
+      "expl2_vs_extr2": {
+        "var_a": "expl2",
+        "var_b": "extr2",
+        "a_wins": 6,
+        "b_wins": 0,
+        "n_discordant": 6,
+        "p_value": 0.03125,
+        "significant_005": true,
+        "models": [
+          "DeepSeek"
+        ],
+        "n_models": 1,
+        "idx_set_size": 200
+      },
+      "expl2_vs_gated": {
+        "var_a": "expl2",
+        "var_b": "gated",
+        "a_wins": 3,
+        "b_wins": 0,
+        "n_discordant": 3,
+        "p_value": 0.25,
+        "significant_005": false,
+        "models": [
+          "DeepSeek"
+        ],
+        "n_models": 1,
+        "idx_set_size": 200
+      },
+      "expl2_vs_base": {
+        "var_a": "expl2",
+        "var_b": "base",
+        "a_wins": 14,
+        "b_wins": 0,
+        "n_discordant": 14,
+        "p_value": 0.000122,
+        "significant_005": true,
+        "models": [
+          "DeepSeek"
+        ],
+        "n_models": 1,
+        "idx_set_size": 200
+      }
+    },
+    "Gemini Flash": {
+      "expl2_vs_extr2": {
+        "var_a": "expl2",
+        "var_b": "extr2",
+        "a_wins": 1,
+        "b_wins": 0,
+        "n_discordant": 1,
+        "p_value": 1.0,
+        "significant_005": false,
+        "models": [
+          "Gemini Flash"
+        ],
+        "n_models": 1,
+        "idx_set_size": 200
+      },
+      "expl2_vs_gated": {
+        "var_a": "expl2",
+        "var_b": "gated",
+        "a_wins": 2,
+        "b_wins": 0,
+        "n_discordant": 2,
+        "p_value": 0.5,
+        "significant_005": false,
+        "models": [
+          "Gemini Flash"
+        ],
+        "n_models": 1,
+        "idx_set_size": 200
+      },
+      "expl2_vs_base": {
+        "var_a": "expl2",
+        "var_b": "base",
+        "a_wins": 3,
+        "b_wins": 0,
+        "n_discordant": 3,
+        "p_value": 0.25,
+        "significant_005": false,
+        "models": [
+          "Gemini Flash"
+        ],
+        "n_models": 1,
+        "idx_set_size": 200
+      }
+    },
+    "Claude Haiku": {
+      "expl2_vs_extr2": {
+        "var_a": "expl2",
+        "var_b": "extr2",
+        "a_wins": 7,
+        "b_wins": 0,
+        "n_discordant": 7,
+        "p_value": 0.015625,
+        "significant_005": true,
+        "models": [
+          "Claude Haiku"
+        ],
+        "n_models": 1,
+        "idx_set_size": 200
+      },
+      "expl2_vs_gated": {
+        "var_a": "expl2",
+        "var_b": "gated",
+        "a_wins": 42,
+        "b_wins": 0,
+        "n_discordant": 42,
+        "p_value": 0.0,
+        "significant_005": true,
+        "models": [
+          "Claude Haiku"
+        ],
+        "n_models": 1,
+        "idx_set_size": 200
+      },
+      "expl2_vs_base": {
+        "var_a": "expl2",
+        "var_b": "base",
+        "a_wins": 9,
+        "b_wins": 0,
+        "n_discordant": 9,
+        "p_value": 0.003906,
+        "significant_005": true,
+        "models": [
+          "Claude Haiku"
+        ],
+        "n_models": 1,
+        "idx_set_size": 200
+      }
+    },
+    "Claude Sonnet": {
+      "expl2_vs_extr2": {
+        "var_a": "expl2",
+        "var_b": "extr2",
+        "a_wins": 3,
+        "b_wins": 2,
+        "n_discordant": 5,
+        "p_value": 1.0,
+        "significant_005": false,
+        "models": [
+          "Claude Sonnet"
+        ],
+        "n_models": 1,
+        "idx_set_size": 200
+      },
+      "expl2_vs_gated": {
+        "var_a": "expl2",
+        "var_b": "gated",
+        "a_wins": 27,
+        "b_wins": 0,
+        "n_discordant": 27,
+        "p_value": 0.0,
+        "significant_005": true,
+        "models": [
+          "Claude Sonnet"
+        ],
+        "n_models": 1,
+        "idx_set_size": 200
+      },
+      "expl2_vs_base": {
+        "var_a": "expl2",
+        "var_b": "base",
+        "a_wins": 6,
+        "b_wins": 1,
+        "n_discordant": 7,
+        "p_value": 0.125,
+        "significant_005": false,
+        "models": [
+          "Claude Sonnet"
+        ],
+        "n_models": 1,
+        "idx_set_size": 200
+      }
+    }
+  },
+  "category_breakdown": {
+    "DeepSeek": {
+      "context-contradiction": {
+        "base": {
+          "errors": 6,
+          "total": 100
+        },
+        "expl": {
+          "errors": 0,
+          "total": 100
+        },
+        "extr": {
+          "errors": 29,
+          "total": 100
+        },
+        "gated": {
+          "errors": 1,
+          "total": 100
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 100
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 100
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 100
+        }
+      },
+      "cross-reference": {
+        "base": {
+          "errors": 1,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 2,
+          "total": 20
+        },
+        "gated": {
+          "errors": 1,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      },
+      "disguised-correction": {
+        "base": {
+          "errors": 10,
+          "total": 100
+        },
+        "expl": {
+          "errors": 2,
+          "total": 100
+        },
+        "extr": {
+          "errors": 38,
+          "total": 100
+        },
+        "gated": {
+          "errors": 4,
+          "total": 100
+        },
+        "extr2": {
+          "errors": 8,
+          "total": 100
+        },
+        "expl2": {
+          "errors": 2,
+          "total": 100
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 100
+        }
+      },
+      "genuinely-quick": {
+        "base": {
+          "errors": 1,
+          "total": 31
+        },
+        "expl": {
+          "errors": 4,
+          "total": 31
+        },
+        "extr": {
+          "errors": 4,
+          "total": 31
+        },
+        "gated": {
+          "errors": 3,
+          "total": 31
+        },
+        "extr2": {
+          "errors": 4,
+          "total": 31
+        },
+        "expl2": {
+          "errors": 7,
+          "total": 31
+        },
+        "expl3": {
+          "errors": 3,
+          "total": 31
+        }
+      },
+      "hidden-compound": {
+        "base": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 0,
+          "total": 20
+        },
+        "gated": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      },
+      "perspective-shift": {
+        "base": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 0,
+          "total": 20
+        },
+        "gated": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      },
+      "vague-affect": {
+        "base": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 0,
+          "total": 20
+        },
+        "gated": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      }
+    },
+    "Gemini Flash": {
+      "context-contradiction": {
+        "base": {
+          "errors": 0,
+          "total": 100
+        },
+        "expl": {
+          "errors": 0,
+          "total": 100
+        },
+        "extr": {
+          "errors": 0,
+          "total": 100
+        },
+        "gated": {
+          "errors": 0,
+          "total": 100
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 100
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 100
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 100
+        }
+      },
+      "cross-reference": {
+        "base": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 0,
+          "total": 20
+        },
+        "gated": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      },
+      "disguised-correction": {
+        "base": {
+          "errors": 3,
+          "total": 100
+        },
+        "expl": {
+          "errors": 0,
+          "total": 100
+        },
+        "extr": {
+          "errors": 5,
+          "total": 100
+        },
+        "gated": {
+          "errors": 2,
+          "total": 100
+        },
+        "extr2": {
+          "errors": 1,
+          "total": 100
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 100
+        },
+        "expl3": {
+          "errors": 3,
+          "total": 100
+        }
+      },
+      "genuinely-quick": {
+        "base": {
+          "errors": 8,
+          "total": 31
+        },
+        "expl": {
+          "errors": 4,
+          "total": 31
+        },
+        "extr": {
+          "errors": 2,
+          "total": 31
+        },
+        "gated": {
+          "errors": 4,
+          "total": 31
+        },
+        "extr2": {
+          "errors": 6,
+          "total": 31
+        },
+        "expl2": {
+          "errors": 4,
+          "total": 31
+        },
+        "expl3": {
+          "errors": 4,
+          "total": 31
+        }
+      },
+      "hidden-compound": {
+        "base": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 0,
+          "total": 20
+        },
+        "gated": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      },
+      "perspective-shift": {
+        "base": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 0,
+          "total": 20
+        },
+        "gated": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      },
+      "vague-affect": {
+        "base": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 0,
+          "total": 20
+        },
+        "gated": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      }
+    },
+    "Claude Haiku": {
+      "context-contradiction": {
+        "base": {
+          "errors": 1,
+          "total": 100
+        },
+        "expl": {
+          "errors": 0,
+          "total": 100
+        },
+        "extr": {
+          "errors": 1,
+          "total": 100
+        },
+        "gated": {
+          "errors": 28,
+          "total": 100
+        },
+        "extr2": {
+          "errors": 3,
+          "total": 100
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 100
+        },
+        "expl3": {
+          "errors": 1,
+          "total": 100
+        }
+      },
+      "cross-reference": {
+        "base": {
+          "errors": 1,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 1,
+          "total": 20
+        },
+        "gated": {
+          "errors": 5,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 1,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      },
+      "disguised-correction": {
+        "base": {
+          "errors": 9,
+          "total": 100
+        },
+        "expl": {
+          "errors": 2,
+          "total": 100
+        },
+        "extr": {
+          "errors": 4,
+          "total": 100
+        },
+        "gated": {
+          "errors": 15,
+          "total": 100
+        },
+        "extr2": {
+          "errors": 5,
+          "total": 100
+        },
+        "expl2": {
+          "errors": 1,
+          "total": 100
+        },
+        "expl3": {
+          "errors": 4,
+          "total": 100
+        }
+      },
+      "genuinely-quick": {
+        "base": {
+          "errors": 0,
+          "total": 31
+        },
+        "expl": {
+          "errors": 4,
+          "total": 31
+        },
+        "extr": {
+          "errors": 0,
+          "total": 31
+        },
+        "gated": {
+          "errors": 0,
+          "total": 31
+        },
+        "extr2": {
+          "errors": 2,
+          "total": 31
+        },
+        "expl2": {
+          "errors": 4,
+          "total": 31
+        },
+        "expl3": {
+          "errors": 3,
+          "total": 31
+        }
+      },
+      "hidden-compound": {
+        "base": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 0,
+          "total": 20
+        },
+        "gated": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      },
+      "perspective-shift": {
+        "base": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 0,
+          "total": 20
+        },
+        "gated": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      },
+      "vague-affect": {
+        "base": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 0,
+          "total": 20
+        },
+        "gated": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      }
+    },
+    "Claude Sonnet": {
+      "context-contradiction": {
+        "base": {
+          "errors": 2,
+          "total": 100
+        },
+        "expl": {
+          "errors": 2,
+          "total": 100
+        },
+        "extr": {
+          "errors": 3,
+          "total": 100
+        },
+        "gated": {
+          "errors": 9,
+          "total": 100
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 100
+        },
+        "expl2": {
+          "errors": 1,
+          "total": 100
+        },
+        "expl3": {
+          "errors": 3,
+          "total": 100
+        }
+      },
+      "cross-reference": {
+        "base": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 1,
+          "total": 20
+        },
+        "gated": {
+          "errors": 4,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 1,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      },
+      "disguised-correction": {
+        "base": {
+          "errors": 10,
+          "total": 100
+        },
+        "expl": {
+          "errors": 10,
+          "total": 100
+        },
+        "extr": {
+          "errors": 13,
+          "total": 100
+        },
+        "gated": {
+          "errors": 25,
+          "total": 100
+        },
+        "extr2": {
+          "errors": 8,
+          "total": 100
+        },
+        "expl2": {
+          "errors": 6,
+          "total": 100
+        },
+        "expl3": {
+          "errors": 8,
+          "total": 100
+        }
+      },
+      "genuinely-quick": {
+        "base": {
+          "errors": 1,
+          "total": 31
+        },
+        "expl": {
+          "errors": 1,
+          "total": 31
+        },
+        "extr": {
+          "errors": 0,
+          "total": 31
+        },
+        "gated": {
+          "errors": 1,
+          "total": 31
+        },
+        "extr2": {
+          "errors": 2,
+          "total": 31
+        },
+        "expl2": {
+          "errors": 1,
+          "total": 31
+        },
+        "expl3": {
+          "errors": 1,
+          "total": 31
+        }
+      },
+      "hidden-compound": {
+        "base": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 0,
+          "total": 20
+        },
+        "gated": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      },
+      "perspective-shift": {
+        "base": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 0,
+          "total": 20
+        },
+        "gated": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      },
+      "vague-affect": {
+        "base": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr": {
+          "errors": 0,
+          "total": 20
+        },
+        "gated": {
+          "errors": 0,
+          "total": 20
+        },
+        "extr2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl2": {
+          "errors": 0,
+          "total": 20
+        },
+        "expl3": {
+          "errors": 0,
+          "total": 20
+        }
+      }
+    }
+  },
+  "wilson_cis": {
+    "DeepSeek": {
+      "base": {
+        "lower": 4.98,
+        "upper": 12.6,
+        "point": 8.0
+      },
+      "expl": {
+        "lower": 0.27,
+        "upper": 3.57,
+        "point": 1.0
+      },
+      "extr": {
+        "lower": 27.32,
+        "upper": 40.3,
+        "point": 33.5
+      },
+      "gated": {
+        "lower": 1.07,
+        "upper": 5.72,
+        "point": 2.5
+      },
+      "extr2": {
+        "lower": 2.04,
+        "upper": 7.69,
+        "point": 4.0
+      },
+      "expl2": {
+        "lower": 0.27,
+        "upper": 3.57,
+        "point": 1.0
+      },
+      "expl3": {
+        "lower": 0,
+        "upper": 1.88,
+        "point": 0.0
+      }
+    },
+    "Gemini Flash": {
+      "base": {
+        "lower": 0.51,
+        "upper": 4.32,
+        "point": 1.5
+      },
+      "expl": {
+        "lower": 0,
+        "upper": 1.88,
+        "point": 0.0
+      },
+      "extr": {
+        "lower": 1.07,
+        "upper": 5.72,
+        "point": 2.5
+      },
+      "gated": {
+        "lower": 0.27,
+        "upper": 3.57,
+        "point": 1.0
+      },
+      "extr2": {
+        "lower": 0.09,
+        "upper": 2.78,
+        "point": 0.5
+      },
+      "expl2": {
+        "lower": 0,
+        "upper": 1.88,
+        "point": 0.0
+      },
+      "expl3": {
+        "lower": 0.51,
+        "upper": 4.32,
+        "point": 1.5
+      }
+    },
+    "Claude Haiku": {
+      "base": {
+        "lower": 2.74,
+        "upper": 8.96,
+        "point": 5.0
+      },
+      "expl": {
+        "lower": 0.27,
+        "upper": 3.57,
+        "point": 1.0
+      },
+      "extr": {
+        "lower": 1.07,
+        "upper": 5.72,
+        "point": 2.5
+      },
+      "gated": {
+        "lower": 16.37,
+        "upper": 27.7,
+        "point": 21.5
+      },
+      "extr2": {
+        "lower": 2.04,
+        "upper": 7.69,
+        "point": 4.0
+      },
+      "expl2": {
+        "lower": 0.09,
+        "upper": 2.78,
+        "point": 0.5
+      },
+      "expl3": {
+        "lower": 1.07,
+        "upper": 5.72,
+        "point": 2.5
+      }
+    },
+    "Claude Sonnet": {
+      "base": {
+        "lower": 3.47,
+        "upper": 10.19,
+        "point": 6.0
+      },
+      "expl": {
+        "lower": 3.47,
+        "upper": 10.19,
+        "point": 6.0
+      },
+      "extr": {
+        "lower": 4.98,
+        "upper": 12.6,
+        "point": 8.0
+      },
+      "gated": {
+        "lower": 12.43,
+        "upper": 22.82,
+        "point": 17.0
+      },
+      "extr2": {
+        "lower": 2.04,
+        "upper": 7.69,
+        "point": 4.0
+      },
+      "expl2": {
+        "lower": 1.71,
+        "upper": 7.05,
+        "point": 3.5
+      },
+      "expl3": {
+        "lower": 3.1,
+        "upper": 9.58,
+        "point": 5.5
+      }
+    }
+  },
+  "gate_sensitivity": {
+    "DeepSeek": {
+      "baseline_errors": 16,
+      "gated_errors": 5,
+      "diff": -11,
+      "direction": "helped"
+    },
+    "Gemini Flash": {
+      "baseline_errors": 3,
+      "gated_errors": 2,
+      "diff": -1,
+      "direction": "helped"
+    },
+    "Claude Haiku": {
+      "baseline_errors": 10,
+      "gated_errors": 43,
+      "diff": 33,
+      "direction": "harmed"
+    },
+    "Claude Sonnet": {
+      "baseline_errors": 12,
+      "gated_errors": 34,
+      "diff": 22,
+      "direction": "harmed"
+    }
+  },
+  "bonferroni": {
+    "expl2_vs_extr2": {
+      "p_value": 0.000729,
+      "bonferroni_alpha": 0.00625,
+      "significant_bonferroni": true,
+      "significant_005": true
+    },
+    "expl3_vs_extr2": {
+      "p_value": 0.344928,
+      "bonferroni_alpha": 0.00625,
+      "significant_bonferroni": false,
+      "significant_005": false
+    },
+    "expl2_vs_gated": {
+      "p_value": 0.0,
+      "bonferroni_alpha": 0.00625,
+      "significant_bonferroni": true,
+      "significant_005": true
+    },
+    "expl2_vs_base": {
+      "p_value": 0.0,
+      "bonferroni_alpha": 0.00625,
+      "significant_bonferroni": true,
+      "significant_005": true
+    },
+    "extr2_vs_gated": {
+      "p_value": 0.0,
+      "bonferroni_alpha": 0.00625,
+      "significant_bonferroni": true,
+      "significant_005": true
+    },
+    "expl2_vs_expl3_wording": {
+      "p_value": 0.063568,
+      "bonferroni_alpha": 0.00625,
+      "significant_bonferroni": false,
+      "significant_005": false
+    },
+    "expl_vs_expl2_wording": {
+      "p_value": 0.070312,
+      "bonferroni_alpha": 0.00625,
+      "significant_bonferroni": false,
+      "significant_005": false
+    },
+    "expl_vs_expl3_wording": {
+      "p_value": 0.607239,
+      "bonferroni_alpha": 0.00625,
+      "significant_bonferroni": false,
+      "significant_005": false
+    }
+  },
+  "cmh_tests": {
+    "expl2_vs_extr2": {
+      "cmh_statistic": 10.3158,
+      "cmh_p_value": 0.001319,
+      "cmh_significant_005": true,
+      "breslow_day_statistic": 6.2588,
+      "breslow_day_p_value": 0.099675,
+      "breslow_day_homogeneous_005": true,
+      "common_odds_ratio": 8.5,
+      "per_stratum": [
+        {
+          "model": "DeepSeek",
+          "cw": 6,
+          "wc": 0
+        },
+        {
+          "model": "Gemini Flash",
+          "cw": 1,
+          "wc": 0
+        },
+        {
+          "model": "Claude Haiku",
+          "cw": 7,
+          "wc": 0
+        },
+        {
+          "model": "Claude Sonnet",
+          "cw": 3,
+          "wc": 2
+        }
+      ],
+      "note": "CMH stratified by model. Breslow-Day tests homogeneity across strata."
+    },
+    "expl2_vs_gated": {
+      "cmh_statistic": 72.0135,
+      "cmh_p_value": 0.0,
+      "cmh_significant_005": true,
+      "breslow_day_statistic": null,
+      "breslow_day_p_value": null,
+      "breslow_day_homogeneous_005": null,
+      "common_odds_ratio": "inf",
+      "per_stratum": [
+        {
+          "model": "DeepSeek",
+          "cw": 3,
+          "wc": 0
+        },
+        {
+          "model": "Gemini Flash",
+          "cw": 2,
+          "wc": 0
+        },
+        {
+          "model": "Claude Haiku",
+          "cw": 42,
+          "wc": 0
+        },
+        {
+          "model": "Claude Sonnet",
+          "cw": 27,
+          "wc": 0
+        }
+      ],
+      "note": "CMH stratified by model. Breslow-Day tests homogeneity across strata."
+    },
+    "expl2_vs_base": {
+      "cmh_statistic": 27.2727,
+      "cmh_p_value": 0.0,
+      "cmh_significant_005": true,
+      "breslow_day_statistic": 3.8304,
+      "breslow_day_p_value": 0.280375,
+      "breslow_day_homogeneous_005": true,
+      "common_odds_ratio": 32.0,
+      "per_stratum": [
+        {
+          "model": "DeepSeek",
+          "cw": 14,
+          "wc": 0
+        },
+        {
+          "model": "Gemini Flash",
+          "cw": 3,
+          "wc": 0
+        },
+        {
+          "model": "Claude Haiku",
+          "cw": 9,
+          "wc": 0
+        },
+        {
+          "model": "Claude Sonnet",
+          "cw": 6,
+          "wc": 1
+        }
+      ],
+      "note": "CMH stratified by model. Breslow-Day tests homogeneity across strata."
+    }
+  }
+}
