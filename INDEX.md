@@ -1,6 +1,6 @@
 # Fundamental Insights — Index
 
-Original discoveries and research-backed findings from the Agent Suite project (March 2026). These insights emerged from iterative experimentation with LLM agent systems, validated against published research (85+ references) and cross-model review (Gemini).
+Original discoveries and research-backed findings from the Agent Suite project (March–April 2026). These insights emerged from iterative experimentation with LLM agent systems, validated against published research (85+ references) and cross-model review (Gemini).
 
 ## Core Discoveries
 
@@ -86,6 +86,8 @@ Original discoveries and research-backed findings from the Agent Suite project (
 **Evidence:** IMPLIES field dropped within minutes in Ralph Loop session despite MANDATORY language. Hook reminder restored it. Epistemic-check (correctness oracle attempt) never blocked once — failed because QA can't judge quality, only compliance.
 
 - Sources: [hooks-as-governance](framework/hooks-as-governance.md) (memory) + [inline-bias-research](insights/inline-bias-is-structural.md) (memory)
+- External validation: [gulli-agentic-patterns-comparison](meta/gulli-agentic-patterns-comparison.md) — Gulli (Google) confirms 7 of our patterns; identifies 3 gaps (trajectory scoring, loop detection, state rollback)
+- Enforcement gap audit: [execution-exhaustion-audit](meta/execution-exhaustion-audit.md) — honest assessment of stated vs enforced execution requirements
 
 ### 11. Mandatory Exploration Backfires
 **The finding:** Forced exploration on every task produces performative compliance, not genuine depth. The system generates exploration-shaped text without actually exploring. Conditional triggers (uncertainty signals, user corrections) work better than unconditional enforcement.
@@ -139,6 +141,7 @@ Original discoveries and research-backed findings from the Agent Suite project (
 **Evidence:** Emerged from three-tier QA model design (2026-03-22). Adversarial-reviewer confirmed: "the pass gate is as reliable as the agent's severity calibration." Layer 4 (QA-on-QA) is irreducibly human.
 
 - Source: [qa-is-popperian-falsification](insights/qa-is-popperian-falsification.md) (insight file)
+- Enforcement gap: [qa-execution-gap-analysis](specs/qa-execution-gap-analysis.md) — QA format enforcement ≠ QA method enforcement; "read the file" passes hooks identically to "ran bash command"
 
 ### 18. TaskCreate = The Increment Institution
 **The finding:** Claude Code's native task list (TaskCreate/TaskUpdate) IS the project increment. The terminal checkmarks are the visual institution. "All tasks completed" = increment boundary = pentest trigger. No new infrastructure needed — the tool already exists. The insight is recognizing it as the lifecycle mechanism.
@@ -148,6 +151,14 @@ Original discoveries and research-backed findings from the Agent Suite project (
 **Constraint:** Hooks can't read task state (session-internal). Increment boundary is soft-enforced (classifier + /pm), not hard-enforced.
 
 - Source: [taskcreate-is-the-increment](insights/taskcreate-is-the-increment.md) (insight file)
+
+---
+
+## Supporting Analysis (April 2026)
+
+- [google-labs-catalog](meta/google-labs-catalog.md) — 12+ Google Labs tools mapped; Jules architecture comparison, Stitch MCP integration, Opal agent memory patterns
+- [monitoring-baseline](meta/monitoring-baseline.md) — Iteration 0 KPI baselines from 815 governance log entries across 17 sessions (DAR 45.5%, tool usage patterns, MCP ratios)
+- [prompt-compression-research](theories/prompt-compression-research.md) — Token footprint analysis (243K total, 8.6K always-on) and compression technique survey (caveman-speak, academic methods, Anthropic guidance)
 
 ---
 
