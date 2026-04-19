@@ -152,6 +152,17 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 - Source: [taskcreate-is-the-increment](insights/taskcreate-is-the-increment.md) (insight file)
 
+### 19. Sidecar Files for Post-Compaction Enforcement
+**The finding:** Governance hooks that read the conversation transcript for enforcement contracts silently bypass after context compaction — the contract falls outside the read window and the hook finds nothing. Placing a machine-readable sidecar file (`DISPATCHES.json`) beside the human-readable skill spec (`SKILL.md`) — and having the hook read the sidecar as fallback when the transcript scan yields nothing — closes the bypass without changing the source of truth.
+
+**Novel element:** Terminal-skill exclusion. Skills that are verifiers rather than orchestrators (QA, pentest) have empty mandatory contracts; letting them overwrite the "current skill" tracker in the fallback silently nullifies enforcement for earlier orchestrator skills in the same session. The fix is excluding terminal skills from overwriting the tracker.
+
+**Prior art:** Sidecar-file contracts widely used (pre-commit, Conftest, Terraform state, Microsoft agent-governance-toolkit). File-based fallback for state externalization well-established in infrastructure. The combination — sidecar contract + compaction-bypass motivation + terminal-skill exclusion in an AI agent governance context — does not appear in the public literature surveyed.
+
+**Evidence:** H11 integration shipped 2026-04-19. 4/4 behavioral tests PASS (fallback fires on missing mandatory dispatches; Quick-like session silent; contract-present path unchanged; planning-then-qa regression confirms Q4 fix holds).
+
+- Source: [sidecar-files-for-post-compaction-enforcement](insights/sidecar-files-for-post-compaction-enforcement.md) (insight file)
+
 ---
 
 ## Supporting Analysis (April 2026)
