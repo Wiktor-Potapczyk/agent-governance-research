@@ -34,7 +34,7 @@ The bypass was documented as audit finding **H11** on 2026-04-18. A proof of con
 
 ## The fix
 
-Three surgical edits to `dispatch-compliance-check.py` and five new `DISPATCHES.json` files.
+Four surgical edits to `dispatch-compliance-check.py` and five new `DISPATCHES.json` files (a sixth sidecar, for `process-build`, was shipped as the 2026-04-18 POC).
 
 ### Hook edits
 
