@@ -21,7 +21,7 @@ Paper (PDF + LaTeX), benchmark, and all experimental data: [`experiments/explora
 
 ## Research Threads
 
-The full research index tracks 8 active threads: [`INDEX.md`](INDEX.md)
+The full research index tracks 9 active threads: [`INDEX.md`](INDEX.md)
 
 | Thread | Summary |
 |--------|---------|
@@ -33,6 +33,7 @@ The full research index tracks 8 active threads: [`INDEX.md`](INDEX.md)
 | Epistemic Gaps | Input (planning) and output (uncertainty) gaps |
 | Framework Architecture | 5-node recursive execution pattern |
 | Agent Teams & Depth Boundary | D1 governance constraint and collaborative mesh |
+| Observability & Monitoring | 35-event telemetry catalog + 4-tier aggregation + 15 derivable conclusions |
 
 ## Repository Structure
 
