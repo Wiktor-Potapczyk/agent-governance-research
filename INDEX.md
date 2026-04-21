@@ -13,6 +13,23 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 **Novelty validated (2026-03-23):** No existing LLM routing framework requires explicit implication articulation before categorization. Nearest: Huang et al. 2025 (latent predictions), Furniturewala et al. 2024 (System 2 activation for debiasing). See [novelty-validation-findings](experiments/novelty-validation-findings.md).
 
+**Deeper findings (2026-03-25, paper V5.1):**
+- expl2 ("What's really going on here?") → 1.25% Type II error; extr2 ("Summarize intent") → 3.12%. McNemar p=0.00073, CMH p=0.0013 (Bonferroni-corrected).
+- R3 mechanism ablation: "Think carefully" achieves 1.0% — not significantly different from exploration (p=0.77). Mechanism is forced attention, not open-ended framing specifically.
+- Structured yes/no detection catastrophically harms Claude models (Haiku +330% errors). Binary choices offer a defaultable "no."
+- **Complementary failure modes:** Exploration forces committed implication statements (rescues 5/8 think failures). Think-carefully uses consequence framing (rescues 7/10 exploration failures). Neither has universal advantage — different trap subtypes.
+- **Recognition without commitment:** Sonnet under "think carefully" writes "this violates change management policy" → still classifies Quick. Under exploration, same model identifies same violation → escalates. The commitment mechanism is the qualitative differentiator.
+- **Difficulty-scaling hypothesis (falsifiable, untested):** Exploration advantage should emerge on harder tasks / higher context, where content-free nudges are insufficient for task-specific representation-building.
+- Per-model: DeepSeek p=0.031, Haiku p=0.016. Flash and Sonnet individually non-significant. Pooled result is exploratory.
+
+**19 limitations explicitly stated in paper.** Key: post-hoc expansion, gate confound not fully isolated, label circularity (Sonnet generated labels AND was tested), single author, pooled exploratory.
+
+**Open:**
+- High-context experiment (>100K tokens) — tests difficulty-scaling hypothesis
+- Second rater for 50 expanded prompts — strongest methodological improvement
+- Within-dataset ablation (all 8 variants in one API run)
+- Open-weight models (Llama/Mistral)
+
 - Source: [exploration-vs-extraction-prompting](insights/exploration-vs-extraction-prompting.md)
 - Research draft: 2026-03-20-exploration-prompting-research-foundation (work file)
 
@@ -65,7 +82,7 @@ Original discoveries and research-backed findings from the Agent Suite project (
 - Source: [reconsideration-science](insights/reconsideration-science.md) (memory)
 
 ### 8. User Intuition Outperforms Engineered Prompts
-**The finding:** Wiktor's intuitive "What does this prompt imply?" outperformed 3 research-engineered alternatives. Simple open-ended questions that invite reasoning beat structured mechanism-targeted questions. User intuition about LLM thinking is a first-class design input.
+**The finding:** An intuitive "What does this prompt imply?" outperformed 3 research-engineered alternatives. Simple open-ended questions that invite reasoning beat structured mechanism-targeted questions. User intuition about LLM thinking is a first-class design input.
 
 - Source: [user-intuition-outperforms](insights/user-intuition-outperforms.md) (memory)
 
@@ -83,7 +100,7 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 **The value of compliance hooks:** A wrong result from a full pipeline is more informative than a wrong result from a shortcut. The pipeline leaves a visible trail — every decision exposed. Error correction mechanism is the user, but hooks ensure the data exists to do it.
 
-**Evidence:** IMPLIES field dropped within minutes in Ralph Loop session despite MANDATORY language. Hook reminder restored it. Epistemic-check (correctness oracle attempt) never blocked once — failed because QA can't judge quality, only compliance.
+**Evidence:** IMPLIES field dropped within minutes in session despite MANDATORY language. Hook reminder restored it. Epistemic-check (correctness oracle attempt) never blocked once — failed because QA can't judge quality, only compliance.
 
 - Sources: [hooks-as-governance](framework/hooks-as-governance.md) (memory) + [inline-bias-research](insights/inline-bias-is-structural.md) (memory)
 - External validation: [gulli-agentic-patterns-comparison](meta/gulli-agentic-patterns-comparison.md) — Gulli (Google) confirms 7 of our patterns; identifies 3 gaps (trajectory scoring, loop detection, state rollback)
@@ -163,6 +180,36 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 - Source: [sidecar-files-for-post-compaction-enforcement](insights/sidecar-files-for-post-compaction-enforcement.md) (insight file)
 
+### 20. Infrastructure Audit — Five Systemic Fragility Patterns (2026-04-18)
+**The finding:** A full infrastructure audit across five surfaces (hooks, agents, skills, CLAUDE.md/MEMORY.md, cross-component deps) revealed 11 HIGH, 13+ MED, and 9 LOW findings. The fragility is not incidental — it follows five architectural patterns:
+
+1. **Accretion without pruning** — components added, never removed; dead code accumulates.
+2. **Multi-source truth with manual sync** — registry.json, SKILL.md files, CLAUDE.md Agent Registry, MEMORY.md, and hook alias tables all encode the same agent list; manual sync breaks silently.
+3. **Prose contracts / code enforcement mismatch** — SKILL.md says "do X"; hook checks for a different marker; gap is invisible until pentest.
+4. **Fail-open on missing context** — when the hook's transcript read window misses the classification block, enforcement silently passes.
+5. **Bidirectional contract gaps** — classifier declares what skills produce; skills assume what the classifier dispatched. Neither checks the other's actual output.
+
+**Opus 4.7 additions beyond Sonnet discovery:**
+- Post-compaction enforcement blind spot (H11) — hooks' 200KB tail-read may miss classification block after transcript compaction.
+- Singular-vs-gerund naming drift is a pattern, not one-off — `architect-review` is case study; same risk at `research-analyst`, `prompt-engineer`, `workflow-orchestrator`.
+- Composed bypass attacks — B1, B2, B3 are not independent; together they form a complete enforcement escape.
+- A+B fix alignment — the 2026-04-18 patch extends accretion pattern rather than closing it; design debt, not immediate bug.
+- Reachability metadata gap — registry tracks existence but not usage; orphan detection requires separate analysis.
+
+**Key fix:** H3 (reject `MUST DISPATCH: none` on non-Quick tasks) is the lowest-effort, highest-impact fix — breaks the composed B1+B2+B3 bypass.
+
+- Source: research/2026-04-18-infrastructure-audit-findings.md (entry point)
+- Opus synthesis: research/2026-04-18-infrastructure-audit-s6-synthesis.md (architectural patterns)
+- Pentest report: research/2026-04-18-infrastructure-audit-s9-pentest.md (empirical verification)
+- RCA methodology: research/2026-04-14-research-orchestrator-bypass-rca.md (dual-stream investigation pattern)
+
+### 21. Rubber-Stamp Enforcement Gaps
+**The finding:** Hooks that check output text but not real dispatch create silent bypass paths. The pattern: `if has_output and not has_real_invocation: BLOCK`. Two instances found in the 2026-04-18 audit — `check_pm_checkpoint_report` (verified report text but not agent dispatch) and `work-verification-check` CHECK 1 (required BOTH conditions simultaneously, missing the skipped-skill-entirely case). Invoke-side verification complements output-side verification; AND/OR logic matters.
+
+**Generalization:** For any governance hook, ask: "What would this miss if the agent faked the output?" Design invoke-side + output-side checks together, not independently.
+
+- Source: [rubber-stamp-enforcement](insights/rubber-stamp-enforcement.md) (insight file)
+
 ---
 
 ## Supporting Analysis (April 2026)
@@ -177,5 +224,5 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 1. **Context rot vs exploration prompting** — does exploration resist degradation as context grows? Observed: at 650K tokens, response quality degrades ("semantic averaging" per Gemini).
 2. **Mechanistic question** — what does exploration do to attention patterns? Does it activate different retrieval than extraction?
-3. **Prompt analysis** — 169 messages analyzed from Awards sessions. Phase 1 complete. Phase 2: compare with Agent Suite patterns.
-
+3. **Prompt analysis** — 169 messages analyzed from prior sessions. Phase 1 complete. Phase 2: compare with Agent Suite patterns.
+4. **Observability v2** — design-complete (2026-04-19). Catalogs 35 events (P0–P3), prescribes 4-tier aggregation strategy, lists 9 derivable conclusions. Two hooks (session-start-log, pre-compact) must be wired before P0 capture. See research/2026-04-19-observability-design-plan.md.
