@@ -27,13 +27,15 @@ The full research index tracks 9 active threads: [`INDEX.md`](INDEX.md)
 |--------|---------|
 | Exploration Prompting | Step-0 framing for self-classification (paper above) |
 | Compound Task Neural Network | Tasks as continuous mixtures of 5 primitives |
-| Quality Mechanism Spectrum | 8-level hierarchy from "think again" to ensemble |
+| Quality Mechanism Spectrum | 8-level hierarchy from "think again" to ensemble. Extended 2026-05-25: Three-lens parallel ensemble applied to framework evaluation itself; convergent finding (confidence 0.82) — Wave A metadata improvements did not change any hook's detection behavior. Ensemble methodology documented as a repeatable pattern. |
 | Inline Bias | Autoregressive generation bias in classification (12.4% mismatch) |
-| Hooks as Governance | Hooks achieve ~90% compliance vs ~25% for prompt rules |
+| Hooks as Governance | Hooks achieve ~90% compliance vs ~25% for prompt rules. Extended 2026-05-25: Infrastructure audit + multi-lens ensemble evaluation reveal the closed-loop measurement problem — internal compliance metrics measure rule conformance, not output quality. External calibration protocol (Action 0.1) is the only loop-exit channel. |
 | Epistemic Gaps | Input (planning) and output (uncertainty) gaps |
-| Framework Architecture | 5-node recursive execution pattern |
+| Framework Architecture | 5-node recursive execution pattern (2026-03-21). Extended 2026-05-25: cold-context empirical investigation of runtime state → 7-delta architecture spec closing gap between declared and actual behavior. Key finding: Stop hook event carries 11 hooks vs. 1–3 for all other events; enforcement is maximally rear-loaded. |
 | Agent Teams & Depth Boundary | D1 governance constraint and collaborative mesh |
 | Observability & Monitoring | 35-event telemetry catalog + 4-tier aggregation + 15 derivable conclusions |
+
+**2026-05 evolution:** A major evaluation and re-architecture pass in May 2026 produced the documents in `framework/`, `specs/`, and the new `meta/` batch. The central finding: the framework's instrumentation measures process conformance, not output quality — a closed-loop problem addressable only via external calibration. The architecture-v2 delta spec closes seven gaps between declared and runtime behavior. An ensemble methodology (parallel cold-context lenses, preserved divergent verdicts, main-session synthesis) is now used for evaluative work across the project. See [`specs/agent-governance-architecture-v2.md`](specs/agent-governance-architecture-v2.md) for the current architectural source of truth and [`specs/action-0-1-calibration-protocol.md`](specs/action-0-1-calibration-protocol.md) for the external calibration protocol.
 
 ## Repository Structure
 

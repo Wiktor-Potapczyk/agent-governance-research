@@ -1,0 +1,45 @@
+# Changelog
+
+All notable research additions and documentation changes.
+
+## 2026-05-26 — Framework evaluation + architecture v2 + ensemble methodology
+
+### Framework architecture
+
+- **framework/2026-05-25-framework-investigation.md** — Cold-context multi-lens empirical investigation of the framework's runtime state. Two parallel lenses merged. Key findings: Stop-chain overload (11 hooks vs. 1–3 elsewhere), session-start hidden dependency, ghost-agent miscount correction, deprecated routing still live in production, closed-loop measurement problem.
+- **specs/agent-governance-architecture-v2.md** — 7-delta specification closing the gap between declared and runtime behavior. Resolves framing choice: CLAUDE.md stays authoritative; drift enforced via lint pass. Every claim traces to the framework investigation.
+
+### Evaluation + PRD
+
+- **meta/2026-05-25-framework-evaluation.md** — Multi-lens evaluation with five process diagrams. Architect verdict: DIVERGENT_AND_DEEP. Adversarial verdict: STRUCTURALLY FLAWED at the measurement layer. Synthesis: salvageable via deltas + external calibration. Confidence 0.88.
+- **specs/2026-05-25-framework-improvement-prd.md** — Product requirements document for two shippable items: file-existence check on sub-agent write claims (closes highest-incidence empirical gap); external calibration protocol (the only loop-exit channel).
+- **meta/2026-05-25-ensemble-synthesis.md** — Three-lens synthesis post-Wave-A. All three lenses independently find Wave A did not change any hook's detection behavior. One unresolved sequencing divergence preserved without collapse.
+
+### Sprint A planning + review
+
+- **specs/sprint-a-task-decomposition.md** — Full Sprint A task decomposition: seven named tasks, dependency graph, acceptance criteria, 10–14 hour estimate.
+- **specs/sprint-a-review-architect.md** — APPROVE-WITH-NOTES (Round 1). Diagram contradicts dependency text; two acceptance criteria weak.
+- **specs/sprint-a-review-adversarial.md** — NEEDS-CHANGES (Round 1, confidence 0.82). SA-1 gate may not need to block SA-4; SA-2 scope ceiling missing.
+
+### Measurement + calibration
+
+- **meta/must-dispatch-compliance-remeasurement.md** — 14-day re-measurement of must-dispatch compliance. Tentative decline from 47% baseline; confounded by mid-window schema drift.
+- **meta/sprint-a-g1-baseline.md** — Baseline snapshot for 30-day G1 measurement (fabrication incident reduction target).
+- **specs/action-0-1-calibration-protocol.md** — The one structural change unsolvable from inside: external calibration. Weekly cadence, three-axis rubric, aggregate measurement format, escalation criteria.
+
+### Wiki active-use ensemble
+
+- **meta/wiki-active-use-architect-lens.md** — Wide-scope process design for wiki active-use (10 trigger categories, session-start hook modification).
+- **meta/wiki-active-use-adversarial-lens.md** — Challenge to the active-use premise. Verdict: ARCHIVE-WITH-CARVE-OUT. Two critical findings: supply pipeline has zero confirmed end-to-end completions; stale-wiki-query epistemically worse than silence.
+- **meta/wiki-active-use-prompt-engineer-lens.md** — Drop-in implementation design. 10 trigger patterns, 7 failure modes addressed proactively.
+- **meta/wiki-active-use-synthesis.md** — Main-session synthesis. Narrow active-use rule for four vault-specific knowledge categories. Confidence 0.78. Divergent verdicts preserved.
+
+### Ecosystem research
+
+- **meta/ecc-broader-repo-adoption.md** — Adoption research for external agent harness project. Verdict: SKIP full install (doctrine-conflict risk); INVESTIGATE FURTHER for selective security-scanner port.
+- **meta/2026-05-25-news-adoption-candidates.md** — Week 21 framework ecosystem scan. Five items evaluated; cache-miss 12.5× finding is the immediate adoption recommendation.
+
+### Documentation
+
+- **INDEX.md** — 17 new entries (entries 22–38), numbered continuation from prior last entry.
+- **README.md** — Three Research Threads table rows updated; new paragraph on 2026-05 evolution added.
