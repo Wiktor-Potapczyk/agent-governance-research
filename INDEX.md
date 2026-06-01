@@ -402,6 +402,15 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 ---
 
+### 39. Volatile-Source Citation Integrity — Anchor-Existence Beats Hash-Pinning (2026-06-01)
+**The finding:** A SHA-256 citation binding (anti-fabrication) has a blind spot for sources that legitimately change often. Exempting them from hashing is correct for script-generated output but wrong for hand-edited doctrine, which is genuinely mis-citable. The resolution is a third granularity — enforce that the cited section *anchor* exists, dropping only the volatile whole-file hash. A four-lens analysis found "full-hash vs exempt" to be a false binary; the adversarial lens identified blanket exemption as an escape hatch and stale citations as the ignored risk. Web-grounded against external provenance practice (content addressing, immutable snapshots, version-ID pinning, canonicalization, fragment/anchor-scoped hashing, signed attestations) — fabrication-resistance and maintenance burden move together.
+
+**Design principle:** grade a source exemption by *why* it resists hashing — `type: generated` (not fabricable → path-existence only) vs `type: schema-doctrine` (mis-citable → path + cited-anchor existence, stricter). An exemption must be narrower than "inconvenient to verify," and should restore a proportionate check rather than remove verification wholesale.
+
+- Source: [volatile-source-citation-integrity](insights/volatile-source-citation-integrity.md) (insight file)
+
+---
+
 ## Supporting Analysis (April 2026)
 
 - [google-labs-catalog](meta/google-labs-catalog.md) — 12+ Google Labs tools mapped; Jules architecture comparison, Stitch MCP integration, Opal agent memory patterns

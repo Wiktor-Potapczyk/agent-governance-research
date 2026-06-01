@@ -2,6 +2,12 @@
 
 All notable research additions and documentation changes.
 
+## 2026-06-01 — Volatile-source citation integrity insight
+
+### Insight
+
+- **insights/volatile-source-citation-integrity.md** — A SHA-256 citation binding has a blind spot for sources that legitimately change often; exempting them is correct for script-generated output but wrong for hand-edited doctrine (mis-citable). Resolution: enforce cited-anchor existence rather than file-content identity, graded by why the source resists hashing (`type: generated` path-only vs `type: schema-doctrine` path + anchor). Derived from a four-lens parallel analysis (the adversarial lens identified blanket exemption as an escape hatch and stale citations as the ignored failure) and web-grounded against external provenance practice (Trusty URIs, fragment identifiers, C2PA, SLSA, Memento). INDEX entry #39.
+
 ## 2026-05-26 — Framework evaluation + architecture v2 + ensemble methodology
 
 ### Framework architecture
