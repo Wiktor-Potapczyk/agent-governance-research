@@ -409,6 +409,20 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 - Source: [volatile-source-citation-integrity](insights/volatile-source-citation-integrity.md) (insight file)
 
+### 40. The Enforcement Layer Needs Its Own Meta-Verification (2026-06-02)
+**The finding:** Once a system enforces rules with hooks/gates, it has created a second system that can be wrong — and its errors are quieter than the agent's. A BLOCK-class hook eventually blocks a *valid* output that resembles the failure it guards (a short negative finding read as a refusal; an unfenced `Label: value` report read as "no structure"), and a block reads as success so no one notices. An allow-list reference silently stops resolving when an asset is renamed/added, and the stale pass reads as clean. Fix: verify the verifier — **false-positive guards** (assert each BLOCK hook stays silent on valid look-alike input) and **structural resolution gates** (warn when any referenced name no longer resolves to a live asset).
+
+**Design principle:** measuring enforcement by how much it catches counts only true positives; an enforcer that catches everything and blocks valid work looks like strictness but is broken. Measure the false-positive rate explicitly. Keep the resolution gate advisory until its own FP-rate is proven.
+
+- Source: [enforcement-layer-needs-meta-verification](insights/enforcement-layer-needs-meta-verification.md) (insight file)
+
+### 41. Installed Is Not Adopted — A Tool Without an Enforcement Binding Is Inert (2026-06-02)
+**The finding:** A tool (MCP server, skill, hook) is adopted only when something causes it to be used at the right moment — not when it is merely present. Incorporation (present + documented) and enforcement (a runtime pull toward use) are independent axes. Judge enforcement per tool type: hooks self-fire; skills soft-trigger on description match; **passive tools (a code call-graph, a search index) have zero native pull** — without a rule or nudge at the decision point, the agent keeps reaching for its default move and the fully-installed tool contributes nothing.
+
+**Design principle:** don't force-bind every new tool (that recreates over-enforcement). Sequence it — incorporate, instrument whether it gets skipped when it would have helped, then gate only on evidence. "Installed but consciously opt-in pending a usage baseline" is a legitimate end state; "installed and silently forgotten" is the failure.
+
+- Source: [installed-is-not-adopted](insights/installed-is-not-adopted.md) (insight file)
+
 ---
 
 ## Supporting Analysis (April 2026)
