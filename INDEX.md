@@ -389,7 +389,7 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 **Note:** star/fork counts from WebFetch summary were flagged as unverified (192K stars for a 4-month-old repo is implausibly high). Architectural claims treated as plausible based on predecessor repo's structure; counts explicitly marked for separate verification.
 
-- Source: [meta/ecc-broader-repo-adoption.md](meta/ecc-broader-repo-adoption.md)
+- Source: [specs/ecc-broader-repo-adoption.md](specs/ecc-broader-repo-adoption.md)
 
 ---
 

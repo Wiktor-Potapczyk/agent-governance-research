@@ -1,0 +1,13 @@
+{
+  "_comment": "doc-consistency manifest for the agent-governance-research repo. NOTE ON SCOPE: AGR is a research/knowledge corpus (~156 markdown pages catalogued by INDEX.md). Its dominant drift surface is INDEX LINK-INTEGRITY (an INDEX 'Source:' link pointing to a moved or never-created file), NOT cross-file numeric value-contradiction — there are almost no duplicated numeric counts across README/INDEX/CHANGELOG. The value checker below therefore carries only the single real cross-referenced count (README 'N active threads' vs the thread table). For the link-integrity check, run a markdown link scan over INDEX.md (every internal '](path.md)' must resolve on disk) — that is what catches the AGR-class drift. Last manual link scan (2026-06-02) found two broken links: meta/ecc-broader-repo-adoption.md (FIXED -> specs/) and insights/rubber-stamp-enforcement.md (FLAGGED: target file never created; authoring decision, not a consistency fix).",
+  "root": ".",
+  "checks": [
+    {
+      "id": "research-threads-count",
+      "expect": { "literal": "9" },
+      "asserted_in": [
+        { "file": "README.md", "pattern": "research index tracks (\\d+) active threads" }
+      ]
+    }
+  ]
+}
