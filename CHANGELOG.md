@@ -2,6 +2,13 @@
 
 All notable research additions and documentation changes.
 
+## 2026-06-02 — Enforcement meta-verification + tool-adoption insights
+
+### Insights
+
+- **insights/enforcement-layer-needs-meta-verification.md** — Once a system enforces rules with hooks/gates, the enforcement layer is itself code with two silent failure modes: a BLOCK-class hook that blocks valid look-alike output (a block reads as success, so the false-positive is invisible), and an allow-list/registry reference that silently stops resolving on rename/add. Fix: verify the verifier — false-positive guards (assert each BLOCK hook stays silent on valid input) + structural resolution gates (warn on unresolved names). Measure the false-positive rate explicitly, not just true positives. INDEX entry #40.
+- **insights/installed-is-not-adopted.md** — A tool (MCP server, skill, hook) is adopted only when something causes it to be used at the right moment, not when merely present. Incorporation and enforcement are independent axes; passive tools (call-graph, search index) have zero native pull. Sequence: incorporate, instrument whether it gets skipped when it would have helped, then gate only on evidence — don't force-bind prematurely. INDEX entry #41.
+
 ## 2026-06-01 — Volatile-source citation integrity insight
 
 ### Insight

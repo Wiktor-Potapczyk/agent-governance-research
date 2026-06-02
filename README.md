@@ -37,6 +37,8 @@ The full research index tracks 9 active threads: [`INDEX.md`](INDEX.md)
 
 **2026-05 evolution:** A major evaluation and re-architecture pass in May 2026 produced the documents in `framework/`, `specs/`, and the new `meta/` batch. The central finding: the framework's instrumentation measures process conformance, not output quality — a closed-loop problem addressable only via external calibration. The architecture-v2 delta spec closes seven gaps between declared and runtime behavior. An ensemble methodology (parallel cold-context lenses, preserved divergent verdicts, main-session synthesis) is now used for evaluative work across the project. See [`specs/agent-governance-architecture-v2.md`](specs/agent-governance-architecture-v2.md) for the current architectural source of truth and [`specs/action-0-1-calibration-protocol.md`](specs/action-0-1-calibration-protocol.md) for the external calibration protocol.
 
+**2026-06 addition:** two insights generalize this layer's lessons (INDEX #40–#41) — *the enforcement layer needs its own meta-verification* (a BLOCK-hook/allow-list enforcer is itself code with silent false-positive and drift failure modes — verify the verifier), and *installed is not adopted* (a tool is adopted only when something pulls it into use at the right moment; incorporation and enforcement are independent axes).
+
 ## Repository Structure
 
 ```
