@@ -1,0 +1,55 @@
+# Documentation consistency + link-integrity gates for the research corpus.
+#
+# SCOPE: runs AFTER a push to main (main-only, direct-push flow — no PR gate),
+# so it is a POST-PUSH TRIPWIRE, not a pre-merge preventer. It does NO NDA/secret
+# scanning: a token list cannot live in a public repo, and a match in a public
+# build log would re-leak it. NDA safety is enforced by a local pre-push gate
+# that never leaves the author's machine. This workflow checks only public-safe
+# quality signals — the dominant drift surface here is INDEX link integrity.
+name: docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Doc-consistency (cross-referenced values vs source)
+        run: |
+          if [ -f .doc-consistency.json ]; then
+            python .ci/check_doc_consistency.py .doc-consistency.json
+          else
+            echo "no .doc-consistency.json — skipping"
+          fi
+
+      - name: INDEX + internal Markdown link integrity
+        run: |
+          python - <<'PY'
+          import os, re, sys, glob
+          broken = []
+          for md in glob.glob('**/*.md', recursive=True):
+              if '/.git/' in md: continue
+              with open(md, encoding='utf-8') as fh:
+                  txt = fh.read()
+              base = os.path.dirname(md)
+              for link in re.findall(r'\]\((?!https?://|#|mailto:)([^)]+?)\)', txt):
+                  target = link.split('#')[0].strip()
+                  if not target:
+                      continue
+                  resolved = os.path.normpath(os.path.join(base, target))
+                  if not os.path.exists(resolved):
+                      broken.append(f"{md} -> {link}")
+          if broken:
+              print(f"{len(broken)} broken internal link(s):")
+              for b in broken: print("  " + b)
+              sys.exit(1)
+          print("internal Markdown links OK")
+          PY
