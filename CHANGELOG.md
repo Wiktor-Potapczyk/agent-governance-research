@@ -2,6 +2,13 @@
 
 All notable research additions and documentation changes.
 
+## 2026-06-08 — Measure-then-gate + wrong-protocol-hook insights
+
+### Insights
+
+- **insights/measure-then-gate.md** — Blocking enforcement should be gated on a measured failure rate, not intuition. Across three decisions the blocking option was correctly declined/deferred once data was consulted: a tool-recall gate declined at a 2.7% forget-rate (4/149 turns); a constitution-blocker shipped opt-in rather than armed by default; a wrong-protocol guardrail found to have been a 14-day no-op. Enforcement is a cost — warn-first/instrument-first, gate only on evidence. Quantifies "hooks are floors not ceilings" + "low-false-positive only". INDEX entry #42.
+- **insights/wrong-protocol-hook-silently-noop.md** — A PreToolUse hook emitting the SubagentStop `decision:block` shape is silently ignored by the runtime; it appears active in logs (self-logs a "blocked" event) while enforcing nothing, and can stay dead for weeks. Protocol/wire-format correctness is invisible to logic-only unit tests; verify a blocking hook by observing it block in a live run. INDEX entry #43.
+
 ## 2026-06-02 — Enforcement meta-verification + tool-adoption insights
 
 ### Insights

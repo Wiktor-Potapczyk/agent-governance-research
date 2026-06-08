@@ -423,6 +423,16 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 - Source: [installed-is-not-adopted](insights/installed-is-not-adopted.md) (insight file)
 
+### 42. Measure-Then-Gate — Blocking Enforcement Needs a Measured Failure Rate, Not Intuition (2026-06-08)
+**The finding:** Across three enforcement decisions, the *blocking* option was correctly declined or deferred once real data was consulted — and the recurrence is the signal. A blocking gate to force a tool-recall habit was declined after the actual forget-rate measured 2.7% (4 of 149 instrumented turns); a constitution-blocker hook was built but shipped opt-in/unregistered rather than armed by default (blast radius on the highest-traffic files); a guardrail found emitting the wrong hook-protocol had been a silent no-op for 14 days. Enforcement is a cost (false positives, friction, blast radius), so the blocking variant must clear an evidence bar before it ships armed. Warn-first / instrument-first, then gate only if the data demands it. Quantifies the older "hooks are floors not ceilings" and "low-false-positive only" rules into a decision procedure.
+
+- Source: [measure-then-gate](insights/measure-then-gate.md) (insight file)
+
+### 43. A Wrong-Protocol Hook Silently No-Ops (2026-06-08)
+**The finding:** A PreToolUse hook that emits the SubagentStop block-protocol shape (a `decision:block`) is silently ignored by the runtime — the edit proceeds, yet the hook appears active in logs (it even self-logs a "blocked" event). It can stay dead for weeks because nothing surfaces the gap. Protocol/event-type correctness is invisible to unit tests that check the hook's logic but not its wire-format against the actual event contract. Verify a blocking hook by observing it actually block in a live run, not just by its tests.
+
+- Source: [wrong-protocol-hook-silently-noop](insights/wrong-protocol-hook-silently-noop.md) (insight file)
+
 ---
 
 ## Supporting Analysis (April 2026)
