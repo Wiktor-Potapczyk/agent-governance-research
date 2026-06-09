@@ -433,6 +433,16 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 - Source: [wrong-protocol-hook-silently-noop](insights/wrong-protocol-hook-silently-noop.md) (insight file)
 
+### 44. Workflow Sub-Agents Have the Full Tool Surface (2026-06-09)
+**The finding:** Sub-agents spawned *inside a deterministic workflow script* have the complete tool surface — shell, file-read, dynamic tool-loading, and every MCP server the session has loaded. The "sub-agents cannot reach MCP" rule holds for ordinary task-delegation sub-agents but is **false for the workflow harness**. Verified across two live runs against fabrication-resistant ground truth. This unblocks converting *any* process skill (including execution-heavy ones) to a workflow, and lets a workflow gate on **execution evidence** (a command was really run) rather than report-presence — enforcement by construction. Caveat: a workflow agent only reaches servers the session has loaded, and the fabrication residue (a plausible "raw output" string without a real call) is mitigated by schemas, not eliminated.
+
+- Source: [workflow-subagents-have-full-tool-surface](insights/workflow-subagents-have-full-tool-surface.md) (insight file)
+
+### 45. Procedure Layer as Workflows (2026-06-09)
+**The finding:** The framework's procedure layer (per-type process skills) is currently *prose the model is asked to follow*. The active direction converts each skill into a **deterministic workflow script** that makes the dispatch sequence happen by construction — routing-as-code, not execution-as-code — collapsing the prose-skill + dispatch-contract + enforcement-hook triplication into one executable source. Engine proven (entry #44); two worked conversion drafts built (one routing-class, one execution-class); adoption gated on a human output-quality calibration baseline, because dispatch-by-construction makes "did we dispatch?" tautological and useless as a metric. Explicitly does NOT fix fabrication or the dispatch-vs-integration gap.
+
+- Source: [specs/procedure-layer-as-workflows.md](specs/procedure-layer-as-workflows.md) — with worked drafts at [specs/workflow-drafts/process-planning.draft.js](specs/workflow-drafts/process-planning.draft.js) and [specs/workflow-drafts/process-pentest.draft.js](specs/workflow-drafts/process-pentest.draft.js)
+
 ---
 
 ## Supporting Analysis (April 2026)

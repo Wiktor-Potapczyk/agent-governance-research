@@ -2,6 +2,18 @@
 
 All notable research additions and documentation changes.
 
+## 2026-06-09 — Procedure layer as workflows: engine proof + program spec + two conversion drafts
+
+### Specs
+
+- **specs/procedure-layer-as-workflows.md** — The program: convert the prose procedure layer (per-type process skills) into deterministic workflow scripts that make the dispatch sequence happen by construction (routing-as-code, not execution-as-code), collapsing the prose-skill + dispatch-contract + enforcement-hook triplication into one source. States the three reframes (routing-not-execution; gate-on-execution-evidence; conditional-not-mandatory), the engine proof, the adoption gate (human output-quality calibration), and what it explicitly does NOT fix (fabrication; dispatch-vs-integration gap; an as-yet-unvalidated success metric). INDEX entry #45.
+- **specs/workflow-drafts/process-planning.draft.js** — worked routing-class conversion: scope+classify → optional research gate → design → mandatory parallel review (architect + adversarial + conditional prompt) → capped revise loop → execution-evidence quality gate. Judgment points are typed schema returns; the quality gate verifies the artifact on disk rather than trusting a self-reported pass.
+- **specs/workflow-drafts/process-pentest.draft.js** — worked execution-class conversion: scope → typed attack-surface enumeration → parallel execute-agents that each run a real test and must return the literal tool output as proof (a finding with no real output is schema-invalid) → synthesis with a mandatory untested-surface and a code-derived (not self-reported) ship/fix recommendation.
+
+### Insights
+
+- **insights/workflow-subagents-have-full-tool-surface.md** — Sub-agents inside a workflow script have the complete tool surface (shell, file-read, dynamic tool-loading, every session-loaded MCP server) — unlike ordinary task-delegation sub-agents. Verified across two live runs against fabrication-resistant ground truth. Unblocks converting any process skill and enables gating on execution evidence rather than report-presence. INDEX entry #44.
+
 ## 2026-06-08 — Measure-then-gate + wrong-protocol-hook insights
 
 ### Insights
