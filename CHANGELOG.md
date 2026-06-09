@@ -2,6 +2,12 @@
 
 All notable research additions and documentation changes.
 
+## 2026-06-09 — Insight: documenting an agent / skill / hook framework
+
+### Insights
+
+- **insights/documenting-agent-skill-hook-frameworks.md** — Research distilled: the canonical documentation frameworks (Diátaxis, arc42/C4, ADR/MADR, Keep a Changelog, standard-readme, docs-as-code) all assume a conventional code library, leaving a real gap for a repo whose artifacts are agents/skills/hooks. The fill: compose those frameworks around the attributes-table-per-configurable-entity convention (Ansible/Terraform/CrewAI). States which frameworks transfer fully, partially, or not (SemVer does not — no pinned consumers), and the honest enforcement limit (automated layers check consistency not completeness; a runtime completeness hook was rejected as over-engineering). The derived standard ships in the framework repo. INDEX entry #46.
+
 ## 2026-06-09 — Procedure layer as workflows: engine proof + program spec + two conversion drafts
 
 ### Specs

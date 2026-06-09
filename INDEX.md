@@ -443,6 +443,11 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 - Source: [specs/procedure-layer-as-workflows.md](specs/procedure-layer-as-workflows.md) — with worked drafts at [specs/workflow-drafts/process-planning.draft.js](specs/workflow-drafts/process-planning.draft.js) and [specs/workflow-drafts/process-pentest.draft.js](specs/workflow-drafts/process-pentest.draft.js)
 
+### 46. Documenting an Agent / Skill / Hook Framework (2026-06-09)
+**The finding:** The established documentation frameworks (Diátaxis, arc42/C4, ADR/MADR, Keep a Changelog, standard-readme, docs-as-code) all assume a conventional code library. A framework whose primary artifacts are *agents, skills, and hooks* falls into a real gap with no cross-tool standard — and the way to fill it is to compose those frameworks around one borrowed convention: the **attributes-table per configurable entity** (the dominant pattern in config-heavy repos: Ansible modules, Terraform variables, CrewAI concepts). The composition: Diátaxis routing + an attributes-table reference schema (the unit of reference) + a MADR decision log with a single-authority rule that prevents competing "why" stores + date-based changelog. The honest limit: automated checks verify *consistency of what exists*, not *completeness of what's required* — completeness rests on a human publish-time gate, and trying to enforce it with a runtime hook was rejected as over-engineering. The live standard ships in the framework repo's `docs/documentation-standard.md`.
+
+- Source: [documenting-agent-skill-hook-frameworks](insights/documenting-agent-skill-hook-frameworks.md) (insight file)
+
 ---
 
 ## Supporting Analysis (April 2026)
