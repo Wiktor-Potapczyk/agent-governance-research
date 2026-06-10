@@ -2,6 +2,13 @@
 
 All notable research additions and documentation changes.
 
+## 2026-06-10 — Curation: 17 working-notes-grade files moved to archive/
+
+### Changed
+
+- **17 files moved to a new `archive/` directory** (from `patterns/` ×12, `framework/` ×3, `experiments/` ×2) per the curation pass: superseded working notes, operational checklists, and derivative summaries whose durable findings are carried by INDEX-cited research files. Verified before moving: zero inbound references from any other document (including the new INDEX entries #47–#64). Nothing deleted — git history and `archive/` preserve all content; an `archive/README.md` states the policy.
+
+
 ## 2026-06-10 — INDEX curation: 18 previously-unindexed research files indexed
 
 ### Added
