@@ -2,6 +2,15 @@
 
 All notable research additions and documentation changes.
 
+## 2026-06-10 — Flaw-audit fixes: dead vault-internal pointers, README currency
+
+### Fixed
+
+- **INDEX.md:** entry #20 and Research Directions item 4 pointed at five `research/...` working documents that were never part of this repo (vault-internal session artifacts; plain-text pointers, so the CI link check could not catch them). Annotated as vault-internal-not-included and re-pointed to the durable insight files that carry the conclusions.
+- **README.md:** the research-layer narrative stopped at INDEX #40–#41; extended to cover #42–#46 (measure-then-gate, wrong-protocol-hook, workflow tool-surface engine proof, procedure-layer-as-workflows, documenting agent/skill/hook frameworks).
+- **Correction note:** the 2026-05-26 entry below records `meta/ecc-broader-repo-adoption.md`; that file lives at `specs/ecc-broader-repo-adoption.md` (moved after the entry was written; per append-only changelog discipline the historical entry is left as written and corrected here).
+
+
 ## 2026-06-09 — Insight: documenting an agent / skill / hook framework
 
 ### Insights

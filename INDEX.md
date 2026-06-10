@@ -198,10 +198,7 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 **Key fix:** H3 (reject `MUST DISPATCH: none` on non-Quick tasks) is the lowest-effort, highest-impact fix — breaks the composed B1+B2+B3 bypass.
 
-- Source: research/2026-04-18-infrastructure-audit-findings.md (entry point)
-- Opus synthesis: research/2026-04-18-infrastructure-audit-s6-synthesis.md (architectural patterns)
-- Pentest report: research/2026-04-18-infrastructure-audit-s9-pentest.md (empirical verification)
-- RCA methodology: research/2026-04-14-research-orchestrator-bypass-rca.md (dual-stream investigation pattern)
+- Source: the 2026-04-18 infrastructure-audit session artifacts (findings entry point, synthesis, pentest report) and the 2026-04-14 research-orchestrator-bypass RCA — **vault-internal working documents, not included in this repo.** The durable conclusions are captured in this entry and in the related insight files ([enforcement-layer-needs-meta-verification](insights/enforcement-layer-needs-meta-verification.md), [rubber-stamp-enforcement](insights/rubber-stamp-enforcement.md)).
 
 ### 21. Rubber-Stamp Enforcement Gaps
 **The finding:** Hooks that check output text but not real dispatch create silent bypass paths. The pattern: `if has_output and not has_real_invocation: BLOCK`. Two instances found in the 2026-04-18 audit — `check_pm_checkpoint_report` (verified report text but not agent dispatch) and `work-verification-check` CHECK 1 (required BOTH conditions simultaneously, missing the skipped-skill-entirely case). Invoke-side verification complements output-side verification; AND/OR logic matters.
@@ -463,4 +460,4 @@ Original discoveries and research-backed findings from the Agent Suite project (
 1. **Context rot vs exploration prompting** — does exploration resist degradation as context grows? Observed: at 650K tokens, response quality degrades ("semantic averaging" per Gemini).
 2. **Mechanistic question** — what does exploration do to attention patterns? Does it activate different retrieval than extraction?
 3. **Prompt analysis** — 169 messages analyzed from prior sessions. Phase 1 complete. Phase 2: compare with Agent Suite patterns.
-4. **Observability v2** — design-complete (2026-04-19). Catalogs 35 events (P0–P3), prescribes 4-tier aggregation strategy, lists 9 derivable conclusions. Two hooks (session-start-log, pre-compact) must be wired before P0 capture. See research/2026-04-19-observability-design-plan.md.
+4. **Observability v2** — design-complete (2026-04-19). Catalogs 35 events (P0–P3), prescribes 4-tier aggregation strategy, lists 9 derivable conclusions. Two hooks (session-start-log, pre-compact) must be wired before P0 capture. The design plan is a vault-internal working document (not included in this repo); the durable telemetry catalog is summarized in the Observability & Monitoring thread above.
