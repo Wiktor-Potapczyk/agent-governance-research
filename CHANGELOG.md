@@ -2,6 +2,21 @@
 
 All notable research additions and documentation changes.
 
+## 2026-06-10 — INDEX curation: 18 previously-unindexed research files indexed
+
+### Added
+
+- **18 new INDEX entries (#47–#64)** covering content that existed in the repo but had no INDEX entry:
+  - **theories/** (7 entries): dark-zone-research, governance-depth-boundary, hook-enforcement-model, failure-modes-taxonomy, context-rot-research-directions, concern-implications, perplexity-synthesis
+  - **theories/ (continued — agent teams)** (1 entry, dual-file): agent-teams-execution-model + agent-teams-reference
+  - **patterns/** (5 entries): external-confidence, claude-code-patterns, routing-architecture, hook-signal-vs-cause, prompt-engineering-findings
+  - **meta/** (3 entries): monitoring-points-analysis, suite-effectiveness-assessment, tool-usage-gap
+  - **framework/** (1 entry): governance-landscape
+  - **experiments/** (1 entry, dual-file): exploration-prompting-paper/README.md + exploration-prompting-research.md
+
+- Archive-candidate moves were deliberately NOT applied — held for maintainer confirmation.
+- Files classified as "covered-elsewhere" (19 files) and "leave" (9 files) also not touched.
+
 ## 2026-06-10 — ECC star count verified
 
 ### Fixed

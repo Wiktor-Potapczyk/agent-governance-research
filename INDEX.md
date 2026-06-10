@@ -447,6 +447,168 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 ---
 
+### 47. The Dark Zone — Output Integration Gap in Multi-Agent Systems (2026-06-10)
+**The finding:** Every multi-agent framework solves making agent output *available*; none solve ensuring it is *used*. This availability-vs-utilization gap — termed the "Dark Zone" — parallels RAG faithfulness failures (40% hallucination despite correct retrieval). Lost in the Middle documents a 30%+ performance drop for mid-context information; MAST taxonomy's FM-2.5 ("ignored other agent's input") records 41–86.7% failure rates across multi-agent systems. Five concrete mitigation patterns are documented: ICM folder-as-architecture, citation-format requirement (`Per [agent-name]: ...`), independent judge agent, position mitigation, and file-based communication with hook observability. Three-layer enforcement spec: agent writes structured findings → PostToolUse confirms Read → Stop hook checks citation pattern.
+
+**Evidence:** ICM (arXiv:2603.16021), MAST (arXiv:2503.13657), Lost in the Middle (arXiv:2307.03172), AIGNE AgentFS (arXiv:2512.05470).
+
+- Source: [dark-zone-research](theories/dark-zone-research.md)
+
+---
+
+### 48. Governance Enforcement Has a Hard Depth Boundary (2026-06-10)
+**The finding:** Hook enforcement has a structural depth boundary in multi-agent LLM systems: D0 (main session) receives full hook enforcement, D1 subagents receive soft guidance only, D2+ operates on trust. Subagents cannot spawn named specialists (platform constraint), so compound needs at D1 are silently dropped or handled poorly inline. An escalation protocol (ESCALATION marker in output + hook detection + D0 dispatch) is proposed but acknowledged as soft governance (~48% chain probability — 78.5% compliance per step across 3 sequential steps). The boundary is not a design choice; it is a structural platform constraint.
+
+**Evidence:** Empirical measurement of escalation chain probability; platform constraint confirmed across Claude Code and equivalent agent frameworks.
+
+- Source: [governance-depth-boundary](theories/governance-depth-boundary.md); companion: [governance-depth-boundary-theory](framework/governance-depth-boundary-theory.md)
+
+---
+
+### 49. Hook-Based Governance Has a Hard Ceiling and a Soft Gap (2026-06-10)
+**The finding:** Four-lens analysis (control theory, organizational governance, failure mode, information theory) establishes that hook-based governance has a **hard ceiling** — hooks cannot enforce semantic correctness, and same-family verification is subject to the same biases it tests — and a **soft gap** — the integration step after an agent returns output is completely unobserved. The enforcement chain covers classify [CHECKED] → dispatch [CHECKED] → integrate [DARK] → respond [DARK]. The soft gap is addressable via structural checks (citation presence, process artifact presence, type-format coherence); the hard ceiling is a boundary, not a defect. The same-model CoVe ceiling is quantified: gains decrease with solver/verifier similarity (Lu et al. 2025).
+
+**Evidence:** T5 test agent produced best output by skipping all process skills (37 tool calls, 4 lenses, cited research). Production enforcement data.
+
+- Source: [hook-enforcement-model](theories/hook-enforcement-model.md)
+
+---
+
+### 50. Autonomous Agent Failure Modes — Taxonomy from 385 Real-World Faults (2026-06-10)
+**The finding:** A comprehensive taxonomy of autonomous LLM agent failure modes compiled from 385+ real-world faults across multiple frameworks (AutoGen, CrewAI, SWE-agent, Haystack). Five architectural fault dimensions, 13 symptom classes, 12 root cause categories. Dominant root causes: dependency/integration failures (~19.5%) and data/type handling (~17.6%). Key implication: termination logic, schema/contract enforcement, and integration tests are as important as prompt engineering. Additional findings include an execution hallucination taxonomy, tool-selection hallucination rates, and direct evidence that multi-agent debate amplifies sycophancy through conformity effects.
+
+**Evidence:** 385 real-world faults (arXiv, 2026); IBM AutoGPT failure analysis; SycEval amplification data.
+
+- Source: [failure-modes-taxonomy](theories/failure-modes-taxonomy.md)
+
+---
+
+### 51. Context-Rot Research Directions — Three Falsifiable Hypotheses (2026-06-10)
+**The finding:** Three deferred but falsifiable research directions on how exploration prompting interacts with context scaling. Direction 1 (context-rot hypothesis): extraction questions compete with accumulated context while exploration questions leverage it — predicting exploration advantage *increases* in long sessions (Gemini-predicted saturation at ~200K tokens via "semantic averaging"). Direction 2 (mechanistic): whether "What does this imply?" causes broader attention distribution. Direction 3 (Implicit CoT mechanism): exploration may trigger vertical reasoning through transformer layers rather than horizontal token-by-token reasoning. First production observation of context rot at ~650K tokens documented: response length dropped from 20–40 lines to 3–8 lines on similar topics.
+
+**Evidence:** First-person production observation corroborated by Gemini's prediction. Connects to Finding 1's difficulty-scaling hypothesis.
+
+- Source: [context-rot-research-directions](theories/context-rot-research-directions.md)
+
+---
+
+### 52. Adversarial Review of 27 Governance Concerns — Recurring Wrong-Layer Pattern (2026-06-10)
+**The finding:** Adversarial review of 27 active architectural concerns (synthesized from 3 parallel adversarial batches) reveals a recurring meta-pattern: proposed solutions were frequently directed at the wrong layer. Three cross-cutting findings: (1) presence checks create false confidence — they detect easy failures and make hard failures (quote-then-ignore) invisible; (2) the observation window cannot see early-session classifications in long sessions (the hook literally cannot read its own jurisdiction); (3) agent tiering conflates the real problem (verbose descriptions) with an unnecessary solution (visibility tiers). Documents 27 concern-by-concern verdicts with dual-surface "if unaddressed" / "if solved as proposed" analysis.
+
+**Evidence:** Three parallel adversarial-reviewer batches; internal enforcement data.
+
+- Source: [concern-implications](theories/concern-implications.md)
+
+---
+
+### 53. Empirical Grounding for the Quality Mechanism Spectrum (2026-06-10)
+**The finding:** Synthesis of 85 academic references (2023–2026) against the quality mechanism spectrum. Key quantified confirmations: "Think Again" is catastrophically harmful (CommonSenseQA drops from 75.8% to 38.1%); verification is easier than generation (6B verifier outperforms 175B generator on GSM8K; 70% verification accuracy vs. 17% generation precision within identical weights); ensemble beats debate (multi-agent debate achieves <20% win rate over CoT baselines across 36 scenarios; on GSM8K 2026 debate = heterogeneous ensemble — zero advantage); sycophancy is structural and RLHF-amplified (stronger RLHF = more sycophancy; up to 98% of correct answers flipped under user pressure). Specific quantitative citations for each claim.
+
+**Evidence:** Huang et al. ICLR 2024; Cobbe et al. 2021; Lu et al. 2025; "Stop Overvaluing Multi-Agent Debate" 2025; SycEval arXiv:2502.08177.
+
+- Source: [perplexity-synthesis](theories/perplexity-synthesis.md)
+
+---
+
+### 54. Agent Teams as a Lateral Solution to the D1 Depth Problem (2026-06-10)
+**The finding:** Agent Teams (experimental multi-session coordination) offer a lateral solution to the D1 depth boundary. Rather than hub-and-spoke dispatch through D0 (multiple round-trips), a team of specialists spawned once can hand off laterally via a shared task list. Key architectural insight: the classifier's compound matrix (Research: yes/no, Analysis: yes/no, etc.) IS the team roster — D0 can directly map compound primitives to team members. Two hooks govern teams: `TeammateIdle` (prevents idle agents) and `TaskCompleted` (blocks premature task closure). Currently experimental (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` env var required) but architecturally important as the enforcement model that solves what soft escalation cannot.
+
+**Evidence:** Empirical D1 problem (48% chain probability, Finding 48). Teams reference confirms lateral communication capability.
+
+- Source: [agent-teams-execution-model](theories/agent-teams-execution-model.md); reference: [agent-teams-reference](theories/agent-teams-reference.md)
+
+---
+
+### 55. External Confidence Calibration for Closed-API LLMs (2026-06-10)
+**The finding:** A catalogued set of external confidence calibration techniques for closed-API LLMs (no logit access). Tier 1 (usable immediately): linguistic hedge scanner, independent cheap-model checker, user-correction-pattern calibration. Tier 2 (costly): parallel sampling (N=5 at temp 0.7 → semantic agreement) and behavioral consistency monitoring. Key finding: self-reported confidence is the worst method across every benchmark; the best approach combines two independent sources. Additionally documents five public production hook repositories with key patterns: builder/validator via tool restriction, context-decay fix via PostToolUse state flush at 40–75% context, and an anti-rationalization Stop hook where a smaller model reviews the final response for deflection.
+
+**Evidence:** DiSRouter (arXiv 2510.19208), Multi-Agent Uncertainty (arXiv 2602.23005), Behavioral Consistency (arXiv 2602.11619). Production deployment confirmed at Trail of Bits.
+
+- Source: [external-confidence](patterns/external-confidence.md)
+
+---
+
+### 56. Production Claude Code Autonomous Architectures — Community Survey (2026-06-10)
+**The finding:** Survey of production Claude Code autonomous agent architectures. Key finding: one documented architecture (84–95 hooks, 48 skills, 19 agents, 17 lifecycle events) evolved from a 1:6 judgment-to-automation hook ratio to ~4:5 over time — incident-driven, not up-front design. Every hook is justified by a specific failure incident (enumerated table in the source). Global config files (recursion-limits.json, circuit-breaker.json, consensus-profiles.json) are consulted at runtime rather than hardcoding thresholds. Autonomy duration: a 47-file refactor in 9 minutes is documented. What breaks (failure table): force-push, infinite subagent spawning, quality regressions that pass tests.
+
+**Evidence:** Perplexity Deep Research (March 2026), GitHub issue references, incident table.
+
+- Source: [claude-code-patterns](patterns/claude-code-patterns.md)
+
+---
+
+### 57. Two-Tier Routing Architecture — Process Skills Bind to TYPE, Not DOMAIN (2026-06-10)
+**The finding:** A two-tier routing architecture resolves the inconsistent domain-table problem in process skills. Chain: Hook → Classifier (TYPE + DOMAIN + APPROACH) → Process Skill → Agent. Process skills bind to TYPE (how work flows), not DOMAIN (who does it). Single source of truth for domain-to-agent mapping is the APPROACH line in the classifier output; domain tables stripped from process skills eliminate inconsistent duplicates (1 to 8 domains across skills with no clear precedence between APPROACH line and table). Compound tasks route through decomposition with a one-level nesting cap.
+
+**Evidence:** Internal design decision record resolving an adversarial finding.
+
+- Source: [routing-architecture](patterns/routing-architecture.md)
+
+---
+
+### 58. Build Enforcement Hooks Against Root Cause, Not Observable Signal (2026-06-10)
+**The finding:** Before building an enforcement hook, trace the failure to root cause — not the observable signal. Case study: a delegation-check Stop hook scanned for "delegate/dispatch" language without Agent tool use. Analysis revealed: (1) the pattern was never observed in production logs; (2) the real failure was misclassification (Quick on depth-signal prompts); (3) fixing the classifier addressed root cause; (4) the hook caught false positives (discussions about delegation) more than real violations. Design method: document observed failure → trace to root cause → check if addressable elsewhere → build against cause, not signal.
+
+**Evidence:** Production governance-log analysis; internal hook incident record.
+
+- Source: [hook-signal-vs-cause](patterns/hook-signal-vs-cause.md)
+
+---
+
+### 59. Empirically Grounded Prompt Engineering Rules for Claude-Family Models (2026-06-10)
+**The finding:** Prompt engineering rules for Claude-family models with full citation trail. Anti-patterns confirmed by documentation: no all-caps / "CRITICAL: You MUST..." (current models overtrigger); no negative instructions; don't over-prompt for thoroughness. System prompt structure: critical instructions at beginning or end (U-shaped attention, Liu et al. TACL 2024); subagent prompts must be fully self-contained. Role/persona: task-relevant roles improve reasoning accuracy (Kong et al. NAACL 2024); persona-heavy prompts reduce instruction-following by up to 8.2% (arXiv:2512.14754). Anti-sycophancy: instruction prepending alone is erratic — either drastically low or high rates (ELEPHANT 2025). Few-shot: exemplar ordering matters (alternate positive/negative to avoid recency bias).
+
+**Evidence:** Academic citations for every claim; official documentation cross-referenced.
+
+- Source: [prompt-engineering-findings](patterns/prompt-engineering-findings.md)
+
+---
+
+### 60. Monitoring Points Audit — 17 of 23 Observable Events Not Captured (2026-06-10)
+**The finding:** First-principles analysis of every observable event in the governance framework architecture: 23 monitoring points identified, 0 fully captured, 6 partially captured, 17 not captured at all. The most diagnostically valuable data is discarded — block events (literal proof enforcement catches violations), IMPLIES text (context rot indicator), subagent pass/fail, session boundaries, skill routing denials. Priority ranking and fix effort (3–5 lines each for P1 items) provided. This audit is the prerequisite for any observability v2 design.
+
+**Evidence:** Architecture analysis with per-monitoring-point enumeration and capture-status audit.
+
+- Source: [monitoring-points-analysis](meta/monitoring-points-analysis.md)
+
+---
+
+### 61. Framework Effectiveness Assessment — Two Sessions, Measured (2026-06-10)
+**The finding:** Evidence-based assessment after two major work sessions (~50MB transcripts, ~14 hours). Key findings: 46% of agents (13 of 28) and 73% of skills (24 of 33) were never invoked; the framework-building session spent 100% of output on meta-work (zero external deliverables); the domain project session was productive (24 tangible deliverables from 73 agent dispatches with 97% specialist usage). The general-purpose agent handled 84% of framework session dispatches — specialist routing infrastructure largely unused in meta-work. The task classifier was invoked 62 times across sessions (most-used skill) but whether overhead improves output quality is unproven. Framework works when applied to real domain work; the cost is in the meta-sessions.
+
+**Evidence:** Transcript analysis, dispatch count tables, deliverable count.
+
+- Source: [suite-effectiveness-assessment](meta/suite-effectiveness-assessment.md)
+
+---
+
+### 62. Tool-Usage Gap — Why Agents Skip Available Tools Despite Rules and Hooks (2026-06-10)
+**The finding:** Structural diagnosis of why LLM agents fail to use available tools even when rules, hooks, and classifiers mandate delegation. The pattern (rule → agent skips → user catches → new rule → repeat) traces to a behavioral root, not a knowledge root. Key insight: "The bottleneck has shifted from AI quality to AI self-direction." 46% of agents were never invoked despite full documentation; specialist routing worked at 97% *when engaged* — the problem is the decision to engage, not the capability. Only structural interventions (hooks that block, routing that forces, architecture that constrains) change behavior; more rules do not. Evidence includes a case where a UserPromptSubmit hook raised skill activation from 25% to 90%.
+
+**Evidence:** Transcript analysis (dispatch count data); cited case studies.
+
+- Source: [tool-usage-gap](meta/tool-usage-gap.md)
+
+---
+
+### 63. Governance Landscape — 340 Mechanisms, Three Actionable Gaps, Five Surprises (2026-06-10)
+**The finding:** Two-pass analysis of 340 extracted governance mechanisms identifies three most actionable gaps and five unexpected findings. Gap 1 (tool-usage gap): classifier routes correctly but agent answers inline — Stop hook delegation verification is the fix. Gap 2 (classifier drift): Quick over-classification on depth-signal prompts — UserPromptSubmit pre-check injects context when depth signals are present alongside a Quick output. Gap 3 (verification gap): live-verification step skipped — SubagentStop quality gate. Five surprises: hook architectures discovered in the community that block via tool restriction (not instructions); context decay fix via PostToolUse state flush; anti-rationalization Stop hook; investigation budget pattern (convergence-forcing rather than kill-switch); pre-constraints > post-checks (MetaGPT/ChatDev pattern).
+
+**Evidence:** 340-mechanism analysis; five community repositories reviewed.
+
+- Source: [governance-landscape](framework/governance-landscape.md)
+
+---
+
+### 64. Exploration Prompting — Primary Experimental Artifacts (2026-06-10)
+**The finding:** The repository-structured paper (V5.1) and companion research foundation document for the exploration-vs-extraction prompting research. The paper (TaskClassBench: 311 prompts, 200 effective traps, 4 models from 3 families) reports: McNemar p=0.00073, CMH p=0.0013; "think-carefully" achieves a non-significantly-different error rate to exploration at 8/800 vs 10/800 (p=0.77); structured extraction is significantly worse. The companion `exploration-prompting-research.md` describes the problem statement, observed failures, root cause analysis, and the two-layer finding (forced pause as mechanism + context-proportional depth differentiation). These are the primary experimental artifacts for Finding 1.
+
+**Evidence:** Full paper at `experiments/exploration-prompting-paper/paper.pdf`; data at `experiments/exploration-prompting-paper/data/`.
+
+- Source: [exploration-prompting-paper/README.md](experiments/exploration-prompting-paper/README.md); [exploration-prompting-research](experiments/exploration-prompting-research.md)
+
+---
+
 ## Supporting Analysis (April 2026)
 
 - [google-labs-catalog](meta/google-labs-catalog.md) — 12+ Google Labs tools mapped; Jules architecture comparison, Stitch MCP integration, Opal agent memory patterns
