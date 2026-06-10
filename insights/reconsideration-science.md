@@ -32,3 +32,7 @@ Runner-up: "If you're right, why would a thoughtful, well-informed person disagr
 These principles were derived from cognitive science and epistemology research about human thinking. When tested as LLM self-verification mechanisms, adversarial review scored only 0.15 confidence — meaning these are useful heuristics for designing human-AI interaction, NOT reliable mechanisms for LLM self-correction.
 
 **For LLMs, use architectural separation instead.** Blind parallel agents (ensemble) produce more genuine divergence than any self-questioning prompt. The reconsideration science applies to how humans interact with LLM output, not to how LLMs interact with themselves.
+
+---
+
+*Note: a longer treatment of these findings — with additional sections on research context and extended principle discussion — exists at [`theories/reconsideration-science.md`](../theories/reconsideration-science.md). This file is the condensed INDEX-linked version.*

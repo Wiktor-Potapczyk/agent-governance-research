@@ -457,7 +457,7 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 ## Research Directions (Deferred)
 
-1. **Context rot vs exploration prompting** — does exploration resist degradation as context grows? Observed: at 650K tokens, response quality degrades ("semantic averaging" per Gemini).
+1. **Context rot vs exploration prompting** — does exploration resist degradation as context grows? Observed: at 650K tokens, response quality degrades ("semantic averaging" per Gemini). *(deferred; no active work planned)*
 2. **Mechanistic question** — what does exploration do to attention patterns? Does it activate different retrieval than extraction?
-3. **Prompt analysis** — 169 messages analyzed from prior sessions. Phase 1 complete. Phase 2: compare with Agent Suite patterns.
+3. **Prompt analysis** — 169 messages analyzed from prior sessions. Phase 1 complete. Phase 2: compare with Agent Suite patterns. *(deferred; no active work planned)*
 4. **Observability v2** — design-complete (2026-04-19). Catalogs 35 events (P0–P3), prescribes 4-tier aggregation strategy, lists 9 derivable conclusions. Two hooks (session-start-log, pre-compact) must be wired before P0 capture. The design plan is a vault-internal working document (not included in this repo); the durable telemetry catalog is summarized in the Observability & Monitoring thread above.

@@ -2,6 +2,15 @@
 
 All notable research additions and documentation changes.
 
+## 2026-06-10 — Audit close-out: cross-reference, stale qualifiers, manifest comment
+
+### Fixed
+
+- **`.doc-consistency.json`:** removed a stale annotation claiming `insights/rubber-stamp-enforcement.md` was never created — the file exists on disk.
+- **`insights/reconsideration-science.md`:** added the missing cross-reference to the fuller `theories/reconsideration-science.md` treatment.
+- **`INDEX.md` Research Directions:** items 1 and 3 marked `(deferred; no active work planned)` — they read as active threads but have no ongoing work.
+
+
 ## 2026-06-10 — Flaw-audit fixes: dead vault-internal pointers, README currency
 
 ### Fixed
