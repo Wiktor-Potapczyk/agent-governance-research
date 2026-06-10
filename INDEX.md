@@ -384,7 +384,7 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 **Key risk finding for full install:** five agent fabrication incidents in the prior two-week session arc demonstrate the framework is operating near the edge of doctrine-control already. Adding a parallel CLAUDE.md-bearing stack would create a doctrine conflict with no clear resolution mechanism.
 
-**Note:** star/fork counts from WebFetch summary were flagged as unverified (192K stars for a 4-month-old repo is implausibly high). Architectural claims treated as plausible based on predecessor repo's structure; counts explicitly marked for separate verification.
+**Note:** star/fork counts from the WebFetch summary were initially flagged as unverified (192K stars for a 4-month-old repo read as implausibly high) — **verified 2026-06-10 via the raw GitHub API: 212,482 stars / 32,632 forks.** The figure was real; the flag-then-verify method worked as intended.
 
 - Source: [specs/ecc-broader-repo-adoption.md](specs/ecc-broader-repo-adoption.md)
 

@@ -2,6 +2,13 @@
 
 All notable research additions and documentation changes.
 
+## 2026-06-10 — ECC star count verified
+
+### Fixed
+
+- **`specs/ecc-broader-repo-adoption.md` + INDEX #37 note:** the long-flagged "192K stars — implausibly high, unverified" hedge resolved by querying the raw GitHub API (no summary-model in the path): 212,482 stars / 32,632 forks as of 2026-06-10. The original figure was accurate; the docs now state the verified number while keeping the verify-via-raw-API method caution.
+
+
 ## 2026-06-10 — Audit close-out: cross-reference, stale qualifiers, manifest comment
 
 ### Fixed

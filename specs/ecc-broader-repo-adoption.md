@@ -24,7 +24,7 @@ Today's URL `affaan-m/ecc` is the **broader umbrella project** (or the predecess
 
 Stated components (numbers per WebFetch summary — TREAT AS UNVERIFIED; the summary model may have hallucinated): 246 skills, 61 agents, 15 hook event types, 76 commands, MCP configs, multi-platform adapters (CC + Codex + OpenCode + Cursor + Copilot). MIT license. Repo created 2026-01-18, last push 2026-05-25 (today — actively maintained).
 
-**WebFetch returned star count 192K — implausibly high for 4-month-old repo. Numbers unreliable until verified via direct repo browse or `gh` (gh not installed per MEMORY.md).** Architecture claims are plausible based on the predecessor's structure; star/fork counts should be verified separately.
+**Verified 2026-06-10 via the raw GitHub API** (`api.github.com/repos/affaan-m/ecc`, direct JSON — no summary-model in the path): **212,482 stars, 32,632 forks**, repo created 2026-01-18. The original 192K WebFetch figure was real, not hallucinated — the repo's growth is genuinely exceptional, and it has since grown further. Architecture claims remain assessed on the predecessor's structure.
 
 ## Adoption shapes (refreshed for broader scope)
 
@@ -54,7 +54,7 @@ Total cost for both: 2 WebFetch calls, ~10 min. Could be done now or scheduled f
 
 ## Caveats
 
-- **WebFetch summary model can hallucinate** — the 192K-stars figure is the most suspicious data point. All numbers in this note are summary-model output, not raw HTML/JSON parsing by main session.
+- **WebFetch summary model can hallucinate** — the 192K-stars figure was initially the most suspicious data point; it was later CONFIRMED via the raw GitHub API (212K by 2026-06-10). The caution stands as method (verify via raw API, not summary output), even though this particular number proved accurate.
 - **Prior internal research** was on `affaan-m/everything-claude-code` which may have been renamed to `affaan-m/ecc` — the repos may be the same project with a name change. If so, much of the prior research applies; if not, this is a fresh investigation.
 - **No code-level inspection performed** — this note is based on README/description summary only. Any adoption shape (A) or (B) requires reading actual SKILL.md / hook source files.
 
