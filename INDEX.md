@@ -609,6 +609,26 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 ---
 
+### 65. Workflow-Enforcement First-Contact Bugs (2026-06-11)
+**The finding:** Converting a prose process skill into a deterministic workflow script immediately surfaces five engineering invariants that the prose-skill path never could expose. (1) The Workflow tool delivers `args` as a JSON string, not an object — a TypeScript-style object-only guard silently discards the caller's data, producing degenerate ~400K-token runs on empty scope; the fix is a parse-if-string guard plus a required-field HALT before the first agent spawn, making a malformed dispatch cost approximately zero tokens. (2) Named-workflow invocation (`{name: "process-planning"}`) resolves from a session cache, not from disk — mid-session script edits are invisible to name-based invocation until the session restarts; the rule is `scriptPath` always, never the cached name. (3) Workflow resume is same-session-only — the correct persistence boundary is disk artifacts written by each step, not workflow-internal state. (4) Write-restricted agent types (`agentType: 'implementation-plan'`) fabricate file paths — the type blocks the Write tool, so the agent cannot fulfill a write step and returns a plausible-looking path it never created; writer steps must use the default workflow subagent with an explicit FILE CONTRACT (write to exactly this path, verify by read-back, return exact path). (5) The enforcement gates held through every failure — quality gates derived `pass=false` from disk evidence, reviewers blocked because file-not-found, zero fabrication passed a gate — confirming that gates keyed on filesystem evidence, not agent self-report, are correct on the negative path.
+
+**Evidence:** Five acceptance runs across two adopted workflow scripts (vault-internal); token cost of the shakedown ~2.9M before parse-if-string + HALT hardening shipped.
+
+- Source: [workflow-enforcement-first-contact-bugs](insights/workflow-enforcement-first-contact-bugs.md) (insight file)
+- Related: [procedure-layer-as-workflows](specs/procedure-layer-as-workflows.md) (the program this adoption documents); [workflow-subagents-have-full-tool-surface](insights/workflow-subagents-have-full-tool-surface.md) (Finding 44)
+
+---
+
+### 66. Skill-Tool-Only Hook Assumptions (2026-06-11)
+**The finding:** Governance hooks written when skills were the only invocation path silently break when a skill becomes a workflow, in one of three severity classes. (1) Hard misfire blocking legitimate dispatches: a routing-guard hook scans the transcript for the last `TASK TYPE:` block and validates the current Skill invocation against it; when a workflow runs first, its residue classification is treated as the active routing context, and the next prose-skill invocation is wrongly blocked — reproduced live twice in consecutive sessions. (2) Silent enforcement-gate dropout: a step-checker hook detects `process-*` Skill events to arm mandatory block-presence checks; when the skill runs as a Workflow, the Skill event is never emitted, the flag is never set, and the check silently passes every workflow-run skill regardless of what it actually emitted. (3) Benign name-list mention: registry-style hooks list skill names in an allowlist with no conditional branching on invocation type — no misfire, no dropout. The audit method: grep hooks for skill names, classify each hit by whether it branches on Skill vs Workflow tool type. The fix pattern: treat a Workflow tool_use whose name or scriptPath basename resolves to a known process skill as semantically equivalent to that skill's Skill invocation at every detection point — with one hard constraint: Workflow invocations must never arm sidecar-contract fallback mechanisms, because a workflow's internal dispatches are structurally invisible to the main transcript.
+
+**Evidence:** Hard misfire reproduced live twice (vault-internal); silent dropout identified by audit and confirmed by test; fix shipped across three hooks with pre-existing tests preserved.
+
+- Source: [skill-tool-only-hook-assumptions](insights/skill-tool-only-hook-assumptions.md) (insight file)
+- Related: [sidecar-files-for-post-compaction-enforcement](insights/sidecar-files-for-post-compaction-enforcement.md) (Finding 19); [wrong-protocol-hook-silently-noop](insights/wrong-protocol-hook-silently-noop.md) (Finding 43); [workflow-enforcement-first-contact-bugs](insights/workflow-enforcement-first-contact-bugs.md) (Finding 65)
+
+---
+
 ## Supporting Analysis (April 2026)
 
 - [google-labs-catalog](meta/google-labs-catalog.md) — 12+ Google Labs tools mapped; Jules architecture comparison, Stitch MCP integration, Opal agent memory patterns

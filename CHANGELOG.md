@@ -2,6 +2,15 @@
 
 All notable research additions and documentation changes.
 
+## 2026-06-11 — Workflow-enforcement adoption arc: two new insights (INDEX #65–#66)
+
+### Added
+
+- **insights/workflow-enforcement-first-contact-bugs.md** — Five engineering invariants that only surface when a prose process skill is first run as a deterministic workflow: args delivered as JSON string (object-only guards silently discard → degenerate ~400K-token runs; fix = parse-if-string + required-field HALT); named-workflow invocation resolves from session cache (mid-session edits invisible; rule = `scriptPath` always); resume is same-session-only; write-restricted agent types fabricate file paths (fix = default subagent + explicit FILE CONTRACT); enforcement gates derived verdicts from disk evidence through every failure, zero fabrication passed. Transferable to anyone wiring a deterministic workflow layer over LLM procedure. INDEX entry #65.
+- **insights/skill-tool-only-hook-assumptions.md** — Hook-blindness bug class introduced when skills convert to workflows: three severity classes (hard misfire blocking legitimate dispatches — reproduced live twice; silent enforcement-gate dropout; benign name-list mention); audit method (grep hooks for skill names, classify by firing condition); fix pattern (treat Workflow tool_use resolving to a known process skill as semantically equivalent to that skill's Skill invocation at every detection point, but never arm sidecar-contract fallback from it — the workflow performs its dispatches internally). INDEX entry #66.
+- **INDEX.md** — Entries #65 and #66 added under Core Discoveries.
+
+
 ## 2026-06-10 — Curation: 17 working-notes-grade files moved to archive/
 
 ### Changed
