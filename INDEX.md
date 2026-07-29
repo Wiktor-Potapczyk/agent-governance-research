@@ -629,6 +629,27 @@ Original discoveries and research-backed findings from the Agent Suite project (
 
 ---
 
+## Two-Gate Autonomy: Licensing Agent Action (July 2026)
+
+Autonomy gated by reversibility then detectability, rather than by task size. The model is
+implemented in the framework repo (ADR-0007 + `docs/concepts/two-gate-autonomy.md`); these are
+the empirical findings that came out of running and maintaining it.
+
+- **Finding 67 — a safety gate's own audit log is mostly its test suite.** Roughly 98.7% of ~8,000
+  recorded deny events were synthetic, produced by the hook's tests writing to the same log as
+  production. Excluding a known placeholder session value was insufficient; the reliable
+  discriminator was structural (real sessions carry a UUID). Any calibration figure quoted from
+  that log during the affected period described the test suite, not agent behaviour.
+- **Finding 68 — narrowing a deny pattern silently opens floor holes.** Relaxing a deletion
+  pattern to cut false positives also un-blocked a parent-directory recursive delete that nobody
+  intended to allow. No test went red. Deny-lists face one-directional feedback pressure: too-broad
+  patterns announce themselves through visible false positives, too-narrow patterns fail as an
+  absence. The missing check is a set difference, new deny-set equals old minus exactly the
+  intended un-blocks, not a forward assertion about the new pattern.
+- Related: [safety-gate-logs-are-mostly-your-own-tests](insights/safety-gate-logs-are-mostly-your-own-tests.md) (Finding 67); [narrowing-a-deny-pattern-opens-floor-holes](insights/narrowing-a-deny-pattern-opens-floor-holes.md) (Finding 68)
+
+---
+
 ## Supporting Analysis (April 2026)
 
 - [google-labs-catalog](meta/google-labs-catalog.md) — 12+ Google Labs tools mapped; Jules architecture comparison, Stitch MCP integration, Opal agent memory patterns

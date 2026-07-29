@@ -2,6 +2,17 @@
 
 All notable research additions and documentation changes.
 
+## 2026-07-29 — Two-Gate Autonomy findings: two new insights (INDEX #67-#68)
+
+### Added
+
+- **[safety-gate-logs-are-mostly-your-own-tests](insights/safety-gate-logs-are-mostly-your-own-tests.md)** (Finding 67): a deny-gate's audit log was ~98.7% synthetic, written by the hook's own test suite into the production sink. Covers why this is worse than ordinary noise (test data is systematically unrepresentative, biasing exactly the frequency estimates calibration needs), why filtering a known placeholder value was insufficient, and the generalisation: decide at design time how a reader tells test records from real ones, and make the discriminator structural rather than a recognised value.
+- **[narrowing-a-deny-pattern-opens-floor-holes](insights/narrowing-a-deny-pattern-opens-floor-holes.md)** (Finding 68): relaxing a deletion pattern under false-positive pressure un-blocked a strictly more dangerous case with no test failure. Documents the one-directional feedback asymmetry that erodes deny-lists over time, and the set-difference verification that forward assertions cannot substitute for.
+
+### Changed
+
+- **INDEX.md**: new thread "Two-Gate Autonomy: Licensing Agent Action (July 2026)" covering both findings and pointing at the framework repo's ADR-0007 and concept page for the model itself.
+
 ## 2026-06-11 — Workflow-enforcement adoption arc: two new insights (INDEX #65–#66)
 
 ### Added
