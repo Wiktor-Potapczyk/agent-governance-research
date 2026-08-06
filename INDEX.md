@@ -650,6 +650,56 @@ the empirical findings that came out of running and maintaining it.
 
 ---
 
+## Publishing a Working System: What the Gates Missed (August 2026)
+
+Findings from a publication pass that brought this framework's public repositories back into
+step with the private system they document. Every one of these was found by *running* something
+rather than reading it, and four of the six describe a check that was passing while unable to
+fail.
+
+- **Finding 69 — a gate that cannot fail is not a gate.** Three separate quality gates in one
+  repository were green while checking nothing: a CI job that excluded its own test suite on an
+  untested comment, a consistency checker comparing documents against numbers typed into its own
+  config, and a structural check resolving to a path that exists in no clone. All exited zero
+  throughout. The remedy is to arm the control, break the guarded thing on purpose and confirm
+  the gate goes red, with the second-order warning that an armed control can itself silently
+  no-op and then prove nothing while appearing to prove something.
+- **Finding 70 — a guarded optional import ships two programs, and you test one.** A `try/except
+  ImportError` fork means a suite run on a machine with the package exercises exactly one branch;
+  the other ships unexecuted. Live case: a fallback frontmatter parser ignored indentation, so a
+  nested key overwrote a top-level one and the hook reported valid files as invalid, in the
+  minimal-dependency configuration a new adopter is most likely to be in. Run the suite with AND
+  without every optional dependency, with a step that proves the configuration is in effect.
+- **Finding 71 — running CI's steps locally is not running CI.** Re-running a workflow's commands
+  in your own shell verifies the commands, not the environment. A local pass cannot see a package
+  the runner lacks, a different operating system, or a clean checkout. When the target platform
+  is unreachable, CI is not a formality, it is the only oracle.
+- **Finding 72 — token scans cannot see infrastructure disclosure.** An IP address, a `root@`
+  login, a hostname, a container name, a deployment path and a product name are all zero-token
+  strings. Two independently written denylist gates passed a production IP with a root login that
+  sat in a public repository for over a week. Grep the shape alongside the token, and accept that
+  product names need a maintained list rather than a pattern.
+- **Finding 73 — deny patterns fail on command spelling, not command meaning.** A force-push block
+  requiring the program and subcommand to be adjacent was evaded by the ordinary directory-option
+  spelling, which places an option between them. The correct pattern already existed ten lines
+  away on a less dangerous rule, and the project's own documentation recommended the evading form.
+- **Finding 74 — commit identity is two fields, and clone copies neither.** An amend that
+  explicitly preserved the author left the committer field to be filled from configuration, which
+  put a work address on a public commit; the pre-push check inspected only the author and passed
+  it. Compounding it, per-repository identity overrides are the only protection and `git clone`
+  does not copy them, so the isolated clone made to perform the rewrite safely was the one without
+  the safeguard. Verify with `git log --format='%ae|%ce' | sort -u` and prefer an unset global
+  identity, whose failure mode is a stop, over a wrong one, whose failure mode is plausible.
+- **Finding 75 — a published mirror is a fork, not a copy.** Public copies accumulate deliberate
+  publication-time edits (templated paths, removed usernames, placeholder identifiers) that the
+  private tree does not have, so a sync is a per-file merge in both directions. Measured: a gated
+  merge tool refused 14 of 40 files on surviving private content, meaning a blanket copy would
+  have leaked on 35 percent of them. A marker check still proves only self-consistency, never
+  completeness: one file passed every gate, carried no private token, and was still wrong.
+- Related: [a-gate-that-cannot-fail-is-not-a-gate](insights/a-gate-that-cannot-fail-is-not-a-gate.md) (Finding 69); [guarded-optional-import-is-two-programs](insights/guarded-optional-import-is-two-programs.md) (Finding 70); [running-ci-steps-locally-is-not-running-ci](insights/running-ci-steps-locally-is-not-running-ci.md) (Finding 71); [token-scans-cannot-see-infrastructure-disclosure](insights/token-scans-cannot-see-infrastructure-disclosure.md) (Finding 72); [deny-patterns-fail-on-command-spelling](insights/deny-patterns-fail-on-command-spelling.md) (Finding 73); [identity-is-two-fields-and-clone-copies-neither](insights/identity-is-two-fields-and-clone-copies-neither.md) (Finding 74); [a-published-mirror-is-a-fork-not-a-copy](insights/a-published-mirror-is-a-fork-not-a-copy.md) (Finding 75)
+
+---
+
 ## Supporting Analysis (April 2026)
 
 - [google-labs-catalog](meta/google-labs-catalog.md) — 12+ Google Labs tools mapped; Jules architecture comparison, Stitch MCP integration, Opal agent memory patterns

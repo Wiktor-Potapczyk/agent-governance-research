@@ -2,6 +2,27 @@
 
 All notable research additions and documentation changes.
 
+## 2026-08-06 — Publishing a working system: seven new insights (INDEX #69-#75)
+
+Findings from the publication pass that brought the framework repository back into step with the
+private system it documents. The common thread is not new: it is that **four of the seven describe
+a check that was passing while structurally unable to fail**, and every one of them was found by
+running something rather than reading it.
+
+### Added
+
+- **[a-gate-that-cannot-fail-is-not-a-gate](insights/a-gate-that-cannot-fail-is-not-a-gate.md)** (Finding 69): three gates in one repository, all green, all checking nothing. Introduces arming the control as the verification discipline, plus the second-order trap that an armed control can itself no-op, with two worked instances of exactly that happening during the same audit.
+- **[guarded-optional-import-is-two-programs](insights/guarded-optional-import-is-two-programs.md)** (Finding 70): a `try/except ImportError` forks the module, and the suite only ever runs the branch your machine has. The live defect: a fallback parser ignored indentation, inverting key precedence, so a hook reported valid input as invalid in the lowest-dependency configuration.
+- **[running-ci-steps-locally-is-not-running-ci](insights/running-ci-steps-locally-is-not-running-ci.md)** (Finding 71): re-running a workflow's commands verifies the commands, not the environment. Enumerates what a local pass structurally cannot see, and the rule that an unreachable target platform makes CI the only oracle rather than a formality.
+- **[token-scans-cannot-see-infrastructure-disclosure](insights/token-scans-cannot-see-infrastructure-disclosure.md)** (Finding 72): denylist scanning is blind to disclosure by shape. Includes the structural sweep that complements it, why a gate whose contents are the secret cannot ship with the artifact it guards, and the complication that an internal name used as matching logic cannot be renamed for free.
+- **[deny-patterns-fail-on-command-spelling](insights/deny-patterns-fail-on-command-spelling.md)** (Finding 73): a regular expression over a command line blocks a spelling, and the operation has several. Sibling to Finding 68: that one is a pattern relaxed too far, this one is a pattern that was never wide enough.
+- **[identity-is-two-fields-and-clone-copies-neither](insights/identity-is-two-fields-and-clone-copies-neither.md)** (Finding 74): author and committer are independent, tooling shows the first, and configuration silently fills the second. Also names the trap where a safeguard lives in a working copy rather than in the repository, so the clone made to work safely is the one without it.
+- **[a-published-mirror-is-a-fork-not-a-copy](insights/a-published-mirror-is-a-fork-not-a-copy.md)** (Finding 75): the public tree is a sibling with its own deliberate edits, not a downstream snapshot. Measured refusal rate of 14 in 40 files, and the honest limit that marker checking verifies the transformation while only execution catches the semantic class.
+
+### Changed
+
+- **INDEX.md**: new section "Publishing a Working System: What the Gates Missed (August 2026)" carrying Findings 69 to 75.
+
 ## 2026-07-29 — Two-Gate Autonomy findings: two new insights (INDEX #67-#68)
 
 ### Added
