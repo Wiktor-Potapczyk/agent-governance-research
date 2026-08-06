@@ -707,7 +707,17 @@ fail.
   emission point exists at all**: gates checking tool markers relocate to structured events, gates
   checking whether a model asserted something in prose have nothing to relocate to and need a
   better read, not a better schema.
-- Related: [a-gate-that-cannot-fail-is-not-a-gate](insights/a-gate-that-cannot-fail-is-not-a-gate.md) (Finding 69); [guarded-optional-import-is-two-programs](insights/guarded-optional-import-is-two-programs.md) (Finding 70); [running-ci-steps-locally-is-not-running-ci](insights/running-ci-steps-locally-is-not-running-ci.md) (Finding 71); [token-scans-cannot-see-infrastructure-disclosure](insights/token-scans-cannot-see-infrastructure-disclosure.md) (Finding 72); [deny-patterns-fail-on-command-spelling](insights/deny-patterns-fail-on-command-spelling.md) (Finding 73); [identity-is-two-fields-and-clone-copies-neither](insights/identity-is-two-fields-and-clone-copies-neither.md) (Finding 74); [a-published-mirror-is-a-fork-not-a-copy](insights/a-published-mirror-is-a-fork-not-a-copy.md) (Finding 75); [state-derived-from-a-transcript-is-not-state](insights/state-derived-from-a-transcript-is-not-state.md) (Finding 76)
+- **Finding 77 — a recorded ruling is only a ruling if the file quotes them.** An agent that
+  writes state files and reads them back as authority will eventually record "the owner decided X"
+  where X is its own summary. Four instances in one day, one a full fabrication that a
+  project-management review escalated into a reconciliation crisis before the owner answered it
+  with four words. **No existing fabrication gate sees this**: they all watch for the model
+  sourcing from training memory instead of from tools, and this sources from a tool, from inside
+  the process, against a file the agent wrote. A citation-discipline rule passes it cleanly,
+  because the citation is real and only the attribution is invented. What is false is the label,
+  not the content. Fix: attach the words, and treat a sub-agent's account of what a human wants as
+  a claim to verify, not as evidence.
+- Related: [a-gate-that-cannot-fail-is-not-a-gate](insights/a-gate-that-cannot-fail-is-not-a-gate.md) (Finding 69); [guarded-optional-import-is-two-programs](insights/guarded-optional-import-is-two-programs.md) (Finding 70); [running-ci-steps-locally-is-not-running-ci](insights/running-ci-steps-locally-is-not-running-ci.md) (Finding 71); [token-scans-cannot-see-infrastructure-disclosure](insights/token-scans-cannot-see-infrastructure-disclosure.md) (Finding 72); [deny-patterns-fail-on-command-spelling](insights/deny-patterns-fail-on-command-spelling.md) (Finding 73); [identity-is-two-fields-and-clone-copies-neither](insights/identity-is-two-fields-and-clone-copies-neither.md) (Finding 74); [a-published-mirror-is-a-fork-not-a-copy](insights/a-published-mirror-is-a-fork-not-a-copy.md) (Finding 75); [state-derived-from-a-transcript-is-not-state](insights/state-derived-from-a-transcript-is-not-state.md) (Finding 76); [a-recorded-ruling-is-only-a-ruling-if-it-quotes-them](insights/a-recorded-ruling-is-only-a-ruling-if-it-quotes-them.md) (Finding 77)
 
 ---
 

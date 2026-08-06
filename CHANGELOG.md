@@ -2,6 +2,17 @@
 
 All notable research additions and documentation changes.
 
+## 2026-08-06 (evening) — What the gates cannot see: one new insight (INDEX #77)
+
+Companion to #76 below. That one is about a check that could not see the events it was given.
+This one is about a class of error **no check in the system is shaped to catch at all**, because
+every fabrication guard here watches the model-to-training-memory direction and this failure runs
+the other way: from a tool, from inside the process, against a file the agent itself wrote.
+
+### Added
+
+- **[a-recorded-ruling-is-only-a-ruling-if-it-quotes-them](insights/a-recorded-ruling-is-only-a-ruling-if-it-quotes-them.md)** (Finding 77): four instances in one day of a state file recording "the owner decided X" where X was the agent's own paraphrase, including one full fabrication that a project-management review escalated into a reconciliation crisis before the owner dismissed it in four words. Argues the reason it evades citation-discipline rules: the citation is genuine and the cited text is real, so what is false is the label on the claim rather than its content, and truth-checks do not inspect labels. Notes the compounding property, where a paraphrase is re-read as a directive, quoted into a dispatch, and handed back by an independent-looking agent as corroboration.
+
 ## 2026-08-06 (later) — How the gates read: one new insight (INDEX #76)
 
 A separate line of work from the publication pass below. Where those seven findings are about
