@@ -696,7 +696,18 @@ fail.
   merge tool refused 14 of 40 files on surviving private content, meaning a blanket copy would
   have leaked on 35 percent of them. A marker check still proves only self-consistency, never
   completeness: one file passed every gate, carried no private token, and was still wrong.
-- Related: [a-gate-that-cannot-fail-is-not-a-gate](insights/a-gate-that-cannot-fail-is-not-a-gate.md) (Finding 69); [guarded-optional-import-is-two-programs](insights/guarded-optional-import-is-two-programs.md) (Finding 70); [running-ci-steps-locally-is-not-running-ci](insights/running-ci-steps-locally-is-not-running-ci.md) (Finding 71); [token-scans-cannot-see-infrastructure-disclosure](insights/token-scans-cannot-see-infrastructure-disclosure.md) (Finding 72); [deny-patterns-fail-on-command-spelling](insights/deny-patterns-fail-on-command-spelling.md) (Finding 73); [identity-is-two-fields-and-clone-copies-neither](insights/identity-is-two-fields-and-clone-copies-neither.md) (Finding 74); [a-published-mirror-is-a-fork-not-a-copy](insights/a-published-mirror-is-a-fork-not-a-copy.md) (Finding 75)
+- **Finding 76 — state derived from a transcript is not state.** Five enforcement gates recovered
+  turn state by regular expression over the conversation log. Measured on one session: a 200 KB
+  window over a 386.7 MB file, which is 0.05 percent, containing **0 of the 308 events** the
+  project-management gate existed to check. Blind by construction, not by bug, and silent because
+  a check that finds nothing to object to reports success. Two siblings in the same codebase share
+  the shape: a byte-bounded tail made a counter run backwards with no code change, and 17 of 18
+  hooks read session identity from a filename instead of the payload field already in their input,
+  mislabelling 43,601 of 77,534 records. The useful split is not text versus typed but **whether an
+  emission point exists at all**: gates checking tool markers relocate to structured events, gates
+  checking whether a model asserted something in prose have nothing to relocate to and need a
+  better read, not a better schema.
+- Related: [a-gate-that-cannot-fail-is-not-a-gate](insights/a-gate-that-cannot-fail-is-not-a-gate.md) (Finding 69); [guarded-optional-import-is-two-programs](insights/guarded-optional-import-is-two-programs.md) (Finding 70); [running-ci-steps-locally-is-not-running-ci](insights/running-ci-steps-locally-is-not-running-ci.md) (Finding 71); [token-scans-cannot-see-infrastructure-disclosure](insights/token-scans-cannot-see-infrastructure-disclosure.md) (Finding 72); [deny-patterns-fail-on-command-spelling](insights/deny-patterns-fail-on-command-spelling.md) (Finding 73); [identity-is-two-fields-and-clone-copies-neither](insights/identity-is-two-fields-and-clone-copies-neither.md) (Finding 74); [a-published-mirror-is-a-fork-not-a-copy](insights/a-published-mirror-is-a-fork-not-a-copy.md) (Finding 75); [state-derived-from-a-transcript-is-not-state](insights/state-derived-from-a-transcript-is-not-state.md) (Finding 76)
 
 ---
 

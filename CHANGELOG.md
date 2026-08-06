@@ -2,6 +2,16 @@
 
 All notable research additions and documentation changes.
 
+## 2026-08-06 (later) — How the gates read: one new insight (INDEX #76)
+
+A separate line of work from the publication pass below. Where those seven findings are about
+checks that could not fail, this one is about a check that could not **see**: the mechanism five
+gates used to recover turn state was a fixed window over a file with no upper bound.
+
+### Added
+
+- **[state-derived-from-a-transcript-is-not-state](insights/state-derived-from-a-transcript-is-not-state.md)** (Finding 76): a 200 KB read of a 386.7 MB transcript containing 0 of the 308 events the gate existed to check. Names the pattern (edge-triggered consumption with no persisted offset, an unmanaged projection, a Correlation Identifier violation), records two sibling bugs in the same codebase that share the shape, and argues the actionable split is whether an emission point exists rather than text versus typed. Carries its own counter-caveat: extraction and adoption are different problems, and the convention these gates enforce had attached to 1.9 percent of steps, so fixing the read perfects the measurement of almost nothing.
+
 ## 2026-08-06 — Publishing a working system: seven new insights (INDEX #69-#75)
 
 Findings from the publication pass that brought the framework repository back into step with the
