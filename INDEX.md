@@ -721,6 +721,26 @@ fail.
 
 ---
 
+### 78. LLM-Judge Variance Without Anchored Rubrics Is a Noise Source, Not a Gate (2026-08-07)
+**The finding:** An open-source resume-screening system was scored on one identical resume across roughly 100 runs by an external practitioner, using a small local model at low temperature. The composite score ranged from 66 to 99 out of 100 on unchanged input. Broken down by rubric field, the swing was not uniform: a field with a concrete checklist-style anchor stayed within one point in 98 of 100 runs, a field scored against a brief unanchored description showed the largest variation, and a third field maxed out every single run because its rubric gave the judge nothing to discriminate on. The composite instability came almost entirely from the unanchored fields.
+
+**Evidence:** Live-fetched practitioner report (about 100 runs, small local model, temperature 0.1); consistent with the established LLM-as-judge bias literature (Zheng et al., "MT-Bench," arXiv:2306.05685) documenting position, verbosity, and self-enhancement bias in LLM judges.
+
+- Source: [llm-judge-variance-needs-anchored-rubrics](insights/llm-judge-variance-needs-anchored-rubrics.md) (insight file)
+- Related: [volatile-source-citation-integrity](insights/volatile-source-citation-integrity.md) (Finding 39)
+
+---
+
+### 79. Research Gatherers Reconstruct From Training Memory Unless a Live-Citation Gate Catches It (2026-08-07)
+**The finding:** Across at least three independent research runs, a web-research step returned a report styled as freshly gathered findings while citing zero live-fetched sources: a training-data reconstruction wearing the shape of research. In one run the reconstruction actively misclassified reality, flagging three specific, real, publicly indexed academic papers as unverified or newsletter-invented, because a model reasoning only from its own training data cannot tell "I do not recognize this paper" apart from "this paper does not exist." A corrected pass with live web access fetched and confirmed all three, with working links, authors, and venues.
+
+**Evidence:** Each of the three runs was caught before use by an independent quality gate that counts live-fetched citations in the artifact rather than trusting its self-reported sourcing; the same live-recovery pass that corrected the misclassified-papers run verified the three papers as real, publicly indexed preprints from independent research groups.
+
+- Source: [research-gatherers-reconstruct-from-training-memory](insights/research-gatherers-reconstruct-from-training-memory.md) (insight file)
+- Related: [state-derived-from-a-transcript-is-not-state](insights/state-derived-from-a-transcript-is-not-state.md) (Finding 76)
+
+---
+
 ## Supporting Analysis (April 2026)
 
 - [google-labs-catalog](meta/google-labs-catalog.md) — 12+ Google Labs tools mapped; Jules architecture comparison, Stitch MCP integration, Opal agent memory patterns
