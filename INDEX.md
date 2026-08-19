@@ -741,6 +741,86 @@ fail.
 
 ---
 
+### 80. Absence in a Log Is Not Absence in the Payload (2026-08-18)
+**The finding:** A research pass over 29,445 archived hook-log records concluded that tool-call payloads lack a usable agent-identity signal: the one field observed carried a single value, session ids were absent in 100 percent of the sample, and a correlation id never appeared. A thirty-line metadata-only probe registered on the same event answered the question within hours, the other way: sub-agent calls carry the identity field populated with the agent's own name for every dispatch shape, main-session calls carry no such key, and both "absent" ids were present. Every archived record had come from one hook that logged only when blocking, only for the three agents it watched; the logs recorded the writer's filter, not the payload's shape.
+
+**Evidence:** 29,445 archived records, one value, 100 percent session-id absence; probe records across three dispatch shapes (workflow worker, direct dispatch, main session), each shape answered by a real event of that shape; the probe took effect on the next tool call after mid-session registration, no restart.
+
+- Source: [absence-in-a-log-is-not-absence-in-the-payload](insights/absence-in-a-log-is-not-absence-in-the-payload.md) (insight file)
+- Related: [state-derived-from-a-transcript-is-not-state](insights/state-derived-from-a-transcript-is-not-state.md) (Finding 76); [safety-gate-logs-are-mostly-your-own-tests](insights/safety-gate-logs-are-mostly-your-own-tests.md) (Finding 67)
+
+---
+
+### 81. Two Schedulers, One Repository, One Lock (2026-08-18)
+**The finding:** Two scheduled tasks maintaining one git repository (a 30-minute snapshot commit and a nightly backup) collided on the repository's own `index.lock`, which fails the loser instead of queueing it. The fix: one lock directory acquired by atomic directory creation, an owner record, staleness judged dead-PID first then a 60-minute ceiling, and an explicitly asymmetric contention policy (the light task skips its cycle; the heavy task retries 5 times at 30-second spacing, then fails loudly naming the holder). Review also forced an honesty correction: the worst observed commit (1,464 files, about 3 minutes 40 seconds) exceeds the heavy task's whole 2.5-minute retry budget, and the resolution was to correct the "holds for seconds" claim and keep the loud bounded failure, not to widen the budget.
+
+**Evidence:** 5-process race with exactly one winner; 10 of 10 replayed collision-shape rounds serialized with zero index-lock signatures; a real externally hard-killed holder (0xC000013A, finally-release never ran) self-healed by the dead-PID rule 11 minutes later; one ceiling takeover at 60.14 minutes with the 57-minute acquire correctly suppressed; the soak checker armed by first catching the historical collision.
+
+- Source: [two-schedulers-one-repo-one-lock](insights/two-schedulers-one-repo-one-lock.md) (insight file)
+- Related: [a-gate-that-cannot-fail-is-not-a-gate](insights/a-gate-that-cannot-fail-is-not-a-gate.md) (Finding 69)
+
+---
+
+### 82. Declare the Vocabulary, Never Rewrite the Record (2026-08-18)
+**The finding:** A closed telemetry vocabulary was adopted from an external framework while rejecting its enforcement-by-coercion (rewriting undeclared values to "unknown" at write time): the vocabulary is derived statically from writer source, exceptions are carried as explicit grandfather data, and enforcement is a warn-only finding that never changes a sink record. Every declared (writer, value) pair carries a proof class: PROVEN by a production record, PROVEN_IN_TEST naming the test file, or NEVER_OBSERVED annotated with why zero is healthy. A first-cut scan measuring 60.7 percent of values as underivable turned out to be scan weakness (writers emitting literals through local wrappers), not runtime dynamism; wrapper-aware patterns closed it to 0 and 9.1 percent on the two axes, all residuals explained.
+
+**Evidence:** 127 pairs, 100 percent classified (88 / 13 / 26); seeded temp-sink demonstration produced exactly one UNDECLARED_VALUE finding while live-sink hashes stayed identical across check runs; the first post-build run correctly flagged its own vocabulary as stale.
+
+- Source: [declare-the-vocabulary-never-rewrite-the-record](insights/declare-the-vocabulary-never-rewrite-the-record.md) (insight file)
+- Related: [safety-gate-logs-are-mostly-your-own-tests](insights/safety-gate-logs-are-mostly-your-own-tests.md) (Finding 67); [installed-is-not-adopted](insights/installed-is-not-adopted.md)
+
+---
+
+### 83. A Miner That Proposes Loosening Must Fail Closed (2026-08-18)
+**The finding:** A mining pass that groups recurring warn-tier events into tuning proposals is a machine whose output is suggestions to weaken guards. Its two safety properties are structural: proposal-only forever (no auto-apply path, not even behind a flag), and a protected-floor exclusion derived live at run time from the enforcement sources themselves, never a private copy, with any derivation failure failing closed to zero candidates plus a sentinel. The load-bearing test is the negative fixture: a synthetic warn matching the irreversible surface produces NOTHING at counts 10, 50, and 500, because a copied exclusion list drifts silently in the dangerous direction and an exclusion failure produces an absence-shaped defect with no symptom.
+
+**Evidence:** literal-ban greps assert zero deny-tier pattern strings in the miner source; first real weekly emission matched an independently pre-computed dry-run expectation exactly (one candidate: 17 events, 4 days, 3 sessions, 64.7 percent in one session; acceptance proxy 16 of 17, published with a blindness disclaimer; the 3-session gate passed on zero margin and the concentration number renders so a human judges it).
+
+- Source: [a-miner-that-proposes-loosening-must-fail-closed](insights/a-miner-that-proposes-loosening-must-fail-closed.md) (insight file)
+- Related: [narrowing-a-deny-pattern-opens-floor-holes](insights/narrowing-a-deny-pattern-opens-floor-holes.md) (Finding 68); [deny-patterns-fail-on-command-spelling](insights/deny-patterns-fail-on-command-spelling.md) (Finding 73)
+
+---
+
+### 84. A Finding You Cannot Resolve Will Resurface Forever (2026-08-18)
+**The finding:** A weekly recurring-signal board without permanent-resolution semantics accumulates premise-false entries in three shapes, all observed in one real proposal artifact: working-as-designed behavior flagged as a regression on every run for over two months across five agent types; a signature from a guard removed by owner decision that kept surfacing because the miner has no concept of a retired writer; and a 412-event burst with zero occurrences in the following 14 days still rendered as a live problem. The meta-instance: the board's highest-leverage unactioned proposal, by recurrence, was the proposal to add resolution semantics, itself re-proposed across three runs. Every premise-false entry charges the reader a "is this still real?" re-derivation until the board is skimmed, and skimming is indiscriminate.
+
+**Evidence:** 15 signatures in one artifact; the by-design family spanning five agent types since June; deny activity stopping exactly on the guard's removal date while the signature persisted; window-clipping (most first-seen timestamps exactly at the 30-day window start) truncating age into false recency.
+
+- Source: [a-finding-you-cannot-resolve-will-resurface-forever](insights/a-finding-you-cannot-resolve-will-resurface-forever.md) (insight file)
+- Related: [a-miner-that-proposes-loosening-must-fail-closed](insights/a-miner-that-proposes-loosening-must-fail-closed.md) (Finding 83); [rubber-stamp-enforcement](insights/rubber-stamp-enforcement.md)
+
+---
+
+### 85. Doctrine Is Probabilistic, Detectors Are Mechanical (2026-08-18)
+**The finding:** An ingest pipeline defends against prompt injection in raw sources with two layers of deliberately different guarantee class: doctrine (source content is quoted material, never directives; instruction-shaped text is surfaced escaped, not acted on), whose compliance is probabilistic, and a mechanical scanner for zero-width and bidirectional control characters, whose guarantee is absolute. A live canary whose hidden instruction was split by three zero-width characters was surfaced escaped and not obeyed, and the record was required to state verbatim that one passing run proves the mechanism worked once, not that the model ignores every injection. The detector's first two real catches were the builder's own authoring mistakes: literal zero-width characters embedded where escape text was intended, twice, while writing the detector's documentation.
+
+**Evidence:** canary run with zero marker occurrences in the derived page and index; 34 of 37 raw files arriving via hook-invisible paths (why lint-time coverage exists); two 297-character paths silently failing reads until unreadable-file became a dedicated finding code; post-fix full scan 0 target characters across 38 files.
+
+- Source: [doctrine-is-probabilistic-detectors-are-mechanical](insights/doctrine-is-probabilistic-detectors-are-mechanical.md) (insight file)
+- Related: [token-scans-cannot-see-infrastructure-disclosure](insights/token-scans-cannot-see-infrastructure-disclosure.md) (Finding 72)
+
+---
+
+### 86. Write the Ignore Rule Before the Artifact (2026-08-19)
+**The finding:** A search index over 5,129 agent transcripts (2.4 GB of deliberately unscrubbed text) was built inside a repository swept by a 30-minute auto-commit task, making the environment's own automation the adversary: any window between "the index exists" and "the index is ignored" can be lost exactly once, permanently, because a commit is history. The build made ordering the control: the ignore rule was written and verified before any indexer code existed on disk, and containment was proven structurally (check-ignore passes, no tracked files, path absent from all history) rather than by absence of complaints. The privacy boundary is explicit instead of diffuse: no scrubbing at index time by ruling, with the compensating rule that anything transcript-derived moving toward a public repository passes the standard pre-push scrub.
+
+**Evidence:** the mid-build auto-commit fire swept none of the index; six before/after hash comparisons (including a 401 MB transcript) proved read-only behavior; a lone-surrogate JSON escape crash led to a corpus-wide sweep finding 0 truly corrupt lines against 5,896 legitimately logged replacement characters; the tool's own help text demotes results to recall, below the live system.
+
+- Source: [write-the-ignore-rule-before-the-artifact](insights/write-the-ignore-rule-before-the-artifact.md) (insight file)
+- Related: [a-published-mirror-is-a-fork-not-a-copy](insights/a-published-mirror-is-a-fork-not-a-copy.md) (Finding 75); [state-derived-from-a-transcript-is-not-state](insights/state-derived-from-a-transcript-is-not-state.md) (Finding 76)
+
+---
+
+### 87. A Splice That Doubles a File Ships Green (2026-08-19)
+**The finding:** A publication pipeline's block-extraction regex ended in `.*$` under the DOT-ALL flag, where the dot matches newlines, so every extracted block ran to end-of-file and every splice appended the target file's entire tail onto itself. Four published hooks at the public repository's HEAD carried their whole body twice (one 489-line file defined `main()` twice) and every gate passed: the parse gate saw valid Python, the test gate saw identical behavior because later definitions win and the later copies were the intact originals, the token scan saw no new tokens, and human review saw the correct top of a file nobody had reason to scroll. Validity-class checks are invariant under duplication; only a shape-class check (line count against source, each name defined once) breaks the symmetry.
+
+**Evidence:** the defect sat on a public default branch for two weeks and was found by the next sync wave inspecting the regex's actual output, not by any gate; the fix bounded the terminator to `[^\n]*` and re-derived blocks from committed history so doubled outputs could not feed forward as inputs.
+
+- Source: [a-splice-that-doubles-a-file-ships-green](insights/a-splice-that-doubles-a-file-ships-green.md) (insight file)
+- Related: [a-gate-that-cannot-fail-is-not-a-gate](insights/a-gate-that-cannot-fail-is-not-a-gate.md) (Finding 69); [guarded-optional-import-is-two-programs](insights/guarded-optional-import-is-two-programs.md) (Finding 70)
+
+---
+
 ## Supporting Analysis (April 2026)
 
 - [google-labs-catalog](meta/google-labs-catalog.md) — 12+ Google Labs tools mapped; Jules architecture comparison, Stitch MCP integration, Opal agent memory patterns

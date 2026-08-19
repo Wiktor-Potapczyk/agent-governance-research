@@ -2,6 +2,32 @@
 
 All notable research additions and documentation changes.
 
+## 2026-08-19 - Running a governed system at scale: eight new insights (INDEX #80-#87)
+
+Findings from two weeks of building and operating governance mechanisms: concurrency locks for
+scheduled automation, telemetry integrity, warn-event mining, ingest hygiene, transcript search,
+and a publication-pipeline defect. The common thread is that **the safety of a mechanism is a
+structural property, not an intention**: derived-not-copied exclusion sets, ordering as the
+control, guarantee classes stated per layer, and shape checks where validity checks are blind.
+Two of the eight (80, 87) are also counterexamples to trusting archives and gates that
+structurally cannot show the answer.
+
+### Added
+
+- **[absence-in-a-log-is-not-absence-in-the-payload](insights/absence-in-a-log-is-not-absence-in-the-payload.md)** (Finding 80): 29,445 archived hook records supported a careful, hedged, wrong verdict about what tool-call payloads carry; a thirty-line metadata probe on the live event reversed it within hours. A log records its writers' filters, not the event's shape, and volume multiplies confidence, not coverage.
+- **[two-schedulers-one-repo-one-lock](insights/two-schedulers-one-repo-one-lock.md)** (Finding 81): two scheduled tasks collided on git's own index lock, which fails the loser instead of queueing it. Atomic directory-creation lock with an owner record, dead-PID-then-ceiling staleness, and an explicitly asymmetric skip-versus-retry-then-fail-loudly contention policy; validated by a forced 10-round replay and an unplanned production hard-kill that self-healed in 11 minutes.
+- **[declare-the-vocabulary-never-rewrite-the-record](insights/declare-the-vocabulary-never-rewrite-the-record.md)** (Finding 82): a closed telemetry vocabulary enforced in the checker, never by coercing sink records, with every declared emitter pair classed PROVEN, PROVEN_IN_TEST (naming its test), or NEVER_OBSERVED (with why zero is healthy). An audit trail that edits itself into consistency is no longer an audit trail.
+- **[a-miner-that-proposes-loosening-must-fail-closed](insights/a-miner-that-proposes-loosening-must-fail-closed.md)** (Finding 83): a system whose output is proposals to weaken guards must be proposal-only forever and must derive the protected floor live from the enforcement source, failing closed to zero output. The load-bearing test is the negative fixture: the most protected pattern, at any frequency, yields nothing.
+- **[a-finding-you-cannot-resolve-will-resurface-forever](insights/a-finding-you-cannot-resolve-will-resurface-forever.md)** (Finding 84): three shapes of premise-false entries on a recurring-signal board (working-as-designed flagged as regression, retired writers still echoing, stale bursts rendered live), and why a board that cannot close items converges on being ignored. The board's own fix was its most re-proposed unactioned item.
+- **[doctrine-is-probabilistic-detectors-are-mechanical](insights/doctrine-is-probabilistic-detectors-are-mechanical.md)** (Finding 85): two-layer defense against prompt injection in raw sources, with guarantee classes stated separately; a zero-width-character canary surfaced escaped and not obeyed, and the detector's first two real catches were the builder's own invisible authoring mistakes.
+- **[write-the-ignore-rule-before-the-artifact](insights/write-the-ignore-rule-before-the-artifact.md)** (Finding 86): when an automated committer sweeps the working tree every 30 minutes, containment is step zero: the ignore rule exists, verified, before the code that can create the artifact. Ordering is the control; a to-do list is a race.
+- **[a-splice-that-doubles-a-file-ships-green](insights/a-splice-that-doubles-a-file-ships-green.md)** (Finding 87): a DOT-ALL `.*$` terminator made a merge tool append each public file's entire tail onto itself; four doubled hooks sat on a public HEAD for two weeks because parse, test, token, and human gates are all invariant under duplication. Only shape checks see a file that contains itself twice.
+
+### Changed
+
+- **INDEX.md**: Findings 80 to 87 appended as numbered entries after Finding 79.
+- **README.md**: research-layer narrative extended with a 2026-07/08 paragraph covering Findings 67 to 87.
+
 ## 2026-08-06 (evening) — What the gates cannot see: one new insight (INDEX #77)
 
 Companion to #76 below. That one is about a check that could not see the events it was given.
